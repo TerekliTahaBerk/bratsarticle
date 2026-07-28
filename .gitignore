@@ -47,6 +47,7 @@ artifacts/cache/
 *.onnx
 
 # Local logs and temporary files
+/tmp/
 *.log
 *.tmp
 *.temp

@@ -1,0 +1,64 @@
+losses:
+  - name: cross_entropy
+    alpha: 0.5
+    beta: 0.5
+    gamma: 1.0
+    smoothing: 0.00001
+    class_weights: null
+    include_background: true
+    reduction: mean
+    expects_logits: true
+  - name: binary_cross_entropy
+    alpha: 0.5
+    beta: 0.5
+    gamma: 1.0
+    smoothing: 0.00001
+    class_weights: null
+    include_background: true
+    reduction: mean
+    expects_logits: true
+  - name: soft_dice
+    alpha: 0.5
+    beta: 0.5
+    gamma: 1.0
+    smoothing: 0.00001
+    class_weights: null
+    include_background: false
+    reduction: mean
+    expects_logits: true
+  - name: cross_entropy_plus_soft_dice
+    alpha: 0.5
+    beta: 0.5
+    gamma: 1.0
+    smoothing: 0.00001
+    class_weights: null
+    include_background: false
+    reduction: mean
+    expects_logits: true
+  - name: binary_cross_entropy_plus_soft_dice
+    alpha: 0.5
+    beta: 0.5
+    gamma: 1.0
+    smoothing: 0.00001
+    class_weights: null
+    include_background: false
+    reduction: mean
+    expects_logits: true
+  - name: focal_tversky
+    alpha: 0.3
+    beta: 0.7
+    gamma: 0.75
+    smoothing: 0.00001
+    class_weights: null
+    include_background: false
+    reduction: mean
+    expects_logits: true
+  - name: binary_cross_entropy_plus_focal_tversky
+    alpha: 0.3
+    beta: 0.7
+    gamma: 0.75
+    smoothing: 0.00001
+    class_weights: null
+    include_background: false
+    reduction: mean
+    expects_logits: true
