@@ -1,0 +1,37 @@
+run:
+  name: unet2d_gate5_smoke
+  seed: 20260729
+  artifact_root: artifacts/runs/unet2d_gate5_smoke
+  require_full_training_flag: true
+  require_cuda_for_full_training: true
+  device: cpu
+
+data:
+  brats2020_root: ${oc.env:BRATS2020_ROOT}
+  split_dir: splits/provisional
+  preprocessing_config: configs/data/preprocessing.yaml
+  evaluation_config: configs/evaluation/default.yaml
+  batch_size: 1
+  validation_batch_size: 1
+  num_workers: 0
+
+model:
+  name: standard_unet_2d
+  input_channels: 4
+  output_channels: 4
+  base_channels: 4
+  depth: 2
+
+optimization:
+  epochs: 2
+  optimizer: adamw
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  mixed_precision: false
+  loss:
+    cross_entropy_weight: 0.5
+    dice_weight: 0.5
+    training_dice_smooth: 0.00001
+  checkpoint_every_epochs: 1
+  early_stopping_patience: 1
+  selection_metric: mean_regional_dice

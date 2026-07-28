@@ -48,6 +48,7 @@ profiling = [
 [project.scripts]
 brats-data-audit = "bratsarticle.data.audit:main"
 brats-generate-split = "bratsarticle.data.splits:main"
+brats-train-unet2d = "bratsarticle.training.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -69,5 +70,5 @@ strict = true
 files = ["src"]
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "sklearn.*", "surface_distance.*"]
+module = ["psutil.*", "scipy.*", "sklearn.*", "surface_distance.*"]
 ignore_missing_imports = true

@@ -305,6 +305,12 @@ class BraTSSliceDataset(Dataset[dict[str, Any]]):
                 self._memory_cache.popitem(last=False)
         return volume
 
+    def subject_volume(self, patient_index: int) -> SubjectVolume:
+        """Load one authorized manifest subject for volume-level diagnostics."""
+        if not 0 <= patient_index < len(self.manifest):
+            raise IndexError(patient_index)
+        return self._subject(patient_index)
+
     def _training_record(self, index: int) -> tuple[int, int, np.random.Generator]:
         samples_per_patient = (
             self.config.training_sampling.samples_per_patient_per_epoch
