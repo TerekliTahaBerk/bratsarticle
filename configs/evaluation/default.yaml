@@ -1,0 +1,38 @@
+evaluation:
+  output_mode: labels
+  from_logits: true
+  default_spacing_mm: [1.0, 1.0, 1.0]
+  hd_percentile: 95.0
+  surface_dice_tolerance_mm: 1.0
+
+  nested_sigmoid:
+    channel_order: [wt, tc, et]
+    thresholds:
+      wt: 0.5
+      tc: 0.5
+      et: 0.5
+    enforce_consistency: false
+    consistency_rule: outward_union
+
+  empty_masks:
+    overlap_both_empty: 1.0
+    overlap_one_empty: 0.0
+    surface_dice_both_empty: 1.0
+    surface_dice_one_empty: 0.0
+    hd95_both_empty_mm: 0.0
+    hd95_one_empty: infinity
+    undefined_rate: nan
+    relative_volume_error_empty_reference: zero_or_infinity
+
+  lesions:
+    connectivity: 26
+    minimum_voxels: 1
+    minimum_volume_mm3: 0.0
+    matching_method: maximum_total_iou
+    minimum_match_iou: 0.0
+
+  postprocessing:
+    # Add "filtered" only in an explicitly named ablation configuration.
+    stages: [raw]
+    minimum_prediction_voxels: 10
+    minimum_prediction_volume_mm3: 0.0

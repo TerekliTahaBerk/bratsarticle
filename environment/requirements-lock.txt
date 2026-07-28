@@ -1,4 +1,4 @@
-# Generated from the Gate 1 Python 3.11 environment on 2026-07-29.
+# Generated from the Python 3.11 environment through Gate 3 on 2026-07-29.
 # Install the project itself from the checked-out source with: pip install -e .
 absl-py==2.5.0
 antlr4-python3-runtime==4.9.3
@@ -49,6 +49,7 @@ scikit-image==0.26.0
 scikit-learn==1.9.0
 scipy==1.17.1
 six==1.17.0
+surface-distance==0.1
 sympy==1.14.0
 tensorboard==2.21.0
 tensorboard-data-server==0.7.2

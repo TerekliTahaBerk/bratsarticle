@@ -39,6 +39,13 @@ definitions are frozen.
 - Primary endpoint: patient-wise arithmetic mean of WT, TC, and ET Dice.
 - Pixel accuracy is not a primary metric.
 
+The versioned metric contract is `configs/evaluation/default.yaml`, explained
+in `reports/evaluator_specification.md`. HD95 and Surface Dice use physical
+spacing. Empty-mask, connected-component, matching, and post-processing rules
+are explicit. Raw and filtered evaluation stages are stored as separate rows.
+Thresholds, lesion-size rules, and Surface Dice tolerance must be frozen before
+the internal held-out test is opened.
+
 ## Fairness regimes
 
 - **Compute-matched:** common GPU-hour, optimizer-step, and tuning budgets.
