@@ -5,13 +5,12 @@ U-Net-family models on multimodal BraTS glioma segmentation data.
 
 ## Current status
 
-Gates 0–6 are complete through the config-driven U-Net/BU-Net/Res U-Net
-ablation implementation and bounded diagnostics: repository/environment audit,
-data integrity, provisional split, central evaluator, preprocessing,
-checkpoint/resume, controlled real U-Net training-slice overfit, source-aligned
-RES/WC reimplementation, model inventory, and loss catalog. No full-cohort
-model comparison or internal held-out test result is currently claimed by this
-repository.
+Gates 0–7 are complete through the config-driven U-Net/BU-Net/Res U-Net
+ablation implementation, bounded diagnostics, frozen fair-training protocols,
+and experiment registry. No full-cohort model comparison or internal held-out
+test result is currently claimed by this repository. The current host has no
+CUDA device and is ineligible for reportable Gate 8 pilots under the frozen
+single-hardware protocol.
 
 The initial audit is available at
 [`reports/phase0_repository_audit.md`](reports/phase0_repository_audit.md).
@@ -30,6 +29,8 @@ The BU-Net fidelity decisions are available at
 and the generated model/loss summaries are
 [`reports/gate6_model_summary.md`](reports/gate6_model_summary.md) and
 [`reports/gate6_loss_methods.md`](reports/gate6_loss_methods.md).
+The frozen fairness and registry contract is
+[`reports/fairness_and_registry_protocol.md`](reports/fairness_and_registry_protocol.md).
 
 ## Scientific scope
 

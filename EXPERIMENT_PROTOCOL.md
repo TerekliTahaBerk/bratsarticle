@@ -69,6 +69,23 @@ the internal held-out test is opened.
 
 Equal epoch counts are not assumed to be fair.
 
+The frozen Gate 7 configs target one `NVIDIA A100-SXM4-80GB`. Compute-matched
+runs stop at the first of 30,000 optimizer steps or 8.0 GPU-hours.
+Convergence-matched runs stop at 50,000 steps or after 12 validation checks
+without at least 0.001 improvement, with validation every 500 steps. Both use
+one integrated linear-warm-up plus cosine-decay scheduler. If this hardware is
+unavailable, the protocol must be revised and versioned before observing pilot
+results; measurements from different GPU models may not be pooled silently.
+
+## Experiment registry
+
+Every reportable run uses `artifacts/runs/<run_id>/` with resolved config,
+metadata, epoch metrics, patient-level validation CSV, checkpoints, resource
+profile, and logs. The registry records Git dirty state and commit, config/data/
+split hashes, seed, model/loss/optimizer/scheduler, software and hardware,
+timestamps, GPU-hours and peak VRAM, parameters and complexity input,
+checkpoint selection, completion/failure, error trace, and test-access state.
+
 ## Preprocessing
 
 The versioned preprocessing contract is

@@ -29,3 +29,9 @@ The same checkpoint format is exercised for every Gate 6 architecture. The
 machine-readable Gate 6 inventory stores config hashes, feature flags,
 parameter counts, closest-width matching outcomes, and tensor traces; the
 bounded smoke artifact records the producing Git commit and hardware.
+
+Gate 7 adds a strict run registry with a resolved `config.yaml`,
+`metadata.json`, append-only `metrics_per_epoch.jsonl`, patient-level
+`validation_per_case.csv`, checkpoint/log directories, and
+`resource_profile.json`. Duplicate or unsafe run identifiers are rejected;
+failed runs cannot close without an error trace.
