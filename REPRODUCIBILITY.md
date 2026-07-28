@@ -35,3 +35,8 @@ Gate 7 adds a strict run registry with a resolved `config.yaml`,
 `validation_per_case.csv`, checkpoint/log directories, and
 `resource_profile.json`. Duplicate or unsafe run identifiers are rejected;
 failed runs cannot close without an error trace.
+
+Gate 8 checkpoints additionally store the integrated scheduler state. The
+pilot plan is hash-linked to its config and clean Git commit, runs one arm per
+explicit invocation, and rejects hardware/data preflight failures before
+opening development data.

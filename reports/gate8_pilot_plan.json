@@ -1,0 +1,153 @@
+{
+  "arms": [
+    {
+      "arm_id": "architecture_unet",
+      "loss": "cross_entropy_plus_soft_dice",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "architecture_unet_res",
+      "loss": "cross_entropy_plus_soft_dice",
+      "model_config": "configs/models/unet_res.yaml",
+      "model_config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "architecture_unet_wc",
+      "loss": "cross_entropy_plus_soft_dice",
+      "model_config": "configs/models/unet_wc.yaml",
+      "model_config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "architecture_bunet",
+      "loss": "cross_entropy_plus_soft_dice",
+      "model_config": "configs/models/bunet.yaml",
+      "model_config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "architecture_resunet",
+      "loss": "cross_entropy_plus_soft_dice",
+      "model_config": "configs/models/resunet.yaml",
+      "model_config_sha256": "691c7f3308597b44386d87529aa414e27709db41a3e80ee576bf1402c9c256d0",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "architecture_resunet_wc",
+      "loss": "cross_entropy_plus_soft_dice",
+      "model_config": "configs/models/resunet_wc.yaml",
+      "model_config_sha256": "50c0df30c1d01e14e57fae9062ea221b552d0c3d324028168180a40f289b56e2",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "loss_cross_entropy",
+      "loss": "cross_entropy",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "loss",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "loss_binary_cross_entropy",
+      "loss": "binary_cross_entropy",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "loss",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "loss_soft_dice",
+      "loss": "soft_dice",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "loss",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "loss_binary_cross_entropy_plus_soft_dice",
+      "loss": "binary_cross_entropy_plus_soft_dice",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "loss",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "loss_focal_tversky",
+      "loss": "focal_tversky",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "loss",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "loss_binary_cross_entropy_plus_focal_tversky",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "loss",
+      "seed": 20260729
+    }
+  ],
+  "budget": {
+    "maximum_gpu_hours": 0.5,
+    "maximum_optimizer_steps": 2000,
+    "minimum_completed_validation_checks": 3,
+    "validation_frequency_optimizer_steps": 500
+  },
+  "data_loader_workers": {
+    "training": 4,
+    "validation": 4
+  },
+  "elimination": {
+    "confidence_level": 0.95,
+    "eliminate_if": {
+      "both_conditions_required": true,
+      "paired_bootstrap_upper_bound_below_zero": true,
+      "paired_mean_delta_below_negative_margin": true
+    },
+    "endpoint": "validation_patient_mean_regional_dice",
+    "fallback_shortlist_if_too_few_eliminated": {
+      "architecture_top_k": 3,
+      "loss_top_k": 2
+    },
+    "finalist_seed_count": 5,
+    "internal_test_permitted": false,
+    "next_stage_seeds": [
+      20260729,
+      20260730,
+      20260731
+    ],
+    "paired_bootstrap_resamples": 10000,
+    "practical_noninferiority_margin": 0.02,
+    "statistical_unit": "patient"
+  },
+  "factorial_combinations_not_scheduled": true,
+  "git": {
+    "commit": "3f6f80e5f143d18bec38905fbb50cf0a58d6fd74",
+    "dirty": false
+  },
+  "internal_test_access": false,
+  "name": "gate8_single_seed_development_screen",
+  "optimization": {
+    "learning_rate": 0.001,
+    "minimum_learning_rate_fraction": 0.01,
+    "mixed_precision": true,
+    "optimizer": "adamw",
+    "scheduler": "linear_warmup_cosine_decay",
+    "warmup_optimizer_steps": 200,
+    "weight_decay": 1e-05
+  },
+  "seed": 20260729,
+  "source_config": "configs/pilots/gate8.yaml",
+  "source_config_sha256": "2c6dbbc491739eac8d7f4cd3cc90455f3af876227ef9f2b7b1bd16ce8e78fc21",
+  "status": "frozen_pending_eligible_hardware"
+}

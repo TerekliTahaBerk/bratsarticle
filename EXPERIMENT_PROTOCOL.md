@@ -86,6 +86,17 @@ split hashes, seed, model/loss/optimizer/scheduler, software and hardware,
 timestamps, GPU-hours and peak VRAM, parameters and complexity input,
 checkpoint selection, completion/failure, error trace, and test-access state.
 
+## Pilot elimination
+
+Gate 8 uses 12 unique single-seed development runs rather than the complete
+six-architecture by seven-loss grid. Six architecture arms share CE + soft
+Dice; six additional losses are screened on U-Net, with the shared arm reused.
+Each arm stops at 2,000 optimizer steps or 0.5 GPU-hours and validates every
+500 steps. Elimination uses paired patient results: both a mean decrement
+larger than 0.02 and a paired-bootstrap upper 95% bound below zero are required.
+The fallback shortlist is three architectures and two losses. The current host
+fails the frozen A100 preflight, so no pilot result or shortlist exists.
+
 ## Preprocessing
 
 The versioned preprocessing contract is

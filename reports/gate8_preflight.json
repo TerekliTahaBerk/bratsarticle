@@ -1,0 +1,20 @@
+{
+  "action_if_ineligible": "Do not start Gate 8 reportable pilot training",
+  "checks": {
+    "brats2020_root_exists": false,
+    "brats2020_root_set": false,
+    "canonical_manifest_exists": true,
+    "cuda_available": false,
+    "exactly_one_visible_cuda_device": false,
+    "gpu_model_matches_frozen_protocol": false,
+    "pilot_budget_within_compute_protocol": true,
+    "test_manifest_not_referenced_by_plan": true,
+    "train_manifest_exists": true,
+    "validation_manifest_exists": true
+  },
+  "eligible": false,
+  "generated_at_utc": "2026-07-28T23:29:50.268858+00:00",
+  "pilot_config_sha256": "2c6dbbc491739eac8d7f4cd3cc90455f3af876227ef9f2b7b1bd16ce8e78fc21",
+  "required_gpu_model": "NVIDIA A100-SXM4-80GB",
+  "visible_cuda_devices": []
+}

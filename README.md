@@ -31,6 +31,8 @@ and the generated model/loss summaries are
 [`reports/gate6_loss_methods.md`](reports/gate6_loss_methods.md).
 The frozen fairness and registry contract is
 [`reports/fairness_and_registry_protocol.md`](reports/fairness_and_registry_protocol.md).
+The frozen Gate 8 screen and current execution blocker are documented in
+[`reports/gate8_execution_readiness.md`](reports/gate8_execution_readiness.md).
 
 ## Scientific scope
 
