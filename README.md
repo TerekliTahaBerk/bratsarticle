@@ -5,11 +5,13 @@ U-Net-family models on multimodal BraTS glioma segmentation data.
 
 ## Current status
 
-Gates 0–5 are complete through Standard 2D U-Net implementation and bounded
-diagnostics: repository/environment audit, data integrity, provisional split,
-central evaluator, preprocessing, checkpoint/resume, and controlled real
-training-slice overfit. No full-cohort model comparison or internal held-out
-test result is currently claimed by this repository.
+Gates 0–6 are complete through the config-driven U-Net/BU-Net/Res U-Net
+ablation implementation and bounded diagnostics: repository/environment audit,
+data integrity, provisional split, central evaluator, preprocessing,
+checkpoint/resume, controlled real U-Net training-slice overfit, source-aligned
+RES/WC reimplementation, model inventory, and loss catalog. No full-cohort
+model comparison or internal held-out test result is currently claimed by this
+repository.
 
 The initial audit is available at
 [`reports/phase0_repository_audit.md`](reports/phase0_repository_audit.md).
@@ -23,6 +25,11 @@ The preprocessing contract is available at
 [`reports/preprocessing_specification.md`](reports/preprocessing_specification.md).
 The baseline contract is available at
 [`reports/unet2d_baseline_specification.md`](reports/unet2d_baseline_specification.md).
+The BU-Net fidelity decisions are available at
+[`reports/bunet_implementation_notes.md`](reports/bunet_implementation_notes.md),
+and the generated model/loss summaries are
+[`reports/gate6_model_summary.md`](reports/gate6_model_summary.md) and
+[`reports/gate6_loss_methods.md`](reports/gate6_loss_methods.md).
 
 ## Scientific scope
 

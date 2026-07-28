@@ -24,3 +24,8 @@ Baseline checkpoints atomically store model, optimizer, AMP scaler, epoch,
 global step, and Python/NumPy/PyTorch CPU/CUDA RNG states. Resume rejects a
 configuration-hash mismatch. The CPU regression test requires bit-identical
 loss and parameters between uninterrupted and interrupted/resumed execution.
+
+The same checkpoint format is exercised for every Gate 6 architecture. The
+machine-readable Gate 6 inventory stores config hashes, feature flags,
+parameter counts, closest-width matching outcomes, and tensor traces; the
+bounded smoke artifact records the producing Git commit and hardware.

@@ -1,0 +1,1390 @@
+{
+  "generated_at_utc": "2026-07-28T23:13:30.343123+00:00",
+  "loss_catalog_path": "configs/losses/catalog.yaml",
+  "loss_catalog_sha256": "2abce1010f935a406c8c6d86f38e9564d8d2c01bb76810e26d05120a209dcf32",
+  "losses": [
+    {
+      "alpha": 0.5,
+      "beta": 0.5,
+      "class_weights": null,
+      "expects_logits": true,
+      "formula": "-sum_c w_c y_c log softmax(z)_c",
+      "gamma": 1.0,
+      "include_background": true,
+      "name": "cross_entropy",
+      "reduction": "mean",
+      "smoothing": 1e-05
+    },
+    {
+      "alpha": 0.5,
+      "beta": 0.5,
+      "class_weights": null,
+      "expects_logits": true,
+      "formula": "-sum_c w_c [y_c log sigmoid(z_c) + (1-y_c) log(1-sigmoid(z_c))]",
+      "gamma": 1.0,
+      "include_background": true,
+      "name": "binary_cross_entropy",
+      "reduction": "mean",
+      "smoothing": 1e-05
+    },
+    {
+      "alpha": 0.5,
+      "beta": 0.5,
+      "class_weights": null,
+      "expects_logits": true,
+      "formula": "1 - mean_c [(2 sum p_c y_c + s)/(sum p_c + sum y_c + s)]",
+      "gamma": 1.0,
+      "include_background": false,
+      "name": "soft_dice",
+      "reduction": "mean",
+      "smoothing": 1e-05
+    },
+    {
+      "alpha": 0.5,
+      "beta": 0.5,
+      "class_weights": null,
+      "expects_logits": true,
+      "formula": "0.5 CE + 0.5 SoftDice",
+      "gamma": 1.0,
+      "include_background": false,
+      "name": "cross_entropy_plus_soft_dice",
+      "reduction": "mean",
+      "smoothing": 1e-05
+    },
+    {
+      "alpha": 0.5,
+      "beta": 0.5,
+      "class_weights": null,
+      "expects_logits": true,
+      "formula": "0.5 BCE + 0.5 SoftDice",
+      "gamma": 1.0,
+      "include_background": false,
+      "name": "binary_cross_entropy_plus_soft_dice",
+      "reduction": "mean",
+      "smoothing": 1e-05
+    },
+    {
+      "alpha": 0.3,
+      "beta": 0.7,
+      "class_weights": null,
+      "expects_logits": true,
+      "formula": "mean_c (1 - (TP+s)/(TP+alpha FP+beta FN+s))^gamma",
+      "gamma": 0.75,
+      "include_background": false,
+      "name": "focal_tversky",
+      "reduction": "mean",
+      "smoothing": 1e-05
+    },
+    {
+      "alpha": 0.3,
+      "beta": 0.7,
+      "class_weights": null,
+      "expects_logits": true,
+      "formula": "0.5 BCE + 0.5 FocalTversky",
+      "gamma": 0.75,
+      "include_background": false,
+      "name": "binary_cross_entropy_plus_focal_tversky",
+      "reduction": "mean",
+      "smoothing": 1e-05
+    }
+  ],
+  "models": [
+    {
+      "base_channels": 16,
+      "batch_normalization": true,
+      "closest_integer_width_match": {
+        "absolute_difference": 156184,
+        "base_channels": 8,
+        "declared_tolerance_fraction": 0.05,
+        "parameter_count": 2098956,
+        "relative_difference": 0.08039234660577772,
+        "target_parameters": 1942772,
+        "within_declared_tolerance": false
+      },
+      "config_path": "configs/models/bunet.yaml",
+      "config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "depth": 4,
+      "dropout_probability": 0.3,
+      "features": {
+        "residual_blocks": false,
+        "residual_extended_skips": true,
+        "wide_context": true
+      },
+      "input_channels": 4,
+      "key": "bunet",
+      "name": "bunet_reimplementation",
+      "output_channels": 4,
+      "parameter_count": 8384660,
+      "parameter_difference_from_equal_width_unet": 6441888,
+      "parameter_ratio_to_equal_width_unet": 4.3158229581237535,
+      "res_kernel_sizes": [
+        9,
+        11,
+        13,
+        15
+      ],
+      "shape_trace": [
+        {
+          "module": "encoder_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "skip_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "encoder_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "skip_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "encoder_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "skip_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "encoder_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "skip_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "bottleneck",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "context",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "upsampler_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "decoder_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "upsampler_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "decoder_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "upsampler_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "decoder_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "upsampler_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "decoder_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "classifier",
+          "shape": [
+            1,
+            4,
+            64,
+            64
+          ]
+        }
+      ],
+      "shape_trace_input": [
+        1,
+        4,
+        64,
+        64
+      ],
+      "wc_kernel_size": 15
+    },
+    {
+      "base_channels": 16,
+      "batch_normalization": true,
+      "closest_integer_width_match": {
+        "absolute_difference": 87840,
+        "base_channels": 16,
+        "declared_tolerance_fraction": 0.05,
+        "parameter_count": 2030612,
+        "relative_difference": 0.04521374613181578,
+        "target_parameters": 1942772,
+        "within_declared_tolerance": true
+      },
+      "config_path": "configs/models/resunet.yaml",
+      "config_sha256": "691c7f3308597b44386d87529aa414e27709db41a3e80ee576bf1402c9c256d0",
+      "depth": 4,
+      "dropout_probability": 0.3,
+      "features": {
+        "residual_blocks": true,
+        "residual_extended_skips": false,
+        "wide_context": false
+      },
+      "input_channels": 4,
+      "key": "resunet",
+      "name": "resunet",
+      "output_channels": 4,
+      "parameter_count": 2030612,
+      "parameter_difference_from_equal_width_unet": 87840,
+      "parameter_ratio_to_equal_width_unet": 1.0452137461318158,
+      "res_kernel_sizes": [
+        9,
+        11,
+        13,
+        15
+      ],
+      "shape_trace": [
+        {
+          "module": "encoder_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "skip_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "encoder_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "skip_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "encoder_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "skip_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "encoder_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "skip_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "bottleneck",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "context",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "upsampler_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "decoder_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "upsampler_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "decoder_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "upsampler_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "decoder_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "upsampler_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "decoder_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "classifier",
+          "shape": [
+            1,
+            4,
+            64,
+            64
+          ]
+        }
+      ],
+      "shape_trace_input": [
+        1,
+        4,
+        64,
+        64
+      ],
+      "wc_kernel_size": 15
+    },
+    {
+      "base_channels": 16,
+      "batch_normalization": true,
+      "closest_integer_width_match": {
+        "absolute_difference": -53821,
+        "base_channels": 9,
+        "declared_tolerance_fraction": 0.05,
+        "parameter_count": 1888951,
+        "relative_difference": 0.027703199346088992,
+        "target_parameters": 1942772,
+        "within_declared_tolerance": true
+      },
+      "config_path": "configs/models/resunet_wc.yaml",
+      "config_sha256": "50c0df30c1d01e14e57fae9062ea221b552d0c3d324028168180a40f289b56e2",
+      "depth": 4,
+      "dropout_probability": 0.3,
+      "features": {
+        "residual_blocks": true,
+        "residual_extended_skips": false,
+        "wide_context": true
+      },
+      "input_channels": 4,
+      "key": "resunet_wc",
+      "name": "resunet_plus_wc",
+      "output_channels": 4,
+      "parameter_count": 5964820,
+      "parameter_difference_from_equal_width_unet": 4022048,
+      "parameter_ratio_to_equal_width_unet": 3.070262490915043,
+      "res_kernel_sizes": [
+        9,
+        11,
+        13,
+        15
+      ],
+      "shape_trace": [
+        {
+          "module": "encoder_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "skip_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "encoder_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "skip_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "encoder_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "skip_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "encoder_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "skip_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "bottleneck",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "context",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "upsampler_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "decoder_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "upsampler_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "decoder_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "upsampler_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "decoder_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "upsampler_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "decoder_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "classifier",
+          "shape": [
+            1,
+            4,
+            64,
+            64
+          ]
+        }
+      ],
+      "shape_trace_input": [
+        1,
+        4,
+        64,
+        64
+      ],
+      "wc_kernel_size": 15
+    },
+    {
+      "base_channels": 16,
+      "batch_normalization": true,
+      "closest_integer_width_match": {
+        "absolute_difference": 0,
+        "base_channels": 16,
+        "declared_tolerance_fraction": 0.05,
+        "parameter_count": 1942772,
+        "relative_difference": 0.0,
+        "target_parameters": 1942772,
+        "within_declared_tolerance": true
+      },
+      "config_path": "configs/models/unet.yaml",
+      "config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "depth": 4,
+      "dropout_probability": 0.3,
+      "features": {
+        "residual_blocks": false,
+        "residual_extended_skips": false,
+        "wide_context": false
+      },
+      "input_channels": 4,
+      "key": "unet",
+      "name": "unet_controlled",
+      "output_channels": 4,
+      "parameter_count": 1942772,
+      "parameter_difference_from_equal_width_unet": 0,
+      "parameter_ratio_to_equal_width_unet": 1.0,
+      "res_kernel_sizes": [
+        9,
+        11,
+        13,
+        15
+      ],
+      "shape_trace": [
+        {
+          "module": "encoder_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "skip_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "encoder_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "skip_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "encoder_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "skip_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "encoder_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "skip_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "bottleneck",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "context",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "upsampler_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "decoder_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "upsampler_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "decoder_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "upsampler_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "decoder_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "upsampler_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "decoder_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "classifier",
+          "shape": [
+            1,
+            4,
+            64,
+            64
+          ]
+        }
+      ],
+      "shape_trace_input": [
+        1,
+        4,
+        64,
+        64
+      ],
+      "wc_kernel_size": 15
+    },
+    {
+      "base_channels": 16,
+      "batch_normalization": true,
+      "closest_integer_width_match": {
+        "absolute_difference": 162720,
+        "base_channels": 11,
+        "declared_tolerance_fraction": 0.05,
+        "parameter_count": 2105492,
+        "relative_difference": 0.08375661168680627,
+        "target_parameters": 1942772,
+        "within_declared_tolerance": false
+      },
+      "config_path": "configs/models/unet_res.yaml",
+      "config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "depth": 4,
+      "dropout_probability": 0.3,
+      "features": {
+        "residual_blocks": false,
+        "residual_extended_skips": true,
+        "wide_context": false
+      },
+      "input_channels": 4,
+      "key": "unet_res",
+      "name": "unet_plus_res",
+      "output_channels": 4,
+      "parameter_count": 4450452,
+      "parameter_difference_from_equal_width_unet": 2507680,
+      "parameter_ratio_to_equal_width_unet": 2.290774213340526,
+      "res_kernel_sizes": [
+        9,
+        11,
+        13,
+        15
+      ],
+      "shape_trace": [
+        {
+          "module": "encoder_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "skip_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "encoder_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "skip_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "encoder_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "skip_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "encoder_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "skip_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "bottleneck",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "context",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "upsampler_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "decoder_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "upsampler_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "decoder_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "upsampler_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "decoder_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "upsampler_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "decoder_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "classifier",
+          "shape": [
+            1,
+            4,
+            64,
+            64
+          ]
+        }
+      ],
+      "shape_trace_input": [
+        1,
+        4,
+        64,
+        64
+      ],
+      "wc_kernel_size": 15
+    },
+    {
+      "base_channels": 16,
+      "batch_normalization": true,
+      "closest_integer_width_match": {
+        "absolute_difference": -81811,
+        "base_channels": 9,
+        "declared_tolerance_fraction": 0.05,
+        "parameter_count": 1860961,
+        "relative_difference": 0.04211044836964914,
+        "target_parameters": 1942772,
+        "within_declared_tolerance": true
+      },
+      "config_path": "configs/models/unet_wc.yaml",
+      "config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "depth": 4,
+      "dropout_probability": 0.3,
+      "features": {
+        "residual_blocks": false,
+        "residual_extended_skips": false,
+        "wide_context": true
+      },
+      "input_channels": 4,
+      "key": "unet_wc",
+      "name": "unet_plus_wc",
+      "output_channels": 4,
+      "parameter_count": 5876980,
+      "parameter_difference_from_equal_width_unet": 3934208,
+      "parameter_ratio_to_equal_width_unet": 3.025048744783227,
+      "res_kernel_sizes": [
+        9,
+        11,
+        13,
+        15
+      ],
+      "shape_trace": [
+        {
+          "module": "encoder_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "skip_0",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "encoder_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "skip_1",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "encoder_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "skip_2",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "encoder_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "skip_3",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "bottleneck",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "context",
+          "shape": [
+            1,
+            256,
+            4,
+            4
+          ]
+        },
+        {
+          "module": "upsampler_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "decoder_0",
+          "shape": [
+            1,
+            128,
+            8,
+            8
+          ]
+        },
+        {
+          "module": "upsampler_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "decoder_1",
+          "shape": [
+            1,
+            64,
+            16,
+            16
+          ]
+        },
+        {
+          "module": "upsampler_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "decoder_2",
+          "shape": [
+            1,
+            32,
+            32,
+            32
+          ]
+        },
+        {
+          "module": "upsampler_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "decoder_3",
+          "shape": [
+            1,
+            16,
+            64,
+            64
+          ]
+        },
+        {
+          "module": "classifier",
+          "shape": [
+            1,
+            4,
+            64,
+            64
+          ]
+        }
+      ],
+      "shape_trace_input": [
+        1,
+        4,
+        64,
+        64
+      ],
+      "wc_kernel_size": 15
+    }
+  ],
+  "parameter_match_search": {
+    "declared_tolerance_fraction": 0.05,
+    "maximum_base_channels": 64,
+    "minimum_base_channels": 1
+  },
+  "reference_model": "unet",
+  "status": "complete"
+}

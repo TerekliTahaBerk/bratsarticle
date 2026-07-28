@@ -24,6 +24,15 @@ optimization settings are `configs/training/unet2d_baseline.yaml`. Full
 training requires an explicit flag and a CUDA host; bounded diagnostics do not
 authorize test access.
 
+The Gate 6 feature matrix is versioned in `configs/models/`. Residual blocks,
+BU-Net RES skips, and BU-Net WC are independent flags. Equal-width models form
+the primary component-cost matrix. A closest-integer-width sensitivity search
+uses the controlled U-Net parameter count as its target and a 5% tolerance;
+unattainable matches remain reported as failures. Candidate optimization
+objectives and all mathematical settings are versioned in
+`configs/losses/catalog.yaml`. No loss or architecture is selected from
+internal-test performance.
+
 ## Partitions
 
 All partitions are patient-level. The provisional split contains 258 training,

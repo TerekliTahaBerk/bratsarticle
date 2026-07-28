@@ -1,0 +1,296 @@
+{
+  "created_at_utc": "2026-07-28T23:14:00.806066+00:00",
+  "metadata": {
+    "config_path": "configs/losses/catalog.yaml",
+    "config_sha256": "2abce1010f935a406c8c6d86f38e9564d8d2c01bb76810e26d05120a209dcf32",
+    "created_at_utc": "2026-07-28T23:14:00.730596+00:00",
+    "cuda_available": false,
+    "cuda_device_count": 0,
+    "device": "cpu",
+    "git_commit": "4a0b5a490e7b8c399462a945655cafc104da9f26",
+    "logical_cpu_count": 10,
+    "memory_total_bytes": 34359738368,
+    "mixed_precision_effective": false,
+    "mixed_precision_requested": false,
+    "mps_available": false,
+    "packages": {
+      "monai": "1.6.0",
+      "nibabel": "5.4.2",
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "torch": "2.13.0"
+    },
+    "physical_cpu_count": 10,
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.3.19.1)]",
+    "run_kind": "gate6_synthetic_model_family_diagnostic",
+    "seed": 20260729,
+    "split_sha256": {
+      "train": "not_applicable_synthetic"
+    },
+    "status": "completed"
+  },
+  "models": [
+    {
+      "acceptance": {
+        "checkpoint_counter_restored": true,
+        "checkpoint_metadata_restored": true,
+        "checkpoint_state_exact": true,
+        "loss_decreased": true
+      },
+      "architecture": "bunet",
+      "diagnostic_overrides": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "res_kernel_sizes": [
+          3
+        ],
+        "wc_kernel_size": 3
+      },
+      "final_loss": 1.0432167053222656,
+      "initial_loss": 1.1529604196548462,
+      "minimum_loss": 1.0432167053222656,
+      "resolved_diagnostic_config": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "input_channels": 4,
+        "name": "bunet_reimplementation",
+        "output_channels": 4,
+        "parameter_target": null,
+        "parameter_tolerance_fraction": 0.05,
+        "res_kernel_sizes": [
+          3
+        ],
+        "residual_blocks": false,
+        "residual_extended_skips": true,
+        "wc_kernel_size": 3,
+        "wide_context": true
+      },
+      "source_config": "configs/models/bunet.yaml",
+      "status": "pass",
+      "steps": 15
+    },
+    {
+      "acceptance": {
+        "checkpoint_counter_restored": true,
+        "checkpoint_metadata_restored": true,
+        "checkpoint_state_exact": true,
+        "loss_decreased": true
+      },
+      "architecture": "resunet",
+      "diagnostic_overrides": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "res_kernel_sizes": [
+          3
+        ],
+        "wc_kernel_size": 3
+      },
+      "final_loss": 0.9498061537742615,
+      "initial_loss": 1.2414730787277222,
+      "minimum_loss": 0.9498061537742615,
+      "resolved_diagnostic_config": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "input_channels": 4,
+        "name": "resunet",
+        "output_channels": 4,
+        "parameter_target": null,
+        "parameter_tolerance_fraction": 0.05,
+        "res_kernel_sizes": [
+          3
+        ],
+        "residual_blocks": true,
+        "residual_extended_skips": false,
+        "wc_kernel_size": 3,
+        "wide_context": false
+      },
+      "source_config": "configs/models/resunet.yaml",
+      "status": "pass",
+      "steps": 15
+    },
+    {
+      "acceptance": {
+        "checkpoint_counter_restored": true,
+        "checkpoint_metadata_restored": true,
+        "checkpoint_state_exact": true,
+        "loss_decreased": true
+      },
+      "architecture": "resunet_wc",
+      "diagnostic_overrides": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "res_kernel_sizes": [
+          3
+        ],
+        "wc_kernel_size": 3
+      },
+      "final_loss": 0.8476365804672241,
+      "initial_loss": 1.063261866569519,
+      "minimum_loss": 0.8443273901939392,
+      "resolved_diagnostic_config": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "input_channels": 4,
+        "name": "resunet_plus_wc",
+        "output_channels": 4,
+        "parameter_target": null,
+        "parameter_tolerance_fraction": 0.05,
+        "res_kernel_sizes": [
+          3
+        ],
+        "residual_blocks": true,
+        "residual_extended_skips": false,
+        "wc_kernel_size": 3,
+        "wide_context": true
+      },
+      "source_config": "configs/models/resunet_wc.yaml",
+      "status": "pass",
+      "steps": 15
+    },
+    {
+      "acceptance": {
+        "checkpoint_counter_restored": true,
+        "checkpoint_metadata_restored": true,
+        "checkpoint_state_exact": true,
+        "loss_decreased": true
+      },
+      "architecture": "unet",
+      "diagnostic_overrides": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "res_kernel_sizes": [
+          3
+        ],
+        "wc_kernel_size": 3
+      },
+      "final_loss": 0.9641055464744568,
+      "initial_loss": 1.1086393594741821,
+      "minimum_loss": 0.9641055464744568,
+      "resolved_diagnostic_config": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "input_channels": 4,
+        "name": "unet_controlled",
+        "output_channels": 4,
+        "parameter_target": null,
+        "parameter_tolerance_fraction": 0.05,
+        "res_kernel_sizes": [
+          3
+        ],
+        "residual_blocks": false,
+        "residual_extended_skips": false,
+        "wc_kernel_size": 3,
+        "wide_context": false
+      },
+      "source_config": "configs/models/unet.yaml",
+      "status": "pass",
+      "steps": 15
+    },
+    {
+      "acceptance": {
+        "checkpoint_counter_restored": true,
+        "checkpoint_metadata_restored": true,
+        "checkpoint_state_exact": true,
+        "loss_decreased": true
+      },
+      "architecture": "unet_res",
+      "diagnostic_overrides": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "res_kernel_sizes": [
+          3
+        ],
+        "wc_kernel_size": 3
+      },
+      "final_loss": 1.086756944656372,
+      "initial_loss": 1.1860142946243286,
+      "minimum_loss": 1.086756944656372,
+      "resolved_diagnostic_config": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "input_channels": 4,
+        "name": "unet_plus_res",
+        "output_channels": 4,
+        "parameter_target": null,
+        "parameter_tolerance_fraction": 0.05,
+        "res_kernel_sizes": [
+          3
+        ],
+        "residual_blocks": false,
+        "residual_extended_skips": true,
+        "wc_kernel_size": 3,
+        "wide_context": false
+      },
+      "source_config": "configs/models/unet_res.yaml",
+      "status": "pass",
+      "steps": 15
+    },
+    {
+      "acceptance": {
+        "checkpoint_counter_restored": true,
+        "checkpoint_metadata_restored": true,
+        "checkpoint_state_exact": true,
+        "loss_decreased": true
+      },
+      "architecture": "unet_wc",
+      "diagnostic_overrides": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "res_kernel_sizes": [
+          3
+        ],
+        "wc_kernel_size": 3
+      },
+      "final_loss": 1.0227198600769043,
+      "initial_loss": 1.1341980695724487,
+      "minimum_loss": 1.0227198600769043,
+      "resolved_diagnostic_config": {
+        "base_channels": 2,
+        "batch_normalization": false,
+        "depth": 1,
+        "dropout_probability": 0.0,
+        "input_channels": 4,
+        "name": "unet_plus_wc",
+        "output_channels": 4,
+        "parameter_target": null,
+        "parameter_tolerance_fraction": 0.05,
+        "res_kernel_sizes": [
+          3
+        ],
+        "residual_blocks": false,
+        "residual_extended_skips": false,
+        "wc_kernel_size": 3,
+        "wide_context": true
+      },
+      "source_config": "configs/models/unet_wc.yaml",
+      "status": "pass",
+      "steps": 15
+    }
+  ],
+  "scope": "bounded synthetic diagnostic; not a performance comparison",
+  "status": "pass"
+}
