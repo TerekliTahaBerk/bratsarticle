@@ -17,6 +17,10 @@ used only to audit subject identity and duplication with BraTS 2020.
 - Every generated output and cache path is rejected if it equals or is located
   within a raw-data root.
 - The repository ignores `data/`, `*.nii`, and `*.nii.gz`.
+- Normalization is computed within each patient and modality. No test-cohort
+  statistic is fitted.
+- Optional normalized-volume caches require `BRATS_CACHE_ROOT` or another
+  explicit external path and are atomically written outside raw data.
 
 ## Approved generated locations
 

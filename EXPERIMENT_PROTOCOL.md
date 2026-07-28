@@ -53,3 +53,13 @@ the internal held-out test is opened.
   convergence/early-stopping rule.
 
 Equal epoch counts are not assumed to be fair.
+
+## Preprocessing
+
+The versioned preprocessing contract is
+`configs/data/preprocessing.yaml`, explained in
+`reports/preprocessing_specification.md`. T1, T1ce, T2, and FLAIR are
+patient/modality-normalized on nonzero voxels. Validation and internal-test
+datasets preserve all slices and use no random augmentation. Any intensity
+clipping rule must be fixed from development data before test access. Caches
+must remain outside raw-data roots.

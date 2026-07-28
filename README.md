@@ -5,11 +5,11 @@ U-Net-family models on multimodal BraTS glioma segmentation data.
 
 ## Current status
 
-Gates 0–3 are complete: repository/environment audit, read-only data integrity,
-a deterministic provisional patient-level split, and the central
-patient-volume evaluator with synthetic edge-case tests. No training results,
-model comparisons, or internal held-out test results are currently claimed by
-this repository.
+Gates 0–4 are complete: repository/environment audit, read-only data integrity,
+a deterministic provisional patient-level split, the central patient-volume
+evaluator, and the leakage-safe four-modality preprocessing/slice-loader
+pipeline. No training results, model comparisons, or internal held-out test
+results are currently claimed by this repository.
 
 The initial audit is available at
 [`reports/phase0_repository_audit.md`](reports/phase0_repository_audit.md).
@@ -19,6 +19,8 @@ The provisional split audit is available at
 [`reports/split_balance_report.md`](reports/split_balance_report.md).
 The evaluator contract is available at
 [`reports/evaluator_specification.md`](reports/evaluator_specification.md).
+The preprocessing contract is available at
+[`reports/preprocessing_specification.md`](reports/preprocessing_specification.md).
 
 ## Scientific scope
 
