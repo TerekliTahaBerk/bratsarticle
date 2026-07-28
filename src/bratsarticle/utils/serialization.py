@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import tempfile
 from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -58,3 +60,20 @@ def atomic_write_csv(
         temporary.replace(destination)
     finally:
         temporary.unlink(missing_ok=True)
+
+
+def append_jsonl(destination: Path, payload: Mapping[str, Any]) -> None:
+    """Append one fsync'd JSON event under an advisory file lock."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    event = {
+        "timestamp_utc": datetime.now(UTC).isoformat(),
+        **payload,
+    }
+    with destination.open("a", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            handle.write(json.dumps(event, sort_keys=True, ensure_ascii=False) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)

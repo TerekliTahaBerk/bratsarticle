@@ -5,14 +5,17 @@ U-Net-family models on multimodal BraTS glioma segmentation data.
 
 ## Current status
 
-Gate 0 (repository and environment audit) and Gate 1 (read-only data integrity
-and duplicate audit) are complete. No training results, model comparisons, or
-internal held-out test results are currently claimed by this repository.
+Gates 0–2 are complete: repository/environment audit, read-only data integrity,
+and a deterministic provisional patient-level split. No training results,
+model comparisons, or internal held-out test results are currently claimed by
+this repository.
 
 The initial audit is available at
 [`reports/phase0_repository_audit.md`](reports/phase0_repository_audit.md).
 The verified data audit is available at
 [`reports/data_audit_summary.md`](reports/data_audit_summary.md).
+The provisional split audit is available at
+[`reports/split_balance_report.md`](reports/split_balance_report.md).
 
 ## Scientific scope
 
@@ -65,6 +68,12 @@ Run the read-only data audit after exporting the dataset roots:
 
 ```bash
 ./.venv/bin/brats-data-audit --config configs/data/audit.yaml
+```
+
+Regenerate the provisional patient-level split:
+
+```bash
+./.venv/bin/brats-generate-split --config configs/data/split.yaml
 ```
 
 Full training and internal held-out test evaluation remain separately guarded

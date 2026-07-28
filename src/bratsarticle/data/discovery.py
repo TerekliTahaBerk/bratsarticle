@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final, Iterable, Mapping
+from typing import Final
 
 from bratsarticle.utils.paths import assert_existing_directory
 
@@ -126,15 +127,12 @@ def discover_subject(
         fallback_candidates = [
             path
             for path in unmatched
-            if _SEGMENTATION_FALLBACK.search(
-                _NIFTI_PATTERN.sub("", path.name).lower()
-            )
+            if _SEGMENTATION_FALLBACK.search(_NIFTI_PATTERN.sub("", path.name).lower())
         ]
         if len(fallback_candidates) == 1:
             role_candidates["seg"] = fallback_candidates
             warnings.append(
-                "segmentation_filename_fallback:"
-                f"{fallback_candidates[0].name}"
+                f"segmentation_filename_fallback:{fallback_candidates[0].name}"
             )
         elif len(fallback_candidates) > 1:
             raise DiscoveryError(

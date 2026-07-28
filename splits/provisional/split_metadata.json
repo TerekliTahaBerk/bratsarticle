@@ -1,0 +1,29 @@
+{
+  "algorithm": "two-stage stratified shuffle candidate search; primary stratum=grade|ET presence|WT quartile",
+  "candidate_seeds": 256,
+  "canonical_manifest_sha256": "b9ab5bdf598521df5b3e26348ef4561f6ace631187385e180841e1712938e78b",
+  "counts": {
+    "test": 74,
+    "train": 258,
+    "validation": 37
+  },
+  "duplicate_file_hash_count": 0,
+  "duplicate_image_signature_count": 0,
+  "frozen": false,
+  "manifest_sha256": {
+    "test": "455b3b661be73a84fc99458798ee9a5cbbf9c70deac0b425397220fbbab7a525",
+    "train": "49a8d6836aba5f69bb39d5eb513e29c3746adaae72f02ecdc0df094cd86d7425",
+    "validation": "95df721b5b013475b2100224279247e53afcc19c6ab79debf54283d27dc3d5bf"
+  },
+  "maximum_absolute_standardized_mean_difference": 0.048393636755385425,
+  "maximum_categorical_prevalence_deviation": 0.043873141434117024,
+  "objective": 0.015458746140772809,
+  "patient_id_overlap_count": 0,
+  "seed": 20260729,
+  "selected_candidate_index": 160,
+  "status": "pass",
+  "tolerances": {
+    "max_absolute_standardized_mean_difference": 0.35,
+    "max_categorical_prevalence_deviation": 0.08
+  }
+}

@@ -6,10 +6,11 @@ import argparse
 import json
 import math
 import sys
+from collections.abc import Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Sequence, cast
+from typing import Any, cast
 
 import nibabel as nib
 import numpy as np
@@ -201,9 +202,7 @@ def audit_subject(
         file_rows.append(row)
         by_role[role] = row
 
-    has_file_errors = any(
-        row.get("integrity_status") != "ok" for row in file_rows
-    )
+    has_file_errors = any(row.get("integrity_status") != "ok" for row in file_rows)
     segmentation_row = by_role.get("seg", {})
     valid_label_set = segmentation_row.get("valid_label_set") is True
     eligible = discovery.complete and not has_file_errors and valid_label_set
@@ -228,16 +227,10 @@ def audit_subject(
     for role in FILE_ROLES:
         role_row = by_role.get(role, {})
         subject_row[f"{role}_relative_path"] = role_row.get("relative_path", "")
-        subject_row[f"{role}_file_size_bytes"] = role_row.get(
-            "file_size_bytes", ""
-        )
-        subject_row[f"{role}_{hash_algorithm}"] = role_row.get(
-            hash_algorithm, ""
-        )
+        subject_row[f"{role}_file_size_bytes"] = role_row.get("file_size_bytes", "")
+        subject_row[f"{role}_{hash_algorithm}"] = role_row.get(hash_algorithm, "")
         subject_row[f"{role}_shape"] = role_row.get("shape", "")
-        subject_row[f"{role}_voxel_spacing"] = role_row.get(
-            "voxel_spacing", ""
-        )
+        subject_row[f"{role}_voxel_spacing"] = role_row.get("voxel_spacing", "")
         subject_row[f"{role}_orientation"] = role_row.get("orientation", "")
         subject_row[f"{role}_dtype"] = role_row.get("dtype", "")
         subject_row[f"{role}_nan_count"] = role_row.get("nan_count", "")
@@ -446,9 +439,7 @@ def build_duplicate_mapping(
                         discovery2019[subject2019].files[role],
                         include_value_pairs=role == "seg",
                     )
-                content_or_sha_equivalent = bool(
-                    match_value or content_equal is True
-                )
+                content_or_sha_equivalent = bool(match_value or content_equal is True)
                 role_equivalences.append(content_or_sha_equivalent)
                 if role != "seg":
                     image_role_equivalences.append(content_or_sha_equivalent)
@@ -457,16 +448,12 @@ def build_duplicate_mapping(
             record[f"{role}_max_abs_difference"] = maximum_difference
             record[f"{role}_differing_voxel_count"] = differing_voxel_count
             record[f"{role}_value_pair_counts"] = value_pair_counts
-            record[f"{role}_content_or_sha_equivalent"] = (
-                content_or_sha_equivalent
-            )
+            record[f"{role}_content_or_sha_equivalent"] = content_or_sha_equivalent
         record["all_role_sha256_match"] = (
             all(role_matches) if len(role_matches) == len(FILE_ROLES) else ""
         )
         record["all_role_content_or_sha_equivalent"] = (
-            all(role_equivalences)
-            if len(role_equivalences) == len(FILE_ROLES)
-            else ""
+            all(role_equivalences) if len(role_equivalences) == len(FILE_ROLES) else ""
         )
         record["all_image_modalities_content_or_sha_equivalent"] = (
             all(image_role_equivalences)
@@ -505,9 +492,7 @@ def build_summary(
         row for row in duplicate_rows if row["mapping_status"] == "new_in_brats2020"
     ]
     segmentation_revision_rows = [
-        row
-        for row in overlap_rows
-        if row.get("seg_content_or_sha_equivalent") is False
+        row for row in overlap_rows if row.get("seg_content_or_sha_equivalent") is False
     ]
     naming_exceptions = [
         row
@@ -519,22 +504,16 @@ def build_summary(
         for row in (*brats2020_rows, *brats2019_rows)
         if row.get("seg_valid_label_set") is not True
     ]
-    file_errors = [
-        row for row in file_rows if row.get("integrity_status") != "ok"
-    ]
+    file_errors = [row for row in file_rows if row.get("integrity_status") != "ok"]
 
     checks = {
         "brats2020_subject_count_is_369": len(brats2020_rows) == 369,
         "brats2019_subject_count_is_335": len(brats2019_rows) == 335,
         "mapped_overlap_count_is_335": len(overlap_rows) == 335,
         "new_brats2020_subject_count_is_34": len(new_rows) == 34,
-        "all_brats2020_subjects_complete": _count_truthy(
-            brats2020_rows, "complete"
-        )
+        "all_brats2020_subjects_complete": _count_truthy(brats2020_rows, "complete")
         == len(brats2020_rows),
-        "all_brats2019_subjects_complete": _count_truthy(
-            brats2019_rows, "complete"
-        )
+        "all_brats2019_subjects_complete": _count_truthy(brats2019_rows, "complete")
         == len(brats2019_rows),
         "no_file_integrity_errors": len(file_errors) == 0,
         "all_segmentation_label_sets_valid": len(invalid_label_subjects) == 0,
@@ -578,9 +557,7 @@ def build_summary(
                 {
                     "brats2020_subject_id": row["brats2020_subject_id"],
                     "brats2019_subject_id": row["brats2019_subject_id"],
-                    "differing_voxel_count": row[
-                        "seg_differing_voxel_count"
-                    ],
+                    "differing_voxel_count": row["seg_differing_voxel_count"],
                     "value_pair_counts": row["seg_value_pair_counts"],
                 }
                 for row in segmentation_revision_rows
@@ -646,11 +623,9 @@ def render_summary_markdown(summary: Mapping[str, Any]) -> str:
             "",
             "## File integrity",
             "",
-            f"- Audited NIfTI files: "
-            f"{summary['integrity']['audited_file_count']}",
+            f"- Audited NIfTI files: {summary['integrity']['audited_file_count']}",
             f"- File errors: {summary['integrity']['file_error_count']}",
-            f"- Naming exceptions: "
-            f"{summary['integrity']['naming_exception_count']}",
+            f"- Naming exceptions: {summary['integrity']['naming_exception_count']}",
             f"- Subjects with invalid label sets: "
             f"{len(summary['integrity']['invalid_label_subjects'])}",
             "",
@@ -674,16 +649,12 @@ def render_summary_markdown(summary: Mapping[str, Any]) -> str:
 
 def _output_paths(output_root: Path) -> dict[str, Path]:
     return {
-        "brats2020_inventory": output_root
-        / "manifests/raw/brats2020_inventory.csv",
-        "brats2019_inventory": output_root
-        / "manifests/raw/brats2019_inventory.csv",
+        "brats2020_inventory": output_root / "manifests/raw/brats2020_inventory.csv",
+        "brats2019_inventory": output_root / "manifests/raw/brats2019_inventory.csv",
         "canonical_manifest": output_root
         / "manifests/canonical/brats2020_canonical_manifest.csv",
-        "duplicate_mapping": output_root
-        / "manifests/audit/duplicate_mapping.csv",
-        "file_integrity": output_root
-        / "manifests/audit/file_integrity_report.csv",
+        "duplicate_mapping": output_root / "manifests/audit/duplicate_mapping.csv",
+        "file_integrity": output_root / "manifests/audit/file_integrity_report.csv",
         "summary_markdown": output_root / "reports/data_audit_summary.md",
         "summary_json": output_root / "reports/data_audit_summary.json",
     }
@@ -694,9 +665,7 @@ def settings_from_config(config: DictConfig) -> AuditSettings:
     brats2020_root = resolve_brats2020_training_root(
         Path(str(config.data.brats2020_root))
     )
-    brats2019_root = resolve_brats2019_root(
-        Path(str(config.data.brats2019_root))
-    )
+    brats2019_root = resolve_brats2019_root(Path(str(config.data.brats2019_root)))
     limit = config.audit.limit_subjects
     return AuditSettings(
         brats2020_root=brats2020_root,

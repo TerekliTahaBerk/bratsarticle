@@ -46,6 +46,7 @@ profiling = [
 
 [project.scripts]
 brats-data-audit = "bratsarticle.data.audit:main"
+brats-generate-split = "bratsarticle.data.splits:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -64,4 +65,8 @@ select = ["E", "F", "I", "B", "UP", "RUF"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-packages = ["bratsarticle"]
+files = ["src/bratsarticle"]
+
+[[tool.mypy.overrides]]
+module = ["sklearn.*"]
+ignore_missing_imports = true

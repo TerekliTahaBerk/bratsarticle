@@ -1,0 +1,16 @@
+split:
+  canonical_manifest: manifests/canonical/brats2020_canonical_manifest.csv
+  output_dir: splits/provisional
+  figure_dir: figures
+  report_path: reports/split_balance_report.md
+  metadata_path: splits/provisional/split_metadata.json
+  seed: 20260729
+  candidate_seeds: 256
+  counts:
+    train: 258
+    validation: 37
+    test: 74
+  tolerances:
+    max_categorical_prevalence_deviation: 0.08
+    max_absolute_standardized_mean_difference: 0.35
+

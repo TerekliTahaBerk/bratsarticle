@@ -20,15 +20,21 @@ components.
 
 ## Partitions
 
-All partitions are patient-level. The planned provisional counts are 258
-training, 37 validation, and 74 internal held-out test subjects. Exact
-membership is generated only after Gate 1 data integrity passes.
+All partitions are patient-level. The provisional split contains 258 training,
+37 validation, and 74 internal held-out test subjects. It was deterministically
+selected from 256 stratified candidates using seed `20260729`. Exact membership
+and SHA-256 hashes are recorded in `splits/provisional/split_metadata.json`.
+The split remains provisional until the statistical plan and finalist
+definitions are frozen.
 
 ## Evaluation discipline
 
 - Development uses training and validation only.
+- The development loader cannot open the internal-test manifest.
 - The internal held-out test subset is opened only after statistical-analysis
   configuration and finalist definitions are frozen.
+- Every authorized internal-test access requires an explicit flag, purpose, and
+  append-only event in `artifacts/test_access_log.jsonl`.
 - Primary statistical unit: patient.
 - Primary endpoint: patient-wise arithmetic mean of WT, TC, and ET Dice.
 - Pixel accuracy is not a primary metric.
