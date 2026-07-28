@@ -1,0 +1,39 @@
+protocol:
+  name: convergence_matched_v1
+  regime: convergence_matched
+  status: frozen_for_pilot
+  hardware:
+    gpu_model: NVIDIA A100-SXM4-80GB
+    identical_gpu_required: true
+  stopping:
+    maximum_optimizer_steps: 50000
+    validation_frequency_optimizer_steps: 500
+    early_stopping_patience_validation_checks: 12
+    minimum_improvement: 0.001
+    mode: maximize
+    monitored_metric: validation_patient_mean_regional_dice
+  training:
+    mixed_precision: true
+    autocast_dtype: float16
+    input_shape_channels_height_width: [4, 240, 240]
+    batch_size: 16
+    gradient_accumulation_steps: 1
+    effective_batch_size: 16
+    scheduler:
+      name: linear_warmup_cosine_decay
+      warmup_optimizer_steps: 1000
+      decay_until_optimizer_step: 50000
+      minimum_learning_rate_fraction: 0.01
+  checkpoint:
+    rule: maximum_validation_patient_mean_regional_dice
+    tie_breaker: lower_validation_loss
+    minimum_delta: 0.001
+  convergence_diagnostic:
+    rule: no_minimum_delta_improvement_for_patience_window
+    rolling_validation_checks: 12
+    report_best_step_and_terminal_step: true
+  fairness:
+    epoch_count_is_fairness_criterion: false
+    scheduler_count: 1
+    budget_violation_action: mark_run_invalid
+    test_subset_permitted: false

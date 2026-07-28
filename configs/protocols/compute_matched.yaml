@@ -1,0 +1,35 @@
+protocol:
+  name: compute_matched_v1
+  regime: compute_matched
+  status: frozen_for_pilot
+  hardware:
+    gpu_model: NVIDIA A100-SXM4-80GB
+    identical_gpu_required: true
+    maximum_gpu_hours_per_run: 8.0
+  budget:
+    maximum_optimizer_steps: 30000
+    tuning:
+      maximum_trials_per_model_loss_family: 4
+      maximum_gpu_hours_per_model_loss_family: 16.0
+      validation_data_only: true
+  training:
+    mixed_precision: true
+    autocast_dtype: float16
+    input_shape_channels_height_width: [4, 240, 240]
+    batch_size: 16
+    gradient_accumulation_steps: 1
+    effective_batch_size: 16
+    scheduler:
+      name: linear_warmup_cosine_decay
+      warmup_optimizer_steps: 1000
+      minimum_learning_rate_fraction: 0.01
+  pretraining:
+    status: none
+    source: null
+    fine_tuning_gpu_hours: 0.0
+    external_pretraining_cost: included
+  fairness:
+    stop_when_first_budget_is_reached: true
+    epoch_count_is_fairness_criterion: false
+    budget_violation_action: mark_run_invalid
+    test_subset_permitted: false

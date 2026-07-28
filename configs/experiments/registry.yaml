@@ -1,0 +1,17 @@
+registry:
+  artifact_root: artifacts/runs
+  allow_existing_run_directory: false
+  files:
+    resolved_config: config.yaml
+    metadata: metadata.json
+    epoch_metrics: metrics_per_epoch.jsonl
+    validation_cases: validation_per_case.csv
+    resource_profile: resource_profile.json
+  directories:
+    checkpoints: checkpoints
+    logs: logs
+  status_values: [running, completed, failed, invalid]
+  test_access_default:
+    allowed: false
+    accessed: false
+    audit_log: artifacts/test_access_log.jsonl
