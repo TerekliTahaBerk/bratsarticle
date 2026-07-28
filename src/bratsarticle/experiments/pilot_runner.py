@@ -8,17 +8,12 @@ import traceback
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from bratsarticle.data.dataset import (
-    BraTSSliceDataset,
-    build_development_dataset,
-)
-from bratsarticle.data.preprocessing import load_preprocessing_config
 from bratsarticle.experiments.fairness import load_compute_matched_protocol
 from bratsarticle.experiments.pilots import (
     PilotArm,
@@ -44,12 +39,9 @@ from bratsarticle.training.reproducibility import (
     seed_everything,
 )
 from bratsarticle.training.schedule import build_warmup_cosine_scheduler
-from bratsarticle.training.validation import validate_full_volumes
-from evaluation import (
-    CentralEvaluator,
-    load_evaluation_config,
-    summarize_patient_metrics,
-)
+
+if TYPE_CHECKING:
+    from bratsarticle.data.dataset import BraTSSliceDataset
 
 
 def _loader(
@@ -84,6 +76,8 @@ def _split_hashes(split_dir: Path) -> dict[str, str]:
 
 
 def _selection_metric(rows: list[dict[str, Any]]) -> float:
+    from evaluation import summarize_patient_metrics
+
     matches = [
         row
         for row in summarize_patient_metrics(rows)
@@ -175,6 +169,11 @@ def run_pilot_arm(
             name for name, passed in preflight["checks"].items() if not bool(passed)
         ]
         raise RuntimeError(f"Gate 8 pilot preflight failed: {failed}")
+    from bratsarticle.data.dataset import build_development_dataset
+    from bratsarticle.data.preprocessing import load_preprocessing_config
+    from bratsarticle.training.validation import validate_full_volumes
+    from evaluation import CentralEvaluator, load_evaluation_config
+
     arm = _arm(plan, arm_id)
     fairness = load_compute_matched_protocol(plan.fairness_protocol_path)
     dataset_root = Path(os.environ["BRATS2020_ROOT"]).expanduser().resolve()
