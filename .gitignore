@@ -1,0 +1,69 @@
+# macOS and editor metadata
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Raw medical imaging data: never commit
+data/
+*.nii
+*.nii.gz
+
+# Local preprocessing caches and training products
+cache/
+caches/
+checkpoints/
+runs/
+wandb/
+tensorboard/
+artifacts/runs/
+artifacts/checkpoints/
+artifacts/cache/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# LaTeX build intermediates
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.toc
+
+# Unverified legacy manuscript assets.
+# Validated manuscript sources and generated figures will live in new,
+# provenance-controlled directories during later gates.
+figuresandfiles/
+main (3).tex
+main (10).pdf
