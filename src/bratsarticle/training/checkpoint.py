@@ -13,6 +13,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.optim import Optimizer
+from torch.optim.lr_scheduler import LRScheduler
 
 
 @dataclass
@@ -48,6 +49,7 @@ def save_checkpoint(
     model: nn.Module,
     optimizer: Optimizer,
     scaler: torch.amp.GradScaler,
+    scheduler: LRScheduler | None = None,
     state: TrainingState,
     metadata: dict[str, Any],
 ) -> None:
@@ -64,6 +66,7 @@ def save_checkpoint(
         "model": model.state_dict(),
         "optimizer": optimizer.state_dict(),
         "scaler": scaler.state_dict(),
+        "scheduler": None if scheduler is None else scheduler.state_dict(),
         "state": asdict(state),
         "metadata": metadata,
         "rng": _rng_state(),
@@ -81,6 +84,7 @@ def load_checkpoint(
     model: nn.Module,
     optimizer: Optimizer,
     scaler: torch.amp.GradScaler,
+    scheduler: LRScheduler | None = None,
     map_location: torch.device,
 ) -> tuple[TrainingState, dict[str, Any]]:
     """Restore all training and random state required for deterministic resume."""
@@ -91,6 +95,13 @@ def load_checkpoint(
     model.load_state_dict(payload["model"])
     optimizer.load_state_dict(payload["optimizer"])
     scaler.load_state_dict(payload["scaler"])
+    scheduler_state = payload.get("scheduler")
+    if scheduler is not None:
+        if scheduler_state is None:
+            raise ValueError("Checkpoint has no scheduler state")
+        scheduler.load_state_dict(scheduler_state)
+    elif scheduler_state is not None:
+        raise ValueError("Checkpoint contains scheduler state but none was supplied")
     state = TrainingState(**payload["state"])
     _restore_rng_state(payload["rng"])
     return state, cast(dict[str, Any], payload["metadata"])

@@ -1,0 +1,83 @@
+pilot:
+  name: gate8_single_seed_development_screen
+  status: frozen_pending_eligible_hardware
+  seed: 20260729
+  fairness_protocol: configs/protocols/compute_matched.yaml
+  registry_config: configs/experiments/registry.yaml
+  artifact_root: artifacts/runs
+
+  data:
+    brats2020_root: ${oc.env:BRATS2020_ROOT}
+    canonical_manifest: manifests/canonical/brats2020_canonical_manifest.csv
+    split_dir: splits/provisional
+    preprocessing_config: configs/data/preprocessing.yaml
+    evaluation_config: configs/evaluation/default.yaml
+    cache_root: ${oc.env:BRATS_CACHE_ROOT,null}
+    training_workers: 4
+    validation_workers: 4
+
+  budget:
+    maximum_optimizer_steps: 2000
+    maximum_gpu_hours: 0.5
+    validation_frequency_optimizer_steps: 500
+    minimum_completed_validation_checks: 3
+
+  optimization:
+    optimizer: adamw
+    learning_rate: 0.001
+    weight_decay: 0.00001
+    scheduler: linear_warmup_cosine_decay
+    warmup_optimizer_steps: 200
+    minimum_learning_rate_fraction: 0.01
+    mixed_precision: true
+
+  screen:
+    architecture:
+      fixed_loss: cross_entropy_plus_soft_dice
+      arms:
+        - id: architecture_unet
+          model_config: configs/models/unet.yaml
+        - id: architecture_unet_res
+          model_config: configs/models/unet_res.yaml
+        - id: architecture_unet_wc
+          model_config: configs/models/unet_wc.yaml
+        - id: architecture_bunet
+          model_config: configs/models/bunet.yaml
+        - id: architecture_resunet
+          model_config: configs/models/resunet.yaml
+        - id: architecture_resunet_wc
+          model_config: configs/models/resunet_wc.yaml
+    loss:
+      fixed_model_config: configs/models/unet.yaml
+      reuse_architecture_arm:
+        cross_entropy_plus_soft_dice: architecture_unet
+      arms:
+        - id: loss_cross_entropy
+          loss: cross_entropy
+        - id: loss_binary_cross_entropy
+          loss: binary_cross_entropy
+        - id: loss_soft_dice
+          loss: soft_dice
+        - id: loss_binary_cross_entropy_plus_soft_dice
+          loss: binary_cross_entropy_plus_soft_dice
+        - id: loss_focal_tversky
+          loss: focal_tversky
+        - id: loss_binary_cross_entropy_plus_focal_tversky
+          loss: binary_cross_entropy_plus_focal_tversky
+
+  elimination:
+    statistical_unit: patient
+    endpoint: validation_patient_mean_regional_dice
+    paired_bootstrap_resamples: 10000
+    confidence_level: 0.95
+    practical_noninferiority_margin: 0.02
+    eliminate_if:
+      paired_mean_delta_below_negative_margin: true
+      paired_bootstrap_upper_bound_below_zero: true
+      both_conditions_required: true
+    fallback_shortlist_if_too_few_eliminated:
+      architecture_top_k: 3
+      loss_top_k: 2
+    next_stage_seeds: [20260729, 20260730, 20260731]
+    finalist_seed_count: 5
+    internal_test_permitted: false

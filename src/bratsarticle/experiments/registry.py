@@ -153,6 +153,10 @@ class ResourceTracker:
             ),
         }
 
+    def elapsed_seconds(self) -> float:
+        """Return elapsed wall time without forcing a device synchronization."""
+        return time.perf_counter() - self.started_at
+
 
 class ExperimentRegistry:
     """Create and finalize one immutable run directory contract."""
