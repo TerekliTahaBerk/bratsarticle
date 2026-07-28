@@ -18,6 +18,12 @@ of U-Net-family models for multimodal glioma segmentation.
 RES and WC are attributed to BU-Net and are evaluated as baseline/ablation
 components.
 
+The Standard 2D U-Net is implemented first and isolated from all BU-Net,
+residual, WC, and transformer components. Its versioned architecture and
+optimization settings are `configs/training/unet2d_baseline.yaml`. Full
+training requires an explicit flag and a CUDA host; bounded diagnostics do not
+authorize test access.
+
 ## Partitions
 
 All partitions are patient-level. The provisional split contains 258 training,

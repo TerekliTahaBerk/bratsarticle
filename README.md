@@ -5,11 +5,11 @@ U-Net-family models on multimodal BraTS glioma segmentation data.
 
 ## Current status
 
-Gates 0–4 are complete: repository/environment audit, read-only data integrity,
-a deterministic provisional patient-level split, the central patient-volume
-evaluator, and the leakage-safe four-modality preprocessing/slice-loader
-pipeline. No training results, model comparisons, or internal held-out test
-results are currently claimed by this repository.
+Gates 0–5 are complete through Standard 2D U-Net implementation and bounded
+diagnostics: repository/environment audit, data integrity, provisional split,
+central evaluator, preprocessing, checkpoint/resume, and controlled real
+training-slice overfit. No full-cohort model comparison or internal held-out
+test result is currently claimed by this repository.
 
 The initial audit is available at
 [`reports/phase0_repository_audit.md`](reports/phase0_repository_audit.md).
@@ -21,6 +21,8 @@ The evaluator contract is available at
 [`reports/evaluator_specification.md`](reports/evaluator_specification.md).
 The preprocessing contract is available at
 [`reports/preprocessing_specification.md`](reports/preprocessing_specification.md).
+The baseline contract is available at
+[`reports/unet2d_baseline_specification.md`](reports/unet2d_baseline_specification.md).
 
 ## Scientific scope
 
@@ -80,6 +82,18 @@ Regenerate the provisional patient-level split:
 ```bash
 ./.venv/bin/brats-generate-split --config configs/data/split.yaml
 ```
+
+Run a bounded baseline smoke:
+
+```bash
+BRATS2020_ROOT=/authorized/path/to/brats2020 \
+./.venv/bin/brats-train-unet2d \
+  --config configs/training/unet2d_gate5_smoke.yaml \
+  --smoke-steps 1
+```
+
+Full training requires both a suitable CUDA host and the explicit
+`--allow-full-training` flag.
 
 Full training and internal held-out test evaluation remain separately guarded
 by the protocol and test-access audit.

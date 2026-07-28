@@ -1,0 +1,86 @@
+{
+  "acceptance": {
+    "final_et_dice_at_least_0_80": true,
+    "final_tc_dice_at_least_0_80": true,
+    "final_wt_dice_at_least_0_80": true,
+    "loss_reduced_by_at_least_50_percent": true,
+    "mean_regional_dice_improved": true
+  },
+  "final_loss": 0.06444607675075531,
+  "final_metrics": {
+    "et_dice": 0.8733031674208145,
+    "mean_regional_dice": 0.9208474654330218,
+    "tc_dice": 0.9522900763358778,
+    "wt_dice": 0.9369491525423729
+  },
+  "initial_loss": 1.2697727680206299,
+  "initial_metrics": {
+    "et_dice": 0.0,
+    "mean_regional_dice": 0.022980107307367274,
+    "tc_dice": 0.018541770584289376,
+    "wt_dice": 0.05039855133781245
+  },
+  "loss_history_every_10_steps": [
+    0.5191426277160645,
+    0.44520196318626404,
+    0.39246582984924316,
+    0.36482495069503784,
+    0.3073691129684448,
+    0.34629371762275696,
+    0.3101787567138672,
+    0.28939691185951233,
+    0.27497628331184387,
+    0.24331870675086975,
+    0.13940812647342682,
+    0.11105044186115265,
+    0.09393467009067535,
+    0.3248589336872101,
+    0.1161634624004364,
+    0.09224145114421844,
+    0.07834170013666153,
+    0.07249169051647186,
+    0.06729359924793243,
+    0.06465169787406921
+  ],
+  "metadata": {
+    "config_path": "configs/training/unet2d_baseline.yaml",
+    "config_sha256": "a86849924c0ee695e7d385d5224de8793f6b3024ab2611066d24c6d896556773",
+    "created_at_utc": "2026-07-28T22:59:54.901595+00:00",
+    "cuda_available": false,
+    "cuda_device_count": 0,
+    "device": "cpu",
+    "git_commit": "09f516284753dfcf9fa5e67c842fa74ad65894ec",
+    "logical_cpu_count": 10,
+    "memory_total_bytes": 34359738368,
+    "mixed_precision_effective": false,
+    "mixed_precision_requested": false,
+    "mps_available": false,
+    "packages": {
+      "monai": "1.6.0",
+      "nibabel": "5.4.2",
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "torch": "2.13.0"
+    },
+    "physical_cpu_count": 10,
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.3.19.1)]",
+    "run_kind": "gate5_real_single_slice_overfit_diagnostic",
+    "seed": 20260729,
+    "split_sha256": {
+      "train": "49a8d6836aba5f69bb39d5eb513e29c3746adaae72f02ecdc0df094cd86d7425",
+      "validation": "95df721b5b013475b2100224279247e53afcc19c6ab79debf54283d27dc3d5bf"
+    },
+    "status": "completed"
+  },
+  "slice_index": 45,
+  "status": "pass",
+  "steps": 200,
+  "subject_id": "BraTS20_Training_002",
+  "target_voxels": {
+    "et": 238,
+    "tc": 539,
+    "wt": 1489
+  }
+}

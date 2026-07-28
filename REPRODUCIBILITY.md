@@ -19,3 +19,8 @@ is prohibited.
 The internal held-out test subset is inaccessible through the ordinary
 training loader. Test evaluation requires `--allow-test-evaluation` and creates
 an append-only access record in `artifacts/test_access_log.jsonl`.
+
+Baseline checkpoints atomically store model, optimizer, AMP scaler, epoch,
+global step, and Python/NumPy/PyTorch CPU/CUDA RNG states. Resume rejects a
+configuration-hash mismatch. The CPU regression test requires bit-identical
+loss and parameters between uninterrupted and interrupted/resumed execution.
