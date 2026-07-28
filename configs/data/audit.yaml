@@ -1,0 +1,12 @@
+data:
+  brats2020_root: ${oc.env:BRATS2020_ROOT}
+  brats2019_root: ${oc.env:BRATS2019_ROOT}
+
+audit:
+  output_root: .
+  workers: 2
+  hash_algorithm: sha256
+  limit_subjects: null
+  compare_content_on_hash_mismatch: true
+  fail_on_invalid_label_set: true
+  expected_segmentation_labels: [0, 1, 2, 4]

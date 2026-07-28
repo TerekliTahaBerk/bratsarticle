@@ -1,0 +1,21 @@
+# Reproducibility Contract
+
+Every reportable experiment must be recoverable from:
+
+1. Git commit and clean/dirty state
+2. locked Python environment
+3. data-manifest SHA-256
+4. split-manifest SHA-256
+5. fully resolved configuration and configuration SHA-256
+6. random seed applied to Python, NumPy, PyTorch, and DataLoader workers
+7. hardware and software metadata
+8. machine-readable per-epoch and per-case results
+9. checkpoint selection rule
+10. resource profile and completion/failure status
+
+Tables and figures must be regenerated from run artifacts. Manual result entry
+is prohibited.
+
+The internal held-out test subset is inaccessible through the ordinary
+training loader. Test evaluation requires `--allow-test-evaluation` and creates
+an append-only access record in `artifacts/test_access_log.jsonl`.

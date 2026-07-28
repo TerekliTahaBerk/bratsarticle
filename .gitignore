@@ -13,7 +13,7 @@
 # Python environments and caches
 .venv/
 venv/
-env/
+/env/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -27,7 +27,7 @@ dist/
 *.egg-info/
 
 # Raw medical imaging data: never commit
-data/
+/data/
 *.nii
 *.nii.gz
 
@@ -64,6 +64,6 @@ artifacts/cache/
 # Unverified legacy manuscript assets.
 # Validated manuscript sources and generated figures will live in new,
 # provenance-controlled directories during later gates.
-figuresandfiles/
-main (3).tex
-main (10).pdf
+/figuresandfiles/
+/main (3).tex
+/main (10).pdf

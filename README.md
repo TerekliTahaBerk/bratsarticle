@@ -5,12 +5,14 @@ U-Net-family models on multimodal BraTS glioma segmentation data.
 
 ## Current status
 
-Gate 0 (repository and environment audit) is complete. No training results,
-model comparisons, or internal held-out test results are currently claimed by
-this repository.
+Gate 0 (repository and environment audit) and Gate 1 (read-only data integrity
+and duplicate audit) are complete. No training results, model comparisons, or
+internal held-out test results are currently claimed by this repository.
 
 The initial audit is available at
 [`reports/phase0_repository_audit.md`](reports/phase0_repository_audit.md).
+The verified data audit is available at
+[`reports/data_audit_summary.md`](reports/data_audit_summary.md).
 
 ## Scientific scope
 
@@ -42,6 +44,28 @@ The `data/` directory and medical-image files are excluded from Git.
 
 ## Development
 
-The implementation stack and reproducible setup commands will be added after
-the Gate 1 environment and data-integrity design is approved. Full training
-and internal held-out test evaluation require separate explicit approval.
+Create the locked Python 3.11 environment:
+
+```bash
+python3.11 -m venv .venv
+./.venv/bin/pip install -r environment/requirements-lock.txt
+./.venv/bin/pip install -e .
+```
+
+Run code-quality checks:
+
+```bash
+./.venv/bin/ruff format --check src tests
+./.venv/bin/ruff check src tests
+./.venv/bin/mypy src/bratsarticle
+./.venv/bin/pytest -q
+```
+
+Run the read-only data audit after exporting the dataset roots:
+
+```bash
+./.venv/bin/brats-data-audit --config configs/data/audit.yaml
+```
+
+Full training and internal held-out test evaluation remain separately guarded
+by the protocol and test-access audit.

@@ -1,0 +1,63 @@
+{
+  "brats2019": {
+    "complete_subject_count": 335,
+    "eligible_subject_count": 335,
+    "grade_counts": {
+      "HGG": 259,
+      "LGG": 76
+    },
+    "subject_count": 335
+  },
+  "brats2020": {
+    "complete_subject_count": 369,
+    "eligible_subject_count": 369,
+    "grade_counts": {
+      "HGG": 293,
+      "LGG": 76
+    },
+    "subject_count": 369
+  },
+  "gate1_integrity_pass": true,
+  "hypothesis_checks": {
+    "all_brats2019_subjects_complete": true,
+    "all_brats2020_subjects_complete": true,
+    "all_mapped_image_modalities_content_equivalent": true,
+    "all_segmentation_label_sets_valid": true,
+    "brats2019_subject_count_is_335": true,
+    "brats2020_subject_count_is_369": true,
+    "mapped_overlap_count_is_335": true,
+    "new_brats2020_subject_count_is_34": true,
+    "no_file_integrity_errors": true
+  },
+  "integrity": {
+    "audited_file_count": 3520,
+    "file_error_count": 0,
+    "invalid_label_subjects": [],
+    "naming_exception_count": 1,
+    "naming_exceptions": [
+      {
+        "dataset": "brats2020",
+        "subject_id": "BraTS20_Training_355",
+        "warnings": "segmentation_filename_fallback:W39_1998.09.19_Segm.nii"
+      }
+    ]
+  },
+  "mapping": {
+    "all_image_modalities_content_or_sha_equivalent_count": 335,
+    "all_role_content_or_sha_equivalent_count": 334,
+    "all_role_sha256_match_count": 334,
+    "mapped_overlap_count": 335,
+    "new_in_brats2020_count": 34,
+    "row_count": 369,
+    "segmentation_revision_count": 1,
+    "segmentation_revision_subjects": [
+      {
+        "brats2019_subject_id": "BraTS19_CBICA_BLJ_1",
+        "brats2020_subject_id": "BraTS20_Training_128",
+        "differing_voxel_count": 2,
+        "value_pair_counts": "{\"0->4\":2}"
+      }
+    ]
+  },
+  "run_scope": "full"
+}
