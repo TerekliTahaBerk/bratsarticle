@@ -1,0 +1,24 @@
+{
+  "gate": 14,
+  "outputs": {
+    "manuscript/claim_2024_checklist.md": "f03622f38e32b9b6458c009bb4adb1a254c7b1fc096982eb83f2ae3b5d0debe8",
+    "manuscript/final_manuscript.md": "4ebad70afe5373ec0c1b4ade885329e895be6a33b905b0ef1ec4a17780852345",
+    "manuscript/response_to_reviewer.md": "7c34149e05495e6386e2023348777195d08593b317294ad2bbf911433155cbdb"
+  },
+  "policy": "All scientific result values are rendered from tracked machine-readable artifacts.",
+  "sources": {
+    "literature/verified_sources.yaml": "9a2ae06c5f13234c79d3e650cd5e101c7a35902a77cb424e74ec0eef3eb2c606",
+    "reports/data_audit_summary.json": "c779e54d717c88902bb6da40c5b02f64fbd092157113c3631b5ce6a8b0276bef",
+    "reports/gate10_analysis_freeze.json": "14ce50283a71dc62111a41f8d6c17c3b743f096bf87b4f157995267af3759b70",
+    "reports/gate11_analysis.json": "7e9a3747147488e98427c2124ce61e24d842e07a93c009568f0046369d52295a",
+    "reports/gate11_comparisons.csv": "eaf344023c5f0ddfbc4af90aa20712e7993b087fd5632dc48550519e920f5bf4",
+    "reports/gate11_metric_summary.csv": "d2167992da7e16c2e44f80040f6bf58f6a00b9bf2b0e46bc011b6dc9506bd59a",
+    "reports/gate11_resource_summary.csv": "744458fe85d0a1c88bb1e59b71a7e1ccaa20116e3fb4283f31ca08d3dd8f6f50",
+    "reports/gate11_subgroups.csv": "81e6cc2e654b179b5bc4345f2b42b239d9cf6a73a17a863366e4a3060a4bcc4c",
+    "reports/gate8_arm_summary.csv": "26abb4e5f962bc52d9ae0e849c701d55b33cfae98e1146cc3f28788119dfbce4",
+    "reports/gate9_confirmation_summary.csv": "68b67b5d03f22729e2b37a64c01f171c241a178d3e47facb97c0de91b3f05f27",
+    "reports/gate9_final_summary.csv": "897306ec8eed051617ddfd68de1ef770f7c2b093ae718980c09856e33c402cf8",
+    "splits/frozen/split_metadata.json": "b3be59a3fb2bdc8d61674500c02df5bec44ff0b6583aa5ae68da0856e0f490d9"
+  },
+  "status": "generated"
+}

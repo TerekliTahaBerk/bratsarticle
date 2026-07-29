@@ -1,0 +1,150 @@
+sources:
+  - id: brats2020_data
+    title: Multimodal Brain Tumor Segmentation Challenge 2020 - Data
+    organization: Center for Biomedical Image Computing and Analytics, University of Pennsylvania
+    url: https://www.med.upenn.edu/cbica/brats2020/data.html
+    verified_claims:
+      - BraTS 2020 provides T1, post-contrast T1, T2, and FLAIR MRI.
+      - Images are co-registered, resampled to 1 mm isotropic resolution, and skull stripped.
+      - Training labels use 1, 2, and 4 for the annotated tumor subregions.
+    use: Dataset description only.
+
+  - id: brats2020_tasks
+    title: Multimodal Brain Tumor Segmentation Challenge 2020 - Tasks
+    organization: Center for Biomedical Image Computing and Analytics, University of Pennsylvania
+    url: https://www.med.upenn.edu/cbica/brats2020/tasks.html
+    verified_claims:
+      - BraTS evaluates whole tumor, tumor core, and enhancing tumor regions.
+      - Dice and 95th-percentile Hausdorff distance are official challenge metrics.
+    use: Region and metric definitions only.
+
+  - id: menze2015
+    title: The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)
+    authors: Menze et al.
+    venue: IEEE Transactions on Medical Imaging
+    year: 2015
+    doi: 10.1109/TMI.2014.2377694
+    url: https://doi.org/10.1109/TMI.2014.2377694
+    use: BraTS benchmark history.
+
+  - id: bakas2017
+    title: Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features
+    authors: Bakas et al.
+    venue: Scientific Data
+    year: 2017
+    doi: 10.1038/sdata.2017.117
+    url: https://doi.org/10.1038/sdata.2017.117
+    use: BraTS annotation and imaging context.
+
+  - id: bakas2018
+    title: Identifying the Best Machine Learning Algorithms for Brain Tumor Segmentation, Progression Assessment, and Overall Survival Prediction in the BRATS Challenge
+    authors: Bakas et al.
+    year: 2018
+    url: https://arxiv.org/abs/1811.02629
+    use: Challenge context.
+
+  - id: unet
+    title: U-Net - Convolutional Networks for Biomedical Image Segmentation
+    authors: Ronneberger, Fischer, and Brox
+    venue: MICCAI
+    year: 2015
+    doi: 10.1007/978-3-319-24574-4_28
+    url: https://doi.org/10.1007/978-3-319-24574-4_28
+    use: U-Net architecture provenance.
+
+  - id: bunet
+    title: BU-Net - Brain Tumor Segmentation Using Modified U-Net Architecture
+    authors: Rehman et al.
+    venue: Electronics
+    year: 2020
+    doi: 10.3390/electronics9122203
+    url: https://doi.org/10.3390/electronics9122203
+    verified_claims:
+      - Residual extended skip and wide context modules were introduced as BU-Net components.
+      - BU-Net is a two-dimensional modified U-Net.
+    use: Exclusive attribution source for RES, WC, and BU-Net.
+
+  - id: focal_tversky
+    title: A Novel Focal Tversky Loss Function With Improved Attention U-Net for Lesion Segmentation
+    authors: Abraham and Khan
+    venue: IEEE ISBI
+    year: 2019
+    doi: 10.1109/ISBI.2019.8759329
+    url: https://doi.org/10.1109/ISBI.2019.8759329
+    use: Focal Tversky loss provenance.
+
+  - id: tversky_loss
+    title: Tversky Loss Function for Image Segmentation Using 3D Fully Convolutional Deep Networks
+    authors: Salehi, Erdogmus, and Gholipour
+    year: 2017
+    url: https://arxiv.org/abs/1706.05721
+    use: Tversky loss context.
+
+  - id: nnunet
+    title: nnU-Net - a self-configuring method for deep learning-based biomedical image segmentation
+    authors: Isensee et al.
+    venue: Nature Methods
+    year: 2021
+    doi: 10.1038/s41592-020-01008-z
+    url: https://doi.org/10.1038/s41592-020-01008-z
+    use: Modern self-configuring segmentation baseline context, not a numerical comparator.
+
+  - id: metrics_reloaded
+    title: Metrics Reloaded - recommendations for image analysis validation
+    authors: Maier-Hein et al.
+    venue: Nature Methods
+    year: 2024
+    doi: 10.1038/s41592-023-02151-z
+    url: https://doi.org/10.1038/s41592-023-02151-z
+    use: Metric selection, hierarchy, and aggregation rationale.
+
+  - id: claim2024
+    title: Checklist for Artificial Intelligence in Medical Imaging (CLAIM) - 2024 Update
+    authors: Tejani et al.
+    venue: Radiology - Artificial Intelligence
+    year: 2024
+    doi: 10.1148/ryai.240300
+    url: https://doi.org/10.1148/ryai.240300
+    use: Reporting framework.
+
+  - id: surface_dice
+    title: Clinically Applicable Segmentation of Head and Neck Anatomy for Radiotherapy - Deep Learning Algorithm Development and Validation Study
+    authors: Nikolov et al.
+    venue: Journal of Medical Internet Research
+    year: 2021
+    doi: 10.2196/26151
+    url: https://doi.org/10.2196/26151
+    use: Surface Dice definition and context; not evidence that the present 1 mm tolerance is clinically calibrated.
+
+  - id: holm
+    title: A Simple Sequentially Rejective Multiple Test Procedure
+    authors: Holm
+    venue: Scandinavian Journal of Statistics
+    year: 1979
+    doi: 10.2307/4615733
+    url: https://doi.org/10.2307/4615733
+    use: Multiplicity correction.
+
+  - id: transbts
+    title: TransBTS - Multimodal Brain Tumor Segmentation Using Transformer
+    authors: Wang et al.
+    year: 2021
+    url: https://arxiv.org/abs/2103.04430
+    use: Transformer-based glioma segmentation context only.
+
+  - id: nnformer
+    title: nnFormer - Interleaved Transformer for Volumetric Segmentation
+    authors: Zhou et al.
+    venue: IEEE Transactions on Image Processing
+    year: 2023
+    doi: 10.1109/TIP.2023.3293771
+    url: https://doi.org/10.1109/TIP.2023.3293771
+    use: Three-dimensional transformer context only.
+
+verification_policy:
+  checked_on: 2026-07-29
+  rule: Only primary papers, official challenge pages, and formal reporting or metric recommendations are used for factual claims.
+  exclusions:
+    - No literature score was imported into an experimental comparison table.
+    - No external implementation code was copied.
+    - No paper is cited as evidence of clinical applicability for the present study.

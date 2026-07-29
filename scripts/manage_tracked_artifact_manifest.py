@@ -21,6 +21,10 @@ EXCLUDED_PREFIXES = (
 )
 INCLUDED_FILES = {
     "AGENTS.md",
+    "CLAIMS_LEDGER.md",
+    "EXPERIMENT_PROTOCOL.md",
+    "README.md",
+    "REPRODUCIBILITY.md",
     "pyproject.toml",
 }
 INCLUDED_PREFIXES = (
@@ -29,6 +33,8 @@ INCLUDED_PREFIXES = (
     "configs/",
     "environment/",
     "figures/final/",
+    "literature/",
+    "manuscript/",
     "reports/",
     "scripts/",
     "splits/frozen/",

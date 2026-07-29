@@ -49,6 +49,7 @@ artifacts/internal_test/
 
 # Local logs and temporary files
 /tmp/
+/work/
 *.log
 *.tmp
 *.temp

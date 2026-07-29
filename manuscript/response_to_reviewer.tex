@@ -1,0 +1,249 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  10pt,
+  letterpaper,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{Response to the reviewer}\label{response-to-the-reviewer}
+
+\textbf{Manuscript:} \emph{Leakage-Safe Multi-Seed Evaluation of
+Published BU-Net Components for Resource-Constrained 2D Glioma
+Segmentation}
+
+We thank the reviewer for identifying problems that could not be
+corrected by editorial changes alone. We rebuilt the study around a
+canonical cohort, patient-level partitions, matched training, guarded
+test access, reproducible artifacts, and appropriately limited claims.
+The old cross-architecture ranking and clinical or state-of-the-art
+language were removed.
+
+\subsection{1. Attribution and novelty}\label{attribution-and-novelty}
+
+\textbf{Concern:} RES and WC appeared to be presented as new
+contributions although they were introduced in BU-Net.
+
+\textbf{Response:} Corrected throughout. RES, WC, and their combination
+are explicitly attributed to Rehman et al.~(2020). The title, abstract,
+architecture figure, Methods, Discussion, and Conclusion describe this
+as an evaluation and reimplementation study. No architectural novelty is
+claimed. A dedicated implementation note records deliberate deviations
+from the source paper.
+
+\subsection{2. BraTS 2019/2020 overlap and
+leakage}\label{brats-20192020-overlap-and-leakage}
+
+\textbf{Concern:} Pooling BraTS editions could duplicate patients and
+contaminate splits.
+
+\textbf{Response:} We did not pool the editions. BraTS 2020 training is
+the only canonical labeled cohort. BraTS 2019 is used only for
+content-based identity auditing. All 335 BraTS 2019 cases map to BraTS
+2020; 34 cases are new in 2020. One mapped segmentation contains a
+two-voxel annotation revision. The final 369 patients were split at
+patient level into 258/37/74 training/validation/internal-test cases,
+with zero identifier or content-signature overlap.
+
+\subsection{3. Slice-level leakage}\label{slice-level-leakage}
+
+\textbf{Concern:} A slice-level split would allow images from one
+patient in several subsets.
+
+\textbf{Response:} All partitions and statistical analyses now use the
+patient as the unit. Slices are sampled only within an already assigned
+training patient. The split manifests and hashes are frozen and tested
+automatically.
+
+\subsection{4. Unfair or inconsistent
+protocols}\label{unfair-or-inconsistent-protocols}
+
+\textbf{Concern:} Architectures appeared to receive different losses,
+schedules, or training opportunities.
+
+\textbf{Response:} Every final candidate now uses the same inputs,
+normalization, augmentation, BCE+FTL objective, AdamW optimizer,
+learning rate, weight decay, batch size, scheduler, device, and
+2,000-step/0.5-hour cap. The protocol is intentionally bounded and this
+limitation is stated. Development screens, confirmation runs, and test
+evaluation have distinct roles and machine-readable registries.
+
+\subsection{5. Unsupported transformer or Swin
+conclusions}\label{unsupported-transformer-or-swin-conclusions}
+
+\textbf{Concern:} Undertrained transformer comparisons cannot support
+architectural conclusions.
+
+\textbf{Response:} Removed. No Swin, transformer, attention, or
+literature score appears as an experimental comparator. nnU-Net,
+TransBTS, and nnFormer are cited only as important untested context. The
+manuscript explicitly states that no 3D, transformer, self-configuring,
+or external-validation comparison was performed.
+
+\subsection{6. Missing ablation}\label{missing-ablation}
+
+\textbf{Concern:} The contribution of individual components was unclear.
+
+\textbf{Response:} The rebuilt design screens standard U-Net, U-Net+RES,
+U-Net+WC, BU-Net (RES+WC), residual-block U-Net, and residual-block
+U-Net+WC under one protocol. The final frozen comparison includes
+standard U-Net, U-Net+RES, and BU-Net. On the internal test, mean
+regional Dice is 0.736, 0.756, and 0.752, respectively. The paired
+U-Net+RES versus standard U-Net difference is +0.020 (Holm p=0.004); the
+BU-Net versus standard U-Net difference is +0.017 (Holm p=0.014). We
+interpret this as evidence for RES under the present protocol, not
+architectural novelty.
+
+\subsection{7. Loss definition and
+selection}\label{loss-definition-and-selection}
+
+\textbf{Concern:} The loss formulation, class handling, and selection
+process were insufficiently specified.
+
+\textbf{Response:} The Methods now provide the complete BCE+FTL formula
+and its parameters: equal term weights, alpha 0.3, beta 0.7, gamma 0.75,
+smoothing 1e-5, foreground-only FTL, and no class weights. Seven loss
+arms were screened once on the validation subset. Their full results are
+reported as development-only evidence.
+
+\subsection{8. Inconsistent metrics and
+aggregation}\label{inconsistent-metrics-and-aggregation}
+
+\textbf{Concern:} Metric definitions, empty-mask rules, and aggregation
+could change model rankings.
+
+\textbf{Response:} The evaluator now fixes WT/TC/ET label mapping, Dice,
+HD95, surface Dice at 1 mm, lesion metrics, 26-connectivity,
+maximum-total-IoU lesion matching, and explicit empty-mask behavior.
+Seeds are averaged within patient before inference; patients are never
+multiplied into slice- or seed-level pseudo-samples. Infinite and
+undefined secondary values are retained and counted.
+
+\subsection{9. Statistics and
+uncertainty}\label{statistics-and-uncertainty}
+
+\textbf{Concern:} Point estimates without patient-level uncertainty or
+multiplicity control were inadequate.
+
+\textbf{Response:} The primary outcome and three contrasts were frozen
+before test access. We use 10,000 patient-level bootstrap resamples,
+100,000 two-sided paired sign-flip permutations, paired effect size dz,
+and Holm correction. Regional and secondary endpoints are identified as
+estimation-only.
+
+\subsection{10. Resource and efficiency
+claims}\label{resource-and-efficiency-claims}
+
+\textbf{Concern:} ``Lightweight,'' ``efficient,'' or clinical deployment
+language lacked measurement.
+
+\textbf{Response:} We removed those unqualified claims. The paper
+reports parameters, checkpoint size, MACs, FLOPs, p50/p95 volume
+latency, throughput, allocated/reserved memory, and development
+accelerator-hours from the implemented candidates on one host. BU-Net is
+explicitly shown to require more resources than standard U-Net and
+U-Net+RES. No clinical deployment claim remains.
+
+\subsection{11. Qualitative analysis and failure
+cases}\label{qualitative-analysis-and-failure-cases}
+
+\textbf{Concern:} The paper lacked image-level evidence and failure
+analysis.
+
+\textbf{Response:} Artifact-derived figures now show modalities, ground
+truth, all frozen predictions, false-positive/false-negative overlays,
+and preselected success, hard, and failure cases. The failure case is
+discussed alongside modest ET lesion-recall and lesion-wise Dice
+estimates.
+
+\subsection{12. Reproducibility and
+code}\label{reproducibility-and-code}
+
+\textbf{Concern:} The reported results could not be reproduced.
+
+\textbf{Response:} The repository now contains configurations, model and
+loss implementations, evaluator tests, patient manifests and hashes, run
+registries, statistical scripts, derived tables and figures, environment
+lock, claim ledger, and reproduction instructions. A clean-clone audit
+verified 230 tracked-artifact hashes, static checks, the test suite, two
+byte-identical manuscript-input generations, and a clean worktree.
+
+\subsection{13. Requested 3D, nnU-Net, transformer, and external
+validation}\label{requested-3d-nnu-net-transformer-and-external-validation}
+
+\textbf{Concern:} Strong conclusions would require modern
+3D/self-configuring baselines and external validation.
+
+\textbf{Response:} We agree with the evidentiary requirement and
+narrowed the paper instead of fabricating or importing incomparable
+results. The revised manuscript does not claim superiority over these
+systems, state of the art, external generalization, or clinical
+applicability. These experiments remain future work and are prominent
+limitations.
+
+\subsection{14. Manuscript-wide claim
+correction}\label{manuscript-wide-claim-correction}
+
+\textbf{Concern:} The original framing was broader than the evidence.
+
+\textbf{Response:} The manuscript was rewritten. The conclusion is
+limited to a leakage-safe internal comparison: RES improved the primary
+overlap endpoint over standard U-Net under this bounded 2D protocol;
+adding WC in the full BU-Net did not improve that endpoint over RES
+alone and increased resource demand. Boundary and lesion-level findings
+are reported as mixed.
+
+\end{document}

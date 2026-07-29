@@ -1,0 +1,93 @@
+{
+  "checks": {
+    "author_confirmation_boundaries_present": true,
+    "eight_manuscript_tables": true,
+    "fifteen_references": true,
+    "latex_figure_captions_not_duplicated": true,
+    "manuscript_docx_valid": true,
+    "manuscript_pdf_valid": true,
+    "no_long_phrase_overlap": true,
+    "no_repeated_full_sentence": true,
+    "no_unresolved_template_tokens": true,
+    "one_test_access_event_preserved": true,
+    "originality_audit_pass": true,
+    "response_docx_valid": true,
+    "response_pdf_valid": true,
+    "ten_figure_references": true
+  },
+  "completed_at_utc": "2026-07-29T19:03:18.382039+00:00",
+  "deliverables": {
+    "literature/verified_sources.yaml": {
+      "sha256": "9a2ae06c5f13234c79d3e650cd5e101c7a35902a77cb424e74ec0eef3eb2c606",
+      "size_bytes": 5974
+    },
+    "manuscript/claim_2024_checklist.md": {
+      "sha256": "f03622f38e32b9b6458c009bb4adb1a254c7b1fc096982eb83f2ae3b5d0debe8",
+      "size_bytes": 2230
+    },
+    "manuscript/final_manuscript.docx": {
+      "sha256": "5f44d179aff8e5c293ad17e0d6e5708dd231f9aa5ab0835c7d7bd810759981a3",
+      "size_bytes": 2818234
+    },
+    "manuscript/final_manuscript.md": {
+      "sha256": "4ebad70afe5373ec0c1b4ade885329e895be6a33b905b0ef1ec4a17780852345",
+      "size_bytes": 32816
+    },
+    "manuscript/final_manuscript.pdf": {
+      "sha256": "d018d41a49919255b0893eb4102ca5b548b499e689fbf0c7b1bb1a6953c88413",
+      "size_bytes": 2702168
+    },
+    "manuscript/final_manuscript.tex": {
+      "sha256": "6e38562b56d669beb589cacc2a2918b6ccedc8ba800af8488525904b4de0aa93",
+      "size_bytes": 46822
+    },
+    "manuscript/response_to_reviewer.docx": {
+      "sha256": "e16df5f3200ffadc04289657bbb901b70c1138a73e3db02632a877ad5bee8332",
+      "size_bytes": 16741
+    },
+    "manuscript/response_to_reviewer.md": {
+      "sha256": "7c34149e05495e6386e2023348777195d08593b317294ad2bbf911433155cbdb",
+      "size_bytes": 7517
+    },
+    "manuscript/response_to_reviewer.pdf": {
+      "sha256": "32e1f3bf8076608d086078b13458fd76a1712483703448fcdf9d6361646f7371",
+      "size_bytes": 33112
+    },
+    "manuscript/response_to_reviewer.tex": {
+      "sha256": "f173996c81599f2fa3217239373374b35545af16ce205d705577ec4cdc1b0f3e",
+      "size_bytes": 10196
+    },
+    "reports/gate14_generation_manifest.json": {
+      "sha256": "1afa4f0eea1be8caa92cc27443abcb018b87bcf59636e53c3e69a980bf9fd2d1",
+      "size_bytes": 1799
+    },
+    "reports/gate14_originality_audit.json": {
+      "sha256": "229dd27a0548710293b4986c050e70147a933e0bc17c49e7697afbc292c5806d",
+      "size_bytes": 5236
+    },
+    "reports/gate14_originality_audit.md": {
+      "sha256": "91f124061e759396caf807bed0f8e09b579fc5b47a85898d0c0619c2ceea7e83",
+      "size_bytes": 819
+    }
+  },
+  "gate": 14,
+  "manuscript": {
+    "docx_visual_qa_pages": 18,
+    "figure_count": 10,
+    "pdf_pages": 16,
+    "reference_count": 15,
+    "table_count": 8,
+    "word_count": 4789
+  },
+  "reviewer_response": {
+    "docx_visual_qa_pages": 4,
+    "pdf_pages": 3
+  },
+  "scientific_values": "Generated from tracked machine-readable artifacts; no manual result transcription.",
+  "scope_boundary": "The study remains an internal, bounded 2D component evaluation. It does not establish external generalization, clinical utility, or superiority over untested 3D, transformer, or self-configuring systems. Author declarations still require confirmation.",
+  "status": "pass",
+  "validation": {
+    "pytest": "111 passed, 1 skipped (CUDA unavailable)",
+    "visual_quality": "All 18 manuscript DOCX pages, 16 manuscript PDF pages, 4 reviewer-response DOCX pages, and 3 reviewer-response PDF pages inspected; no clipping, duplicate captions, or unreadable elements."
+  }
+}

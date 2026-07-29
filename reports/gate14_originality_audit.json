@@ -1,0 +1,73 @@
+{
+  "exact_ngram_match_count": 0,
+  "interpretation": "A pass means no exact long-phrase overlap was found in the audited inputs and no full prose sentence was duplicated. It is not a guarantee about third-party similarity or authorship classifiers.",
+  "longest_sentences": [
+    {
+      "sentence": "Leakage-Safe Multi-Seed Evaluation of Published BU-Net Components for Resource-Constrained 2D Glioma Segmentation\n\nTaha Berk Terekli^1^, Livanur Menge\u015f^2^, Volkan Yusuf Hal^3^, Ali Emre D\u00f6\u015fer^4^\n\n^1^ Department of Mathematics, Y\u0131ld\u0131z Technical University, Istanbul, Turkey<br>\n^2^ Department of Computer Engineering, Istanbul Beykent University, Istanbul, Turkey<br>\n^3^ Department of Software Engineering, Istanbul Beykent University, Istanbul, Turkey<br>\n^4^ Department of Computer Engineering, Hali\u00e7 University, Istanbul, Turkey\n\n**Corresponding author:** Taha Berk Terekli<br>\n**Running title:** Controlled evaluation of BU-Net components<br>\n**Article type:** Original research - methodological evaluation\n\nAbstract\n\n**Background:** Architectural comparisons in glioma segmentation are vulnerable to patient leakage, inconsistent training budgets, incomplete attribution, and selective reporting.",
+      "word_count": 116
+    },
+    {
+      "sentence": "3.5 Loss function and development screen\n\nThe selected loss was an equal-weight combination of channel-wise binary cross-entropy (BCE) and foreground focal Tversky loss (FTL):\n\n \n\n \n\nwhere $C_f$ contains the three foreground classes, $\\alpha=0.3$, $\\beta=0.7$, $\\gamma=0.75$, and $\\epsilon=10^{-5}$.",
+      "word_count": 49
+    },
+    {
+      "sentence": "Single-seed loss development screen (n=37 validation patients).**\n\n \n \n \n \n \n \n \n \n \n\n3.6 Matched training and multi-seed confirmation\n\nEvery reportable run used the same Apple M1 Max MPS device, inputs, batch size 16, AdamW optimizer, learning rate 0.001, weight decay 0.00001, augmentation, and loss.",
+      "word_count": 45
+    },
+    {
+      "sentence": "Relative to standard U-Net, paired differences were +0.017 for BU-Net (95% CI +0.005 to +0.030; Holm p=0.014) and +0.020 for U-Net+RES (95% CI +0.008 to +0.034; Holm p=0.004).",
+      "word_count": 42
+    },
+    {
+      "sentence": "The workflow was organized into sequential gates: data integrity and identity audit; patient-level split; preprocessing and evaluator validation; model and loss implementation tests; single-seed development screening; multi-seed confirmation; analysis freezing; one guarded internal-test evaluation; and artifact-derived reporting.",
+      "word_count": 42
+    },
+    {
+      "sentence": "Exploratory mean regional Dice by frozen subgroup.**\n\n \n \n \n \n \n \n \n \n \n\nThe qualitative panel includes preselected BU-Net success, hard, and failure cases: BraTS20_Training_166 (ET Dice 0.924), BraTS20_Training_137 (ET Dice 0.788), and BraTS20_Training_323 (ET Dice 0.000).",
+      "word_count": 41
+    },
+    {
+      "sentence": "A standard 2D U-Net, the published BU-Net reimplementation with residual extended skip (RES) and wide context (WC) modules, and U-Net+RES were trained with identical preprocessing, loss, optimization, and 2,000-step per-run limits.",
+      "word_count": 38
+    },
+    {
+      "sentence": "5.6 Reproducibility and auditability\n\nThe released repository contains configuration files, split hashes, model and loss code, evaluator tests, analysis scripts, machine-readable outputs, figure and table generators, resource profiles, a claim ledger, and a tracked-artifact manifest.",
+      "word_count": 38
+    },
+    {
+      "sentence": "Internal held-out test Dice estimates (n=74 patients).**\n\n \n \n \n \n \n\nBU-Net exceeded standard U-Net by +0.017 (95% CI +0.005 to +0.030; $d_z$=+0.308; raw p=0.007; Holm p=0.014).",
+      "word_count": 37
+    },
+    {
+      "sentence": "In the three-seed stage, mean regional Dice was 0.739 for standard U-Net, 0.745 for BU-Net, 0.739 for U-Net+RES, and 0.730 for U-Net+WC.",
+      "word_count": 33
+    }
+  ],
+  "manuscript": {
+    "mean_sentence_words": 17.836363636363636,
+    "median_sentence_words": 16,
+    "path": "/Users/berk.terekli/Documents/braintumorarticle/manuscript/final_manuscript.md",
+    "prose_word_count": 3949,
+    "sentence_count": 220,
+    "sha256": "4ebad70afe5373ec0c1b4ade885329e895be6a33b905b0ef1ec4a17780852345"
+  },
+  "ngram_size": 12,
+  "references": [
+    {
+      "exact_ngram_match_count": 0,
+      "matches": [],
+      "path": "/Users/berk.terekli/.codex/attachments/52eb8b87-d478-43df-8594-de332b2ce5e0/pasted-text.txt",
+      "sha256": "708ceaebb5550fc14b58df438bd692e5237c42665838689e75cb3f285e8ab461"
+    },
+    {
+      "exact_ngram_match_count": 0,
+      "matches": [],
+      "path": "/Users/berk.terekli/.codex/attachments/df4705a7-9f0a-4ad5-9087-1faa25f1d7b7/pasted-text.txt",
+      "sha256": "061555ba7f4498ede748201bf0dffa218803102cdac40389aa0305159f3bdcf8"
+    }
+  ],
+  "repeated_four_word_openings": [],
+  "repeated_sentences": [],
+  "scope": "Exact phrase overlap against user-supplied reviewer/planning text and internal prose repetition. This is not Turnitin and does not predict or evade AI-detection systems.",
+  "status": "pass"
+}

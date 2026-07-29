@@ -55,3 +55,12 @@ and tests, and regenerates every Gate 12 output twice. Both generations must
 leave the clean clone byte-identical to the committed snapshot. This verifies
 artifact-level reproducibility without pretending that raw-data training or a
 new guarded internal-test pass can occur in a data-free clone.
+
+Gate 14 adds a result-aware manuscript generator. The Markdown manuscript,
+reviewer response, and reporting checklist are regenerated from tracked
+machine-readable evidence; DOCX, LaTeX, and PDF are then built from that
+Markdown. `reports/gate14_generation_manifest.json` records the hashes of the
+scientific inputs and generated text outputs. The final completion report
+hashes every delivered document and verifies figure/table/reference counts,
+the DOCX package, PDF structure, absence of unresolved template tokens,
+one-time test-access preservation, and the originality audit status.

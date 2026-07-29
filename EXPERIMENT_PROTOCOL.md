@@ -146,10 +146,10 @@ unreported candidate/seed exclusion.
 
 Gate 11 opened `splits/frozen/test.csv` once through the guarded loader, with
 the purpose, manifest hash, code commit, and command recorded in the append-only
-access log. It evaluated all 13 frozen checkpoints over all 74 patients. The
-three-seed reference and both five-seed finalists were aggregated within
-patient before inference. No model, seed, patient, metric, or comparison was
-removed after viewing results.
+access log. It evaluated all 13 frozen checkpoints over all 74 patients. For
+the three-seed reference and both five-seed finalists, per-seed endpoint values
+were averaged within patient before patient-level statistical inference. No
+model, seed, patient, metric, or comparison was removed after viewing results.
 
 The complete audit, per-seed rows, candidate-level rows, estimates, paired
 comparisons, subgroup summaries, resource measurements, and generated report
@@ -182,6 +182,23 @@ then regenerates all Gate 12 outputs twice and requires a clean Git diff after
 each pass. Full training and another internal-test inference run are outside
 this data-free verification and require separately authorized inputs and
 access logging.
+
+## Manuscript reconstruction
+
+Gate 14 treats the prior manuscript as superseded rather than importing its
+unverified scores or claims. `scripts/generate_gate14_manuscript.py` renders
+scientific values from the tracked Gate 1-12 CSV/JSON artifacts, incorporates
+the verified primary-source bibliography, and produces the manuscript,
+reviewer response, and CLAIM-oriented checklist. RES and WC remain attributed
+to Rehman et al.; the paper is framed as a bounded 2D component evaluation.
+
+The final text explicitly excludes state-of-the-art, clinical, external-
+generalization, and untested 3D/transformer/nnU-Net claims. Funding, competing
+interests, author contributions, and journal-specific ethics language are left
+for author confirmation rather than invented. A local exact-phrase audit
+checks the user-supplied reviewer and planning text but is not represented as
+Turnitin or as an AI-detector evasion guarantee. DOCX and PDF outputs are
+rendered and visually inspected page by page before release.
 
 ## Preprocessing
 
