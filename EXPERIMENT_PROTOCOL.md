@@ -97,6 +97,23 @@ results: both a mean decrement larger than 0.02 and a paired-bootstrap upper
 shortlists are machine-readable in `reports/gate8_artifact_audit.json` and
 `reports/gate8_pilot_analysis.json`.
 
+## Multi-seed confirmation
+
+Gate 9 fixed BCE + Focal Tversky and compared the Standard 2D U-Net reference,
+BU-Net, residual U-Net, and wide-channel U-Net over three predeclared seeds.
+Selection used the arithmetic mean of patient-wise WT, TC, and ET Dice after
+averaging each patient's result across seeds. A candidate was eliminated only
+when its paired mean decrement exceeded 0.01 and its 10,000-resample paired
+bootstrap upper 95% bound was below zero. The reference U-Net remained a
+mandatory internal-test comparator and was ineligible for finalist selection.
+
+BU-Net and residual U-Net were selected by the frozen top-two/minimum-two rule
+and received two additional predeclared seeds, yielding five seeds per
+finalist. BU-Net ranked first at Gate 9, but the paired bootstrap interval
+between the finalists included zero; this ranking is not a superiority claim.
+The frozen internal-test candidate set is Standard 2D U-Net, BU-Net, and
+residual U-Net. Gate 9 used no internal-test data.
+
 ## Preprocessing
 
 The versioned preprocessing contract is `configs/data/preprocessing.yaml`,
