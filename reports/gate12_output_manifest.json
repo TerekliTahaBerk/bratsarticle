@@ -1,0 +1,272 @@
+{
+  "figure_count": 10,
+  "gate": 12,
+  "outputs": [
+    {
+      "caption": "BraTS 2019 subjects were identity-mapped to BraTS 2020; no independent 2019 patients were added. The 369 eligible BraTS 2020 subjects formed the canonical patient-level cohort.",
+      "id": "fig01_cohort_flow",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig01_cohort_flow.pdf",
+      "pdf_sha256": "600029ab1bae58278012e868f34f82612c63b760becf66727d6a8752ed16f49f",
+      "pixel_height": 984,
+      "pixel_width": 2571,
+      "png_path": "figures/final/fig01_cohort_flow.png",
+      "png_sha256": "c437fde3d1d3322b461f08efc7e07b5bd15f829d3bc0659e17725485f5e7c454",
+      "source_sha256": {
+        "reports/data_audit_summary.json": "c779e54d717c88902bb6da40c5b02f64fbd092157113c3631b5ce6a8b0276bef",
+        "splits/frozen/split_metadata.json": "b3be59a3fb2bdc8d61674500c02df5bec44ff0b6583aa5ae68da0856e0f490d9"
+      },
+      "title": "Cohort identity and canonicalization flow"
+    },
+    {
+      "caption": "The 258/37/74 split was frozen byte-for-byte. The internal held-out test subset was opened once only after candidate checkpoints and the statistical plan were frozen.",
+      "id": "fig02_split_and_analysis_flow",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig02_split_and_analysis_flow.pdf",
+      "pdf_sha256": "744864955e2c647e665e28f60db61ae1d89695b83e9a295415a899e5d1dd6a2a",
+      "pixel_height": 891,
+      "pixel_width": 2431,
+      "png_path": "figures/final/fig02_split_and_analysis_flow.png",
+      "png_sha256": "6ff9c2b0ea1687d8c1c014a1f58b59f223bb77b3750d26bb313612fe5135b822",
+      "source_sha256": {
+        "reports/gate10_analysis_freeze.json": "14ce50283a71dc62111a41f8d6c17c3b743f096bf87b4f157995267af3759b70",
+        "splits/frozen/split_metadata.json": "b3be59a3fb2bdc8d61674500c02df5bec44ff0b6583aa5ae68da0856e0f490d9"
+      },
+      "title": "Patient-level split and guarded analysis flow"
+    },
+    {
+      "caption": "All candidates share a four-level 2D U-Net backbone. U-Net + RES adds published BU-Net residual extended skips; BU-Net additionally adds the wide-context bottleneck. RES and WC are attributed to Rehman et al. (2020).",
+      "id": "fig03_model_architectures",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig03_model_architectures.pdf",
+      "pdf_sha256": "747cf92b4d9d9631222b424719cd21377f72cbae7cfc8d94ad6ee906fe414a34",
+      "pixel_height": 1588,
+      "pixel_width": 2617,
+      "png_path": "figures/final/fig03_model_architectures.png",
+      "png_sha256": "74be456bfdd4e01825e6929441e54ebc28413967ab14cab59fd59ea7026f2564",
+      "source_sha256": {
+        "configs/models/bunet.yaml": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+        "configs/models/unet.yaml": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+        "configs/models/unet_res.yaml": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+        "reports/gate11_resource_summary.csv": "744458fe85d0a1c88bb1e59b71a7e1ccaa20116e3fb4283f31ca08d3dd8f6f50"
+      },
+      "title": "Controlled U-Net-family architectures"
+    },
+    {
+      "caption": "Each point is one internal-test patient after within-patient seed aggregation. Diamonds and bars show paired mean differences and 95% bootstrap confidence intervals versus Standard U-Net.",
+      "id": "fig04_paired_region_differences",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig04_paired_region_differences.pdf",
+      "pdf_sha256": "88f5474f11d2a9416d812c1d1a45673b98c011eb80c2e64960504abf5a18c911",
+      "pixel_height": 1155,
+      "pixel_width": 3342,
+      "png_path": "figures/final/fig04_paired_region_differences.png",
+      "png_sha256": "2ae35990479467f700f1841d29769b4a3da2770dd6cf355f633f79462df13b01",
+      "source_sha256": {
+        "reports/gate11_comparisons.csv": "eaf344023c5f0ddfbc4af90aa20712e7993b087fd5632dc48550519e920f5bf4",
+        "reports/gate11_patient_candidate_metrics.csv": "893580eabc99e8e747c5907e382073cce8ea96244a5c141c7a06486ba509fda9"
+      },
+      "title": "Patient-paired regional Dice differences"
+    },
+    {
+      "caption": "Patient-paired mean differences in seed-aggregated WT/TC/ET Dice with 95% bootstrap intervals. Holm-adjusted p-values cover the predeclared three-comparison family.",
+      "id": "fig05_primary_effects",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig05_primary_effects.pdf",
+      "pdf_sha256": "916060ce17c26dff6bcb24d37aca50af0c5388135265d9c0b4805931fc12f6cb",
+      "pixel_height": 939,
+      "pixel_width": 2445,
+      "png_path": "figures/final/fig05_primary_effects.png",
+      "png_sha256": "a13e097d9e25e76eb2a7474833c6c4ec7022bafe23cbeef54e3abd6f5fa84067",
+      "source_sha256": {
+        "reports/gate11_comparisons.csv": "eaf344023c5f0ddfbc4af90aa20712e7993b087fd5632dc48550519e920f5bf4"
+      },
+      "title": "Frozen primary-endpoint effect estimates"
+    },
+    {
+      "caption": "Accuracy is plotted against per-slice MACs; marker area encodes parameter count, color encodes Apple M1 Max median per-volume latency, and labels report mean peak allocated VRAM across seeds.",
+      "id": "fig06_performance_resource_tradeoff",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig06_performance_resource_tradeoff.pdf",
+      "pdf_sha256": "4b1087bbdc1ec24f9bd99a5e18ce8b651e94fb6d6bdb9e4992ece056faee4d23",
+      "pixel_height": 1419,
+      "pixel_width": 2102,
+      "png_path": "figures/final/fig06_performance_resource_tradeoff.png",
+      "png_sha256": "917776323d9104a362d414513706b30c831250313aafcad9cab627c2414bab92",
+      "source_sha256": {
+        "reports/gate11_metric_summary.csv": "d2167992da7e16c2e44f80040f6bf58f6a00b9bf2b0e46bc011b6dc9506bd59a",
+        "reports/gate11_resource_summary.csv": "744458fe85d0a1c88bb1e59b71a7e1ccaa20116e3fb4283f31ca08d3dd8f6f50"
+      },
+      "title": "Performance and resource trade-off"
+    },
+    {
+      "caption": "T1, contrast-enhanced T1, T2, and FLAIR are shown for the predeclared hard case alongside ground truth and fixed-seed predictions. The displayed slice maximizes ground-truth WT area.",
+      "id": "fig07_modalities_and_predictions",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig07_modalities_and_predictions.pdf",
+      "pdf_sha256": "ad9749398c4cd800719b0a1a21eb75f4caf4ee8508089e40ea7d5cd387a71549",
+      "pixel_height": 1660,
+      "pixel_width": 3048,
+      "png_path": "figures/final/fig07_modalities_and_predictions.png",
+      "png_sha256": "f368847c58645890c5aced5207afb1b0f51bed542430aded28a86645ef0bd6aa",
+      "source_sha256": {
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_137/bunet.npz": "48b1a87b3c004c51d8d38206456ad7c492a3e819345608961000188bf36d293a",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_137/context.npz": "6277355b2ba52c6f3fb0a420b36ed9e367218fbb9d1987a526a2969f819a1aa5",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_137/unet_reference.npz": "c6446b7f99e377266d696015daa5d50854128ab4b497181c727a350c13c04bdf",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_137/unet_res.npz": "100d437a0b9df8b46ec7fc803c7abc9882d20a72eb1ab7647c2aa8e74846fd8d",
+        "reports/gate11_analysis.json": "7e9a3747147488e98427c2124ce61e24d842e07a93c009568f0046369d52295a"
+      },
+      "title": "Multimodal MRI, ground truth, and frozen predictions"
+    },
+    {
+      "caption": "Voxel-level error overlays for the predeclared failure case. Green denotes true positive, red false positive, and blue false negative for WT and ET on the slice with maximum label disagreement.",
+      "id": "fig08_false_positive_false_negative_overlay",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig08_false_positive_false_negative_overlay.pdf",
+      "pdf_sha256": "856d9654294e4282cd03667f353269654ac766384524ed5a67276e94fc129145",
+      "pixel_height": 1072,
+      "pixel_width": 2747,
+      "png_path": "figures/final/fig08_false_positive_false_negative_overlay.png",
+      "png_sha256": "431b1f025625749033f670c81d586825a5f9dc7aa5c33823fd189eda5b3dbe08",
+      "source_sha256": {
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_323/bunet.npz": "5626033a7e88cdd46382a99b0456cf659635637e709facb1d478923b485d4857",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_323/context.npz": "f5ad773ad1776447adc91a71c5f9c18abab2c13a546e2573e25bb916d042f321",
+        "reports/gate11_analysis.json": "7e9a3747147488e98427c2124ce61e24d842e07a93c009568f0046369d52295a"
+      },
+      "title": "False-positive and false-negative overlays"
+    },
+    {
+      "caption": "Illustrative BU-Net seed-20260729 ET predictions for the predeclared success, hard, and failure roles. Case selection used the frozen artifact rule and does not add inferential units.",
+      "id": "fig09_success_hard_failure_et_cases",
+      "kind": "figure",
+      "pdf_path": "figures/final/fig09_success_hard_failure_et_cases.pdf",
+      "pdf_sha256": "44be8558b15080d7a8a51b9dce2aaaf51785d480de81341656ffc54a485dc5c4",
+      "pixel_height": 2367,
+      "pixel_width": 2378,
+      "png_path": "figures/final/fig09_success_hard_failure_et_cases.png",
+      "png_sha256": "5c7c2c773d233b1a54dbffda93c92140e309766da8bcb7d9df09f0a4f4a5b772",
+      "source_sha256": {
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_137/bunet.npz": "48b1a87b3c004c51d8d38206456ad7c492a3e819345608961000188bf36d293a",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_137/context.npz": "6277355b2ba52c6f3fb0a420b36ed9e367218fbb9d1987a526a2969f819a1aa5",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_166/bunet.npz": "cbc525800800f0ab6d0727888ec42e5fdf0463560a007c95c9305d13694a9e19",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_166/context.npz": "30a7a608b7d3291a54f77cb69ba357c8c3934aa679cb07d41191c099974bd8da",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_323/bunet.npz": "5626033a7e88cdd46382a99b0456cf659635637e709facb1d478923b485d4857",
+        "artifacts/internal_test/gate11/qualitative/BraTS20_Training_323/context.npz": "f5ad773ad1776447adc91a71c5f9c18abab2c13a546e2573e25bb916d042f321",
+        "reports/gate11_analysis.json": "7e9a3747147488e98427c2124ce61e24d842e07a93c009568f0046369d52295a"
+      },
+      "title": "Predeclared successful, hard, and failed ET cases"
+    },
+    {
+      "caption": "Grade and ET-presence prevalence together with log-volume standardized mean differences across the frozen patient-level split.",
+      "id": "figS01_split_balance",
+      "kind": "figure",
+      "pdf_path": "figures/final/figS01_split_balance.pdf",
+      "pdf_sha256": "d1a70a71a522f43f70cbee81941859e1bf8d48b00d3192f3c2453d8eb5043950",
+      "pixel_height": 1208,
+      "pixel_width": 3041,
+      "png_path": "figures/final/figS01_split_balance.png",
+      "png_sha256": "27e4a694e6a8ca2b8657ce226dd9b68cc1e165390a0b4d5b26e05495e3d2b1a9",
+      "source_sha256": {
+        "splits/frozen/categorical_balance.csv": "162c4d5ece05d56d26385d22c62d85a4a4be040fc7f2a078bf9bee4ba406e6ce",
+        "splits/frozen/continuous_balance.csv": "76c3645a2201d519df0afb7845e1cbd20bd447c44a47d4bbdcafdbe07eef2b76"
+      },
+      "title": "Frozen split balance"
+    },
+    {
+      "caption": "Patient counts, grade, enhancing-tumor presence, and whole-tumor volume across the frozen partitions.",
+      "column_count": 6,
+      "csv_path": "tables/final/table01_cohort_characteristics.csv",
+      "csv_sha256": "e9415a071f8b4154634ef64b777fe4057a9d976601dfd120a2dc128159b1993f",
+      "id": "table01_cohort_characteristics",
+      "kind": "table",
+      "row_count": 3,
+      "source_sha256": {
+        "artifacts/internal_test/gate11/cohort_metadata.csv": "b547a119e3a454b166d2e5924e02e81cadff59e5f0e6715b9d25278534d36c3d",
+        "splits/frozen/train.csv": "49a8d6836aba5f69bb39d5eb513e29c3746adaae72f02ecdc0df094cd86d7425",
+        "splits/frozen/validation.csv": "95df721b5b013475b2100224279247e53afcc19c6ab79debf54283d27dc3d5bf"
+      },
+      "tex_path": "tables/final/table01_cohort_characteristics.tex",
+      "tex_sha256": "856ab02554fa23b2d630fd7e542a6a9980a74cd29c8208be8875fce25cc5f4bc",
+      "title": "Cohort characteristics by frozen partition"
+    },
+    {
+      "caption": "Internal-test accuracy and Apple M1 Max resource measurements. GPU-hours and peak allocated VRAM summarize development runs.",
+      "column_count": 8,
+      "csv_path": "tables/final/table02_architecture_resources.csv",
+      "csv_sha256": "8401abd11eba229c78245242439540c79aa09563f0e41c15f7e9732c18855dc4",
+      "id": "table02_architecture_resources",
+      "kind": "table",
+      "row_count": 3,
+      "source_sha256": {
+        "reports/gate11_metric_summary.csv": "d2167992da7e16c2e44f80040f6bf58f6a00b9bf2b0e46bc011b6dc9506bd59a",
+        "reports/gate11_resource_summary.csv": "744458fe85d0a1c88bb1e59b71a7e1ccaa20116e3fb4283f31ca08d3dd8f6f50"
+      },
+      "tex_path": "tables/final/table02_architecture_resources.tex",
+      "tex_sha256": "4574752a80f6704c884141f3ef19218c312a1b13cfb01a8700bfd577cdee5463",
+      "title": "Accuracy and resource profile"
+    },
+    {
+      "caption": "Patient-level seed-aggregated Dice estimates with percentile bootstrap confidence intervals.",
+      "column_count": 5,
+      "csv_path": "tables/final/table03_internal_test_dice.csv",
+      "csv_sha256": "6eee4355b81d28ffcdd82a8e31f4f517a350db3267da483117307d687ae17b76",
+      "id": "table03_internal_test_dice",
+      "kind": "table",
+      "row_count": 12,
+      "source_sha256": {
+        "reports/gate11_metric_summary.csv": "d2167992da7e16c2e44f80040f6bf58f6a00b9bf2b0e46bc011b6dc9506bd59a"
+      },
+      "tex_path": "tables/final/table03_internal_test_dice.tex",
+      "tex_sha256": "a3632f68f3a3e9efbbcf5035a0bd3659bb1326100e32e9d27e167cd545f60899",
+      "title": "Internal held-out test Dice estimates"
+    },
+    {
+      "caption": "Paired patient-level differences, 95% bootstrap intervals, two-sided sign-flip p-values, and Holm family-wise correction.",
+      "column_count": 10,
+      "csv_path": "tables/final/table04_primary_comparisons.csv",
+      "csv_sha256": "1d46ff04f4bc0345cc94654efc6f902eb44969f7d534e98ed5fad146c813e1f1",
+      "id": "table04_primary_comparisons",
+      "kind": "table",
+      "row_count": 3,
+      "source_sha256": {
+        "reports/gate11_comparisons.csv": "eaf344023c5f0ddfbc4af90aa20712e7993b087fd5632dc48550519e920f5bf4"
+      },
+      "tex_path": "tables/final/table04_primary_comparisons.tex",
+      "tex_sha256": "3f9d95f0224cd32c686a9dc0dc66783bbec06d116ace8ab3c1529d1b7fd25ae0",
+      "title": "Frozen primary-endpoint comparisons"
+    },
+    {
+      "caption": "Surface, HD95, and lesion-wise estimates. Undefined and infinite values are counted explicitly and are not imputed.",
+      "column_count": 7,
+      "csv_path": "tables/final/table05_secondary_metrics.csv",
+      "csv_sha256": "496e3d1de8718ae56b328a9b4057b3a66cd149866a126692a54b6462a75670c1",
+      "id": "table05_secondary_metrics",
+      "kind": "table",
+      "row_count": 24,
+      "source_sha256": {
+        "reports/gate11_metric_summary.csv": "d2167992da7e16c2e44f80040f6bf58f6a00b9bf2b0e46bc011b6dc9506bd59a"
+      },
+      "tex_path": "tables/final/table05_secondary_metrics.tex",
+      "tex_sha256": "547fcdecf037f6f57b003c11005c273df0297b0d86031e402b9720fa2995c95a",
+      "title": "Selected secondary endpoints"
+    },
+    {
+      "caption": "Estimation-only mean regional Dice by grade, ground-truth ET presence, and training-derived whole-tumor burden category.",
+      "column_count": 8,
+      "csv_path": "tables/final/table06_exploratory_subgroups.csv",
+      "csv_sha256": "a2faa432aa9042b2372149aad387a71107443b2c259a962a826408022176c440",
+      "id": "table06_exploratory_subgroups",
+      "kind": "table",
+      "row_count": 21,
+      "source_sha256": {
+        "reports/gate10_analysis_freeze.json": "14ce50283a71dc62111a41f8d6c17c3b743f096bf87b4f157995267af3759b70",
+        "reports/gate11_subgroups.csv": "81e6cc2e654b179b5bc4345f2b42b239d9cf6a73a17a863366e4a3060a4bcc4c"
+      },
+      "tex_path": "tables/final/table06_exploratory_subgroups.tex",
+      "tex_sha256": "eacb3c7bb92919cd02491cd81965a47b7691abc8dc09cb97a240deaf230a6720",
+      "title": "Exploratory subgroup estimates"
+    }
+  ],
+  "status": "complete",
+  "table_count": 6
+}

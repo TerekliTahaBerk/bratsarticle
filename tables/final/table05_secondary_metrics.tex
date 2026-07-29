@@ -1,0 +1,34 @@
+\begin{table}[htbp]
+\caption{Surface, HD95, and lesion-wise estimates. Undefined and infinite values are counted explicitly and are not imputed.}
+\label{tab:table05_secondary_metrics}
+\begin{tabular}{llrrrrr}
+\toprule
+Model & Endpoint & Finite n & NaN n & Infinity n & Finite mean & Finite median \\
+\midrule
+BU-Net & wt\_hd95\_mm & 74 & 0 & 0 & 35.8229 & 33.8729 \\
+BU-Net & tc\_hd95\_mm & 73 & 0 & 1 & 22.0000 & 15.2294 \\
+BU-Net & et\_hd95\_mm & 69 & 0 & 5 & 16.8250 & 7.7343 \\
+BU-Net & wt\_surface\_dice & 74 & 0 & 0 & 0.6212 & 0.6404 \\
+BU-Net & tc\_surface\_dice & 74 & 0 & 0 & 0.5862 & 0.6547 \\
+BU-Net & et\_surface\_dice & 74 & 0 & 0 & 0.7439 & 0.8357 \\
+BU-Net & et\_lesion\_recall & 69 & 5 & 0 & 0.4753 & 0.3333 \\
+BU-Net & et\_lesion\_wise\_dice & 69 & 5 & 0 & 0.3675 & 0.2221 \\
+Standard U-Net & wt\_hd95\_mm & 74 & 0 & 0 & 21.9262 & 14.0080 \\
+Standard U-Net & tc\_hd95\_mm & 71 & 0 & 3 & 17.4176 & 10.8209 \\
+Standard U-Net & et\_hd95\_mm & 70 & 0 & 4 & 14.8037 & 6.0096 \\
+Standard U-Net & wt\_surface\_dice & 74 & 0 & 0 & 0.6055 & 0.6268 \\
+Standard U-Net & tc\_surface\_dice & 74 & 0 & 0 & 0.5774 & 0.6690 \\
+Standard U-Net & et\_surface\_dice & 74 & 0 & 0 & 0.7337 & 0.8339 \\
+Standard U-Net & et\_lesion\_recall & 69 & 5 & 0 & 0.4700 & 0.3333 \\
+Standard U-Net & et\_lesion\_wise\_dice & 69 & 5 & 0 & 0.3562 & 0.2156 \\
+U-Net + RES & wt\_hd95\_mm & 74 & 0 & 0 & 31.8650 & 25.0547 \\
+U-Net + RES & tc\_hd95\_mm & 72 & 0 & 2 & 21.0406 & 15.0602 \\
+U-Net + RES & et\_hd95\_mm & 69 & 0 & 5 & 16.9245 & 10.2707 \\
+U-Net + RES & wt\_surface\_dice & 74 & 0 & 0 & 0.6374 & 0.6637 \\
+U-Net + RES & tc\_surface\_dice & 74 & 0 & 0 & 0.5949 & 0.6713 \\
+U-Net + RES & et\_surface\_dice & 74 & 0 & 0 & 0.7476 & 0.8447 \\
+U-Net + RES & et\_lesion\_recall & 69 & 5 & 0 & 0.4765 & 0.3333 \\
+U-Net + RES & et\_lesion\_wise\_dice & 69 & 5 & 0 & 0.3704 & 0.2312 \\
+\bottomrule
+\end{tabular}
+\end{table}

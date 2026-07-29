@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\caption{Estimation-only mean regional Dice by grade, ground-truth ET presence, and training-derived whole-tumor burden category.}
+\label{tab:table06_exploratory_subgroups}
+\begin{tabular}{lllrlrrr}
+\toprule
+Subgroup & Category & Model & Patients & Status & Mean Dice & CI lower & CI upper \\
+\midrule
+grade & HGG & BU-Net & 59 & exploratory & 0.8078 & 0.7821 & 0.8313 \\
+grade & HGG & Standard U-Net & 59 & exploratory & 0.8065 & 0.7784 & 0.8320 \\
+grade & HGG & U-Net + RES & 59 & exploratory & 0.8118 & 0.7878 & 0.8346 \\
+grade & LGG & BU-Net & 15 & exploratory & 0.5339 & 0.4586 & 0.6082 \\
+grade & LGG & Standard U-Net & 15 & exploratory & 0.4566 & 0.3671 & 0.5461 \\
+grade & LGG & U-Net + RES & 15 & exploratory & 0.5365 & 0.4604 & 0.6114 \\
+enhancing\_tumor\_reference & present & BU-Net & 69 & exploratory & 0.7727 & 0.7385 & 0.8035 \\
+enhancing\_tumor\_reference & present & Standard U-Net & 69 & exploratory & 0.7586 & 0.7158 & 0.7958 \\
+enhancing\_tumor\_reference & present & U-Net + RES & 69 & exploratory & 0.7760 & 0.7430 & 0.8061 \\
+enhancing\_tumor\_reference & absent & BU-Net & 5 & descriptive\_insufficient\_n & 0.4700 & 0.3700 & 0.5664 \\
+enhancing\_tumor\_reference & absent & Standard U-Net & 5 & descriptive\_insufficient\_n & 0.4175 & 0.3124 & 0.5214 \\
+enhancing\_tumor\_reference & absent & U-Net + RES & 5 & descriptive\_insufficient\_n & 0.4797 & 0.3730 & 0.5864 \\
+whole\_tumor\_burden & small & BU-Net & 24 & exploratory & 0.7355 & 0.6697 & 0.7914 \\
+whole\_tumor\_burden & small & Standard U-Net & 24 & exploratory & 0.7134 & 0.6299 & 0.7837 \\
+whole\_tumor\_burden & small & U-Net + RES & 24 & exploratory & 0.7461 & 0.6799 & 0.7981 \\
+whole\_tumor\_burden & medium & BU-Net & 24 & exploratory & 0.7708 & 0.7060 & 0.8267 \\
+whole\_tumor\_burden & medium & Standard U-Net & 24 & exploratory & 0.7697 & 0.7004 & 0.8280 \\
+whole\_tumor\_burden & medium & U-Net + RES & 24 & exploratory & 0.7722 & 0.7054 & 0.8319 \\
+whole\_tumor\_burden & large & BU-Net & 26 & exploratory & 0.7507 & 0.6866 & 0.8071 \\
+whole\_tumor\_burden & large & Standard U-Net & 26 & exploratory & 0.7245 & 0.6457 & 0.7963 \\
+whole\_tumor\_burden & large & U-Net + RES & 26 & exploratory & 0.7502 & 0.6885 & 0.8077 \\
+\bottomrule
+\end{tabular}
+\end{table}

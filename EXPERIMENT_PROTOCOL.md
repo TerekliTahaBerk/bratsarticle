@@ -158,6 +158,17 @@ remain visible through explicit finite, NaN, and infinity counts. Qualitative
 case roles and the fixed prediction seed were declared before access; the
 resulting cases are illustrative and are not additional inferential units.
 
+## Artifact-derived reporting
+
+Gate 12 generates every publication figure and table from frozen split,
+Gate 10, or Gate 11 artifacts. Scientific result values are never hand-entered
+into reporting outputs. Each figure and table records its source SHA-256 and
+its own output SHA-256 in `reports/gate12_output_manifest.json`. PNG, PDF, CSV,
+and LaTeX outputs are deterministic across repeated generation on the declared
+environment. The reporting step does not reopen raw images or the internal-test
+manifest; qualitative panels use the fixed, derived arrays and predeclared
+case roles produced during Gate 11.
+
 ## Preprocessing
 
 The versioned preprocessing contract is `configs/data/preprocessing.yaml`,

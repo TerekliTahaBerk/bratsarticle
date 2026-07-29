@@ -1,0 +1,13 @@
+\begin{table}[htbp]
+\caption{Internal-test accuracy and Apple M1 Max resource measurements. GPU-hours and peak allocated VRAM summarize development runs.}
+\label{tab:table02_architecture_resources}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Model & Mean Dice & Parameters (M) & MAC/slice (G) & Peak allocated VRAM (MB) & GPU-hours & Latency p50 (s/volume) & Latency p95 (s/volume) \\
+\midrule
+BU-Net & 0.7523 & 8.3847 & 10.3440 & 234.7846 & 0.3835 & 1.2578 & 1.2854 \\
+Standard U-Net & 0.7355 & 1.9428 & 2.6763 & 66.9947 & 0.3320 & 0.4919 & 0.5280 \\
+U-Net + RES & 0.7560 & 4.4505 & 9.4593 & 88.9339 & 0.3879 & 1.1890 & 1.2146 \\
+\bottomrule
+\end{tabular}
+\end{table}
