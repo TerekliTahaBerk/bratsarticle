@@ -15,6 +15,7 @@ def test_gate8_plan_is_single_seed_and_non_factorial() -> None:
     assert plan.maximum_gpu_hours == 0.5
     assert plan.elimination["statistical_unit"] == "patient"
     assert not plan.elimination["internal_test_permitted"]
+    assert plan.loss_reuse == {"cross_entropy_plus_soft_dice": "architecture_unet"}
 
 
 def test_gate8_preflight_refuses_current_non_cuda_host() -> None:

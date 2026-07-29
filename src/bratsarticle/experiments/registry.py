@@ -8,7 +8,7 @@ import re
 import subprocess
 import time
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -104,6 +104,7 @@ class RunDescriptor:
     test_access_allowed: bool = False
     test_accessed: bool = False
     test_access_audit_log: str = "artifacts/test_access_log.jsonl"
+    tags: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Reject ambiguous identities or invalid scientific metadata."""
@@ -123,6 +124,8 @@ class RunDescriptor:
             raise ValueError("A positive FLOPs/MACs input specification is required")
         if self.test_accessed and not self.test_access_allowed:
             raise ValueError("Test access cannot occur without authorization")
+        if any(not str(key).strip() for key in self.tags):
+            raise ValueError("Run tag keys cannot be empty")
 
 
 class ResourceTracker:
@@ -222,6 +225,7 @@ class ExperimentRegistry:
                 "accessed": descriptor.test_accessed,
                 "audit_log": descriptor.test_access_audit_log,
             },
+            "tags": dict(descriptor.tags),
         }
         self._metadata = metadata
         atomic_write_json(self.run_directory / "metadata.json", metadata)

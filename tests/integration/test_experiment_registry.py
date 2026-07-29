@@ -24,6 +24,7 @@ def _descriptor(manifest: Path, run_id: str = "unit-run") -> RunDescriptor:
         input_specification=(1, 4, 240, 240),
         data_manifest_path=manifest,
         split_hashes={"train": "train-hash", "validation": "validation-hash"},
+        tags={"gate": 8, "pilot_arm_id": "architecture_unet"},
     )
 
 
@@ -70,6 +71,7 @@ def test_registry_creates_required_artifact_contract(tmp_path: Path) -> None:
     assert metadata["repository_dirty"] in {True, False}
     assert metadata["gpu_hours"] == 0.0
     assert metadata["test_access"]["accessed"] is False
+    assert metadata["tags"]["pilot_arm_id"] == "architecture_unet"
     assert cases.loc[0, "patient_id"] == "subject-1"
 
 

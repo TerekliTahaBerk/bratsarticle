@@ -13,7 +13,7 @@
     "validation_manifest_exists": true
   },
   "eligible": false,
-  "generated_at_utc": "2026-07-28T23:29:50.268858+00:00",
+  "generated_at_utc": "2026-07-29T05:19:57.130170+00:00",
   "pilot_config_sha256": "2c6dbbc491739eac8d7f4cd3cc90455f3af876227ef9f2b7b1bd16ce8e78fc21",
   "required_gpu_model": "NVIDIA A100-SXM4-80GB",
   "visible_cuda_devices": []

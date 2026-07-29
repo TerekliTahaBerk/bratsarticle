@@ -39,6 +39,7 @@ from bratsarticle.training.reproducibility import (
     seed_everything,
 )
 from bratsarticle.training.schedule import build_warmup_cosine_scheduler
+from bratsarticle.utils.hashing import file_digest
 
 if TYPE_CHECKING:
     from bratsarticle.data.dataset import BraTSSliceDataset
@@ -242,6 +243,12 @@ def run_pilot_arm(
             input_specification=(1, *fairness.input_shape),
             data_manifest_path=plan.canonical_manifest_path,
             split_hashes=_split_hashes(plan.split_dir),
+            tags={
+                "gate": 8,
+                "pilot_arm_id": arm.arm_id,
+                "pilot_screen": arm.screen,
+                "pilot_config_sha256": file_digest(plan_path),
+            },
         ),
         config_path=plan_path,
         raw_data_roots=[dataset_root],

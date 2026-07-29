@@ -59,6 +59,7 @@ class PilotPlan:
     minimum_learning_rate_fraction: float
     mixed_precision: bool
     arms: tuple[PilotArm, ...]
+    loss_reuse: dict[str, str]
     elimination: dict[str, Any]
 
     def __post_init__(self) -> None:
@@ -83,6 +84,8 @@ class PilotPlan:
             raise ValueError("At least one pilot arm is required")
         if any(not _ARM_ID_PATTERN.fullmatch(value) for value in identifiers):
             raise ValueError("Pilot arm identifier is unsafe")
+        if any(value not in identifiers for value in self.loss_reuse.values()):
+            raise ValueError("Reused loss-screen arm must reference a declared arm")
         if bool(self.elimination["internal_test_permitted"]):
             raise ValueError("Pilot elimination cannot use the internal test")
 
@@ -155,6 +158,10 @@ def load_pilot_plan(path: Path) -> PilotPlan:
         ),
         mixed_precision=bool(pilot.optimization.mixed_precision),
         arms=arms,
+        loss_reuse={
+            str(loss): str(arm_id)
+            for loss, arm_id in pilot.screen.loss.reuse_architecture_arm.items()
+        },
         elimination=cast(
             dict[str, Any],
             OmegaConf.to_container(
@@ -257,6 +264,7 @@ def pilot_plan_record(plan: PilotPlan, source_path: Path) -> dict[str, Any]:
             }
             for arm in plan.arms
         ],
+        "loss_screen_reused_arms": plan.loss_reuse,
         "elimination": plan.elimination,
         "factorial_combinations_not_scheduled": True,
         "internal_test_access": False,
