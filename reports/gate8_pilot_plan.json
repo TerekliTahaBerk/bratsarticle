@@ -100,12 +100,12 @@
   "budget": {
     "maximum_gpu_hours": 0.5,
     "maximum_optimizer_steps": 2000,
-    "minimum_completed_validation_checks": 3,
-    "validation_frequency_optimizer_steps": 500
+    "minimum_completed_validation_checks": 1,
+    "validation_frequency_optimizer_steps": 2000
   },
   "data_loader_workers": {
     "training": 4,
-    "validation": 4
+    "validation": 0
   },
   "elimination": {
     "confidence_level": 0.95,
@@ -132,25 +132,35 @@
   },
   "factorial_combinations_not_scheduled": true,
   "git": {
-    "commit": "ecc425548ce2863d34dd5d41d389a4b433f1a63e",
-    "dirty": true
+    "commit": "a528ca38d7a946c40bce753ac84a40c6049da2a1",
+    "dirty": false
   },
   "internal_test_access": false,
   "loss_screen_reused_arms": {
     "cross_entropy_plus_soft_dice": "architecture_unet"
   },
+  "memory_cache_subjects": {
+    "training": 4,
+    "validation": 37
+  },
   "name": "gate8_single_seed_development_screen",
   "optimization": {
     "learning_rate": 0.001,
     "minimum_learning_rate_fraction": 0.01,
-    "mixed_precision": true,
+    "mixed_precision": false,
     "optimizer": "adamw",
     "scheduler": "linear_warmup_cosine_decay",
     "warmup_optimizer_steps": 200,
     "weight_decay": 1e-05
   },
+  "protocol_revision": 2,
+  "referenced_config_sha256": {
+    "evaluation": "e7da40fc2ff6fabada3737af2940f3e826fa1c9f02e58342471f8832377d70e0",
+    "fairness_protocol": "681e9230cf673171b9d113c13207371b86a74da5cc092d8e7adc027f0e556d44",
+    "preprocessing": "63043f37245a0a709e4c8dc2da05934ce4305e7885feff988b31a74de73b1616"
+  },
   "seed": 20260729,
   "source_config": "configs/pilots/gate8.yaml",
-  "source_config_sha256": "b4bbc5bfdf5e697852998ae5129854745a747500ce3a2910c543b053060bf7d7",
-  "status": "frozen_pending_eligible_hardware"
+  "source_config_sha256": "d0bdc0c4ff3990ff6038bc651c24c8f415324eaf3e0521ab0f210447cc6f74d4",
+  "status": "frozen_ready_mps_memory_mapped_v2"
 }
