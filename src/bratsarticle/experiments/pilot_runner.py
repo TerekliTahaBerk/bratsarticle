@@ -6,6 +6,7 @@ import json
 import os
 import traceback
 from collections.abc import Iterable, Iterator
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -91,6 +92,7 @@ def _loader(
     seed: int,
     shuffle: bool,
     sampler: Sampler[int] | None = None,
+    pin_memory: bool = False,
 ) -> DataLoader[dict[str, Any]]:
     generator = torch.Generator().manual_seed(seed)
     return DataLoader(
@@ -101,7 +103,7 @@ def _loader(
         num_workers=workers,
         worker_init_fn=seed_dataloader_worker,
         generator=generator,
-        pin_memory=True,
+        pin_memory=pin_memory,
         persistent_workers=workers > 0,
     )
 
@@ -217,21 +219,36 @@ def run_pilot_arm(
 
     arm = _arm(plan, arm_id)
     fairness = load_compute_matched_protocol(plan.fairness_protocol_path)
+    device = accelerator_device(fairness.accelerator_backend)
     dataset_root = Path(os.environ["BRATS2020_ROOT"]).expanduser().resolve()
     seed_everything(arm.seed)
     preprocessing = load_preprocessing_config(plan.preprocessing_config_path)
+    training_preprocessing = replace(
+        preprocessing,
+        cache=replace(
+            preprocessing.cache,
+            memory_subjects=plan.training_memory_subjects,
+        ),
+    )
+    validation_preprocessing = replace(
+        preprocessing,
+        cache=replace(
+            preprocessing.cache,
+            memory_subjects=plan.validation_memory_subjects,
+        ),
+    )
     train_dataset = build_development_dataset(
         plan.split_dir,
         "train",
         dataset_root,
-        preprocessing,
+        training_preprocessing,
         seed=arm.seed,
     )
     validation_dataset = build_development_dataset(
         plan.split_dir,
         "validation",
         dataset_root,
-        preprocessing,
+        validation_preprocessing,
         seed=arm.seed,
     )
     train_sampler = PatientGroupedSampler(
@@ -248,6 +265,7 @@ def run_pilot_arm(
         seed=arm.seed,
         shuffle=False,
         sampler=train_sampler,
+        pin_memory=device.type == "cuda",
     )
     validation_loader = _loader(
         validation_dataset,
@@ -255,6 +273,7 @@ def run_pilot_arm(
         workers=plan.validation_workers,
         seed=arm.seed + 1,
         shuffle=False,
+        pin_memory=device.type == "cuda",
     )
     model_config = load_model_config(arm.model_config_path)
     model = model_from_config(model_config)
@@ -270,7 +289,6 @@ def run_pilot_arm(
         total_steps=plan.maximum_optimizer_steps,
         minimum_fraction=plan.minimum_learning_rate_fraction,
     )
-    device = accelerator_device(fairness.accelerator_backend)
     engine = TrainingEngine(
         model=model,
         optimizer=optimizer,

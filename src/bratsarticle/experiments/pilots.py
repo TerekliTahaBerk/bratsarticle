@@ -19,6 +19,7 @@ from bratsarticle.experiments.hardware import (
 from bratsarticle.models.configurable_unet import load_model_config
 from bratsarticle.training.loss_catalog import load_loss_catalog
 from bratsarticle.utils.hashing import file_digest
+from bratsarticle.utils.paths import is_relative_to
 from bratsarticle.utils.serialization import atomic_write_text
 
 _ARM_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
@@ -55,6 +56,8 @@ class PilotPlan:
     minimum_completed_validation_checks: int
     training_workers: int
     validation_workers: int
+    training_memory_subjects: int
+    validation_memory_subjects: int
     optimizer: str
     learning_rate: float
     weight_decay: float
@@ -81,6 +84,8 @@ class PilotPlan:
             raise ValueError("Pilot warm-up must end before the step budget")
         if self.training_workers < 0 or self.validation_workers < 0:
             raise ValueError("DataLoader worker counts cannot be negative")
+        if self.training_memory_subjects < 1 or self.validation_memory_subjects < 1:
+            raise ValueError("Pilot memory-cache subject counts must be positive")
         identifiers = [arm.arm_id for arm in self.arms]
         if len(identifiers) != len(set(identifiers)):
             raise ValueError("Pilot arm identifiers must be unique")
@@ -152,6 +157,8 @@ def load_pilot_plan(path: Path) -> PilotPlan:
         ),
         training_workers=int(pilot.data.training_workers),
         validation_workers=int(pilot.data.validation_workers),
+        training_memory_subjects=int(pilot.data.training_memory_subjects),
+        validation_memory_subjects=int(pilot.data.validation_memory_subjects),
         optimizer=str(pilot.optimization.optimizer),
         learning_rate=float(pilot.optimization.learning_rate),
         weight_decay=float(pilot.optimization.weight_decay),
@@ -190,6 +197,8 @@ def write_mps_diagnostic_config(source: Path, destination: Path) -> Path:
     root.pilot.optimization.warmup_optimizer_steps = 2
     root.pilot.data.training_workers = 0
     root.pilot.data.validation_workers = 0
+    root.pilot.data.training_memory_subjects = 1
+    root.pilot.data.validation_memory_subjects = 1
     atomic_write_text(
         destination,
         OmegaConf.to_yaml(root, resolve=False),
@@ -267,6 +276,10 @@ def pilot_plan_record(plan: PilotPlan, source_path: Path) -> dict[str, Any]:
             "training": plan.training_workers,
             "validation": plan.validation_workers,
         },
+        "memory_cache_subjects": {
+            "training": plan.training_memory_subjects,
+            "validation": plan.validation_memory_subjects,
+        },
         "optimization": {
             "optimizer": plan.optimizer,
             "learning_rate": plan.learning_rate,
@@ -303,6 +316,10 @@ def pilot_preflight(plan: PilotPlan) -> dict[str, Any]:
     data_root = (
         None if not data_root_value else Path(data_root_value).expanduser().resolve()
     )
+    cache_root_value = os.environ.get("BRATS_CACHE_ROOT")
+    cache_root = (
+        None if not cache_root_value else Path(cache_root_value).expanduser().resolve()
+    )
     checks = {
         "accelerator_backend_available": backend_available,
         "exactly_one_visible_accelerator": len(visible_devices) == 1,
@@ -311,6 +328,13 @@ def pilot_preflight(plan: PilotPlan) -> dict[str, Any]:
         ),
         "brats2020_root_set": data_root is not None,
         "brats2020_root_exists": bool(data_root is not None and data_root.is_dir()),
+        "brats_cache_root_set": cache_root is not None,
+        "brats_cache_root_exists": bool(cache_root is not None and cache_root.is_dir()),
+        "cache_root_outside_raw_root": bool(
+            cache_root is not None
+            and data_root is not None
+            and not is_relative_to(cache_root, data_root)
+        ),
         "canonical_manifest_exists": plan.canonical_manifest_path.is_file(),
         "train_manifest_exists": (plan.split_dir / "train.csv").is_file(),
         "validation_manifest_exists": (plan.split_dir / "validation.csv").is_file(),
@@ -318,6 +342,12 @@ def pilot_preflight(plan: PilotPlan) -> dict[str, Any]:
         "pilot_budget_within_compute_protocol": (
             plan.maximum_optimizer_steps <= fairness.maximum_optimizer_steps
             and plan.maximum_gpu_hours <= fairness.maximum_gpu_hours_per_run
+        ),
+        "precision_matches_compute_protocol": (
+            plan.mixed_precision == fairness.mixed_precision
+        ),
+        "scheduler_matches_compute_protocol": (
+            plan.scheduler == fairness.scheduler.name
         ),
     }
     return {

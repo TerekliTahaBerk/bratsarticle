@@ -13,6 +13,11 @@ def test_gate8_plan_is_single_seed_and_non_factorial() -> None:
     assert {arm.screen for arm in plan.arms} == {"architecture", "loss"}
     assert plan.maximum_optimizer_steps == 2000
     assert plan.maximum_gpu_hours == 0.5
+    assert plan.validation_frequency_optimizer_steps == 2000
+    assert plan.minimum_completed_validation_checks == 1
+    assert not plan.mixed_precision
+    assert plan.training_memory_subjects == 4
+    assert plan.validation_memory_subjects == 37
     assert plan.elimination["statistical_unit"] == "patient"
     assert not plan.elimination["internal_test_permitted"]
     assert plan.loss_reuse == {"cross_entropy_plus_soft_dice": "architecture_unet"}

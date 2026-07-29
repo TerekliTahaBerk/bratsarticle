@@ -1,0 +1,40 @@
+preprocessing:
+  modality_order: [t1, t1ce, t2, flair]
+  slice_axis: 2
+  normalization: nonzero_patient_modality_zscore
+
+  clipping:
+    enabled: false
+    provenance: development_train_only_fixed_bounds
+    fixed_bounds: {}
+
+  training_sampling:
+    tumor_probability: 0.67
+    tumor_minimum_voxels_per_slice: 1
+    samples_per_patient_per_epoch: 16
+
+  augmentation:
+    spatial:
+      enabled: true
+      flip_probability: 0.5
+      rotate_90: true
+    intensity:
+      enabled: true
+      apply_probability_per_modality: 0.5
+      scale_range: [0.9, 1.1]
+      shift_range: [-0.1, 0.1]
+
+  validation:
+    include_all_slices: true
+    include_empty_slices: true
+    deterministic: true
+
+  test:
+    include_all_slices: true
+    include_empty_slices: true
+    deterministic: true
+
+  cache:
+    enabled: true
+    root: ${oc.env:BRATS_CACHE_ROOT}
+    memory_subjects: 1

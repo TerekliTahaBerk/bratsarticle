@@ -18,3 +18,5 @@ def test_mps_smoke_config_is_bounded_and_nonreportable(tmp_path: Path) -> None:
     assert root.pilot.budget.minimum_completed_validation_checks == 1
     assert root.pilot.data.training_workers == 0
     assert root.pilot.data.validation_workers == 0
+    assert root.pilot.data.training_memory_subjects == 1
+    assert root.pilot.data.validation_memory_subjects == 1

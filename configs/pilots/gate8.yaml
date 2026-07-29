@@ -10,17 +10,19 @@ pilot:
     brats2020_root: ${oc.env:BRATS2020_ROOT}
     canonical_manifest: manifests/canonical/brats2020_canonical_manifest.csv
     split_dir: splits/provisional
-    preprocessing_config: configs/data/preprocessing.yaml
+    preprocessing_config: configs/data/preprocessing_pilot_cached.yaml
     evaluation_config: configs/evaluation/default.yaml
     cache_root: ${oc.env:BRATS_CACHE_ROOT,null}
     training_workers: 4
-    validation_workers: 4
+    validation_workers: 0
+    training_memory_subjects: 4
+    validation_memory_subjects: 37
 
   budget:
     maximum_optimizer_steps: 2000
     maximum_gpu_hours: 0.5
-    validation_frequency_optimizer_steps: 500
-    minimum_completed_validation_checks: 3
+    validation_frequency_optimizer_steps: 2000
+    minimum_completed_validation_checks: 1
 
   optimization:
     optimizer: adamw
@@ -29,7 +31,7 @@ pilot:
     scheduler: linear_warmup_cosine_decay
     warmup_optimizer_steps: 200
     minimum_learning_rate_fraction: 0.01
-    mixed_precision: true
+    mixed_precision: false
 
   screen:
     architecture:
