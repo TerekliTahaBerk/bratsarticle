@@ -1,0 +1,59 @@
+{
+  "architecture_screen": {
+    "best_arm": "architecture_bunet",
+    "fallback_applied": true,
+    "fallback_top_k": 3,
+    "retained_by_statistical_rule": [
+      "architecture_bunet",
+      "architecture_resunet_wc",
+      "architecture_unet_res",
+      "architecture_unet_wc"
+    ],
+    "screen": "architecture",
+    "shortlist": [
+      "architecture_bunet",
+      "architecture_unet_res",
+      "architecture_unet_wc"
+    ]
+  },
+  "audit": {
+    "artifact_root": "artifacts/runs",
+    "duplicate_arm_runs": {},
+    "expected_arm_count": 12,
+    "expected_validation_patients": 37,
+    "foreign_config_run_ids_ignored": [
+      "gate8_architecture_unet_res_s20260729_dd160ea6",
+      "gate8_architecture_unet_s20260729_dd160ea6",
+      "gate8_mps_diagnostic_20260729T053619Z",
+      "gate8_mps_diagnostic_20260729T054604Z",
+      "gate8_mps_diagnostic_20260729T062855Z"
+    ],
+    "invalid_runs": {},
+    "missing_or_invalid_arms": [],
+    "shortlist_permitted": true,
+    "status": "complete",
+    "test_access_used": false,
+    "untagged_run_ids_ignored": [],
+    "valid_arm_count": 12
+  },
+  "finalist_seed_count": 5,
+  "internal_test_access": false,
+  "loss_screen": {
+    "best_arm": "loss_binary_cross_entropy_plus_focal_tversky",
+    "fallback_applied": false,
+    "fallback_top_k": 2,
+    "retained_by_statistical_rule": [
+      "loss_binary_cross_entropy_plus_focal_tversky"
+    ],
+    "screen": "loss",
+    "shortlist": [
+      "loss_binary_cross_entropy_plus_focal_tversky"
+    ]
+  },
+  "next_stage_seeds": [
+    20260729,
+    20260730,
+    20260731
+  ],
+  "status": "complete"
+}

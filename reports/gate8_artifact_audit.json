@@ -3,24 +3,18 @@
   "duplicate_arm_runs": {},
   "expected_arm_count": 12,
   "expected_validation_patients": 37,
-  "invalid_runs": {},
-  "missing_or_invalid_arms": [
-    "architecture_bunet",
-    "architecture_resunet",
-    "architecture_resunet_wc",
-    "architecture_unet",
-    "architecture_unet_res",
-    "architecture_unet_wc",
-    "loss_binary_cross_entropy",
-    "loss_binary_cross_entropy_plus_focal_tversky",
-    "loss_binary_cross_entropy_plus_soft_dice",
-    "loss_cross_entropy",
-    "loss_focal_tversky",
-    "loss_soft_dice"
+  "foreign_config_run_ids_ignored": [
+    "gate8_architecture_unet_res_s20260729_dd160ea6",
+    "gate8_architecture_unet_s20260729_dd160ea6",
+    "gate8_mps_diagnostic_20260729T053619Z",
+    "gate8_mps_diagnostic_20260729T054604Z",
+    "gate8_mps_diagnostic_20260729T062855Z"
   ],
-  "shortlist_permitted": false,
-  "status": "incomplete",
+  "invalid_runs": {},
+  "missing_or_invalid_arms": [],
+  "shortlist_permitted": true,
+  "status": "complete",
   "test_access_used": false,
   "untagged_run_ids_ignored": [],
-  "valid_arm_count": 0
+  "valid_arm_count": 12
 }

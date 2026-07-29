@@ -69,13 +69,12 @@ the internal held-out test is opened.
 
 Equal epoch counts are not assumed to be fair.
 
-The frozen Gate 7 configs target one `NVIDIA A100-SXM4-80GB`. Compute-matched
-runs stop at the first of 30,000 optimizer steps or 8.0 GPU-hours.
-Convergence-matched runs stop at 50,000 steps or after 12 validation checks
-without at least 0.001 improvement, with validation every 500 steps. Both use
-one integrated linear-warm-up plus cosine-decay scheduler. If this hardware is
-unavailable, the protocol must be revised and versioned before observing pilot
-results; measurements from different GPU models may not be pooled silently.
+The original frozen Gate 7 configs target one `NVIDIA A100-SXM4-80GB`.
+Gate 8 was subsequently revised, versioned, and re-preflighted for one
+`Apple M1 Max` MPS accelerator before reportable pilot results were observed.
+That pilot protocol uses full precision, batch size 16, 2,000 optimizer steps,
+and a 0.5 GPU-hour-equivalent wall-time cap. Measurements from different
+accelerator protocols are never pooled silently.
 
 ## Experiment registry
 
@@ -88,21 +87,24 @@ checkpoint selection, completion/failure, error trace, and test-access state.
 
 ## Pilot elimination
 
-Gate 8 uses 12 unique single-seed development runs rather than the complete
-six-architecture by seven-loss grid. Six architecture arms share CE + soft
-Dice; six additional losses are screened on U-Net, with the shared arm reused.
-Each arm stops at 2,000 optimizer steps or 0.5 GPU-hours and validates every
-500 steps. Elimination uses paired patient results: both a mean decrement
-larger than 0.02 and a paired-bootstrap upper 95% bound below zero are required.
-The fallback shortlist is three architectures and two losses. The current host
-fails the frozen A100 preflight, so no pilot result or shortlist exists.
+Gate 8 used 12 unique single-seed development runs rather than the complete
+six-architecture by seven-loss grid. Six architecture arms shared CE + soft
+Dice; six additional losses were screened on U-Net, with the shared arm reused.
+Each arm stopped at 2,000 optimizer steps or 0.5 GPU-hours and performed one
+full patient-level validation at step 2,000. Elimination used paired patient
+results: both a mean decrement larger than 0.02 and a paired-bootstrap upper
+95% bound below zero were required. The complete artifact audit and selected
+shortlists are machine-readable in `reports/gate8_artifact_audit.json` and
+`reports/gate8_pilot_analysis.json`.
 
 ## Preprocessing
 
-The versioned preprocessing contract is
-`configs/data/preprocessing.yaml`, explained in
+The versioned preprocessing contract is `configs/data/preprocessing.yaml`,
+explained in
 `reports/preprocessing_specification.md`. T1, T1ce, T2, and FLAIR are
 patient/modality-normalized on nonzero voxels. Validation and internal-test
 datasets preserve all slices and use no random augmentation. Any intensity
 clipping rule must be fixed from development data before test access. Caches
-must remain outside raw-data roots.
+must remain outside raw-data roots. Gate 8 used an atomically written,
+memory-mapped NPY cache for the 258 training and 37 validation subjects; the
+conversion report explicitly records that the test manifest was not accessed.
