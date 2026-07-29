@@ -1,0 +1,176 @@
+gate10:
+  gate: 10
+  name: internal_test_statistical_analysis_freeze
+  revision: 1
+  status: frozen_pending_execution
+  internal_test_permitted: false
+
+  source:
+    gate9_analysis: reports/gate9_final_analysis.json
+    gate9_confirmation_summary: reports/gate9_confirmation_summary.csv
+    gate9_final_summary: reports/gate9_final_summary.csv
+    gate9_pilot_config: configs/pilots/gate9.yaml
+    artifact_root: artifacts/runs
+
+  split:
+    source_dir: splits/provisional
+    frozen_dir: splits/frozen
+    expected_counts:
+      train: 258
+      validation: 37
+      test: 74
+    freeze_membership_byte_for_byte: true
+    prohibit_post_freeze_membership_change: true
+
+  candidates:
+    primary: bunet
+    mandatory_reference: unet_reference
+    ordered_internal_test_candidates: [unet_reference, bunet, unet_res]
+    expected_seeds:
+      unet_reference: [20260729, 20260730, 20260731]
+      bunet: [20260729, 20260730, 20260731, 20260732, 20260733]
+      unet_res: [20260729, 20260730, 20260731, 20260732, 20260733]
+    model_configs:
+      unet_reference: configs/models/unet.yaml
+      bunet: configs/models/bunet.yaml
+      unet_res: configs/models/unet_res.yaml
+    checkpoint_selection: best_validation_checkpoint
+    evaluate_every_predeclared_seed: true
+    seed_ensemble: false
+    seed_aggregation: per_patient_arithmetic_mean_before_patient_level_inference
+
+  evaluation:
+    evaluation_config: configs/evaluation/default.yaml
+    preprocessing_config: configs/data/preprocessing_pilot_cached.yaml
+    prediction_decoding: four_class_argmax_then_labels_0_1_2_4
+    evaluation_stage: raw
+    surface_dice_tolerance_mm: 1.0
+    hd_percentile: 95.0
+    postprocessing: none
+    threshold_tuning_after_freeze: prohibited
+    test_time_augmentation: none
+
+  endpoints:
+    statistical_unit: patient
+    primary:
+      name: mean_regional_dice
+      definition: arithmetic_mean_of_patient_WT_TC_ET_Dice
+      direction: higher_is_better
+    secondary:
+      - wt_dice
+      - tc_dice
+      - et_dice
+      - wt_hd95_mm
+      - tc_hd95_mm
+      - et_hd95_mm
+      - wt_surface_dice
+      - tc_surface_dice
+      - et_surface_dice
+      - wt_lesion_recall
+      - tc_lesion_recall
+      - et_lesion_recall
+      - wt_lesion_precision
+      - tc_lesion_precision
+      - et_lesion_precision
+      - wt_lesion_wise_dice
+      - tc_lesion_wise_dice
+      - et_lesion_wise_dice
+      - wt_false_positive_lesion_count
+      - tc_false_positive_lesion_count
+      - et_false_positive_lesion_count
+      - wt_relative_volume_error
+      - tc_relative_volume_error
+      - et_relative_volume_error
+    missing_and_infinite_values:
+      imputation: none
+      preserve_nan_and_infinity_counts: true
+      hd95_infinity_policy: report_rate_and_finite_distribution_separately
+      undefined_lesion_rate_policy: report_defined_count_and_no_imputation
+
+  estimation:
+    confidence_level: 0.95
+    paired_bootstrap:
+      resamples: 10000
+      seed: 20260729
+      resampling_unit: patient
+      interval: percentile
+    report:
+      - paired_mean_difference
+      - paired_median_difference
+      - confidence_interval
+      - standardized_paired_effect_dz
+      - candidate_mean
+      - candidate_median
+      - seed_mean_standard_deviation
+
+  hypothesis_testing:
+    endpoint: mean_regional_dice
+    method: paired_sign_flip_permutation_two_sided
+    resamples: 100000
+    seed: 20260730
+    alpha: 0.05
+    difference_direction: first_candidate_minus_second_candidate
+    comparisons:
+      - id: bunet_vs_unet_reference
+        first: bunet
+        second: unet_reference
+        role: primary
+      - id: unet_res_vs_unet_reference
+        first: unet_res
+        second: unet_reference
+        role: multiplicity_controlled_secondary
+      - id: bunet_vs_unet_res
+        first: bunet
+        second: unet_res
+        role: multiplicity_controlled_secondary
+    multiplicity:
+      family: all_three_primary_endpoint_comparisons
+      correction: holm
+    secondary_endpoints:
+      role: estimation_only
+      multiplicity_adjusted_p_values: false
+
+  subgroups:
+    role: exploratory_estimation_only
+    hypothesis_tests: false
+    minimum_reportable_patient_count: 10
+    insufficient_size_label: descriptive_insufficient_n
+    definitions:
+      grade:
+        categories: [HGG, LGG]
+      enhancing_tumor_reference:
+        categories: [present, absent]
+        definition: ground_truth_ET_voxel_count_greater_than_zero
+      whole_tumor_burden:
+        categories: [small, medium, large]
+        derivation_split: train_only
+        source_column: wt_volume_mm3
+        quantiles: [0.3333333333333333, 0.6666666666666666]
+        quantile_method: linear
+        boundaries: small_le_q1_medium_le_q2_large_gt_q2
+
+  resource_analysis:
+    development_training:
+      - parameter_count
+      - checkpoint_size_bytes
+      - gpu_hours
+      - peak_allocated_vram_bytes
+      - peak_reserved_vram_bytes
+    internal_test_inference:
+      - per_volume_latency_seconds
+      - latency_p50_seconds
+      - latency_p95_seconds
+      - throughput_volumes_per_hour
+    complexity:
+      input_specification: [1, 4, 240, 240]
+      report_macs_and_flops_when_profiled: true
+      prohibit_cross_hardware_latency_pooling: true
+
+  conduct:
+    one_guarded_internal_test_opening: true
+    append_only_test_access_audit: artifacts/test_access_log.jsonl
+    no_model_selection_after_test_access: true
+    no_checkpoint_replacement_after_test_access: true
+    no_threshold_or_postprocessing_tuning_after_test_access: true
+    report_all_frozen_candidates_and_seeds: true
+    clinical_applicability_claims_permitted: false
