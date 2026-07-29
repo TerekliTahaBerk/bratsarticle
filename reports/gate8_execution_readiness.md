@@ -37,6 +37,13 @@ The runner:
 - writes best-case rows and all run/resource provenance through the registry;
 - marks a run invalid if the minimum validation count is not achieved.
 
+The analysis command independently audits every expected registry directory.
+It requires a clean repository, the frozen GPU, matching seed/model/loss and
+data/split/config hashes, an untouched test-access state, in-budget resources,
+the best checkpoint file, and exactly the 37 frozen validation patients. It
+rejects duplicate or untagged substitutions. Bootstrap elimination and
+shortlist files are produced only when all 12 arms pass.
+
 ## Current preflight result
 
 | Check | Result |
@@ -51,6 +58,9 @@ The runner:
 | GPU is `NVIDIA A100-SXM4-80GB` | FAIL |
 | `BRATS2020_ROOT` set | FAIL |
 | Dataset root exists | FAIL |
+
+The current artifact audit reports 0 valid and 12 missing arms. Its
+`shortlist_permitted` field is `false`.
 
 No CPU timing, synthetic metric, or Gate 5 memorization result is substituted
 for the missing pilot evidence. Consequently Gate 9 shortlist selection cannot
@@ -70,5 +80,11 @@ PYTHONPATH=src ./.venv/bin/python scripts/run_gate8_pilot.py \
 ```
 
 Each remaining ID is listed in `reports/gate8_pilot_plan.json` and must be
-started separately. The machine-readable blocker is
-`reports/gate8_preflight.json`.
+started separately. After all runs:
+
+```bash
+PYTHONPATH=src ./.venv/bin/python scripts/analyze_gate8_pilots.py
+```
+
+The machine-readable blockers are `reports/gate8_preflight.json` and
+`reports/gate8_artifact_audit.json`.

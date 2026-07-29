@@ -40,3 +40,7 @@ Gate 8 checkpoints additionally store the integrated scheduler state. The
 pilot plan is hash-linked to its config and clean Git commit, runs one arm per
 explicit invocation, and rejects hardware/data preflight failures before
 opening development data.
+
+The Gate 8 analyzer accepts only all 12 clean, tagged, in-budget runs with the
+frozen hashes, A100 identity, checkpoint, and exact validation-patient set.
+Missing or invalid artifacts produce an audit but no shortlist.

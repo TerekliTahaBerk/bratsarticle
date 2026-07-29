@@ -132,10 +132,13 @@
   },
   "factorial_combinations_not_scheduled": true,
   "git": {
-    "commit": "fc5a5bdf847ac9b616b96e4f39d25ca532b3d2ef",
+    "commit": "b8b288855708f2fb0a764eb2b36579b505c161ed",
     "dirty": false
   },
   "internal_test_access": false,
+  "loss_screen_reused_arms": {
+    "cross_entropy_plus_soft_dice": "architecture_unet"
+  },
   "name": "gate8_single_seed_development_screen",
   "optimization": {
     "learning_rate": 0.001,
