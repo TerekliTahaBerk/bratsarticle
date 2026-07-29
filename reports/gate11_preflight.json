@@ -1,0 +1,26 @@
+{
+  "accelerator_backend": "mps",
+  "accelerator_device_names": [
+    "Apple M1 Max"
+  ],
+  "checks": {
+    "cache_outside_raw_root": true,
+    "cache_root_configured": true,
+    "dataset_root_configured": true,
+    "device_name_matches": true,
+    "disk_space_sufficient": true,
+    "gate10_hashes_valid": true,
+    "mps_available": true,
+    "no_prior_test_access": true,
+    "repository_clean": true
+  },
+  "eligible": true,
+  "free_disk_bytes": 441636118528,
+  "gate": 11,
+  "git_commit": "e5158afaa71d083561f5d524aa0e9ca829b0ff7c",
+  "plan_path": "configs/internal_test/gate11.yaml",
+  "plan_sha256": "40b249f3a441a8c1825d3b2acace6fb9ea5de214957653e9c3c11d64a79a2ff5",
+  "status": "eligible",
+  "test_access_event_count": 0,
+  "test_manifest_opened": false
+}
