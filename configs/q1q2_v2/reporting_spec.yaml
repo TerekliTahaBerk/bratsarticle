@@ -1,0 +1,34 @@
+schema_version: 1
+status: template_only_values_must_be_generated
+manual_result_entry: prohibited
+main_figures:
+  - cohort_identity_overlap_external_data_flow
+  - development_cv_untouched_external_workflow
+  - component_and_parameter_matched_architectures
+  - patient_level_external_paired_results
+  - hierarchical_seed_patient_uncertainty
+  - convergence_curves_and_ranking_stability
+  - capacity_performance
+  - compute_performance_pareto
+  - lesion_failure_distribution
+  - external_domain_shift_subgroups
+  - qualitative_success_hard_failure_disagreement
+  - hd95_finite_infinite_behavior
+main_tables:
+  - cohort_and_dataset_characteristics
+  - model_configurations_and_matching_accuracy
+  - training_and_tuning_budgets
+  - internal_cross_validation_results
+  - external_confirmatory_results
+  - primary_statistical_contrasts
+  - regional_and_lesion_endpoints
+  - convergence_sensitivity
+  - loss_interaction
+  - resource_profile
+  - domain_shift_subgroups
+  - reproducibility_checklist
+secondary_material_policy: move_to_supplement_when_journal_limits_require
+build_preconditions:
+  - gate_f_convergence_pass
+  - gate_g_analysis_frozen
+  - gate_h_external_evaluation_complete

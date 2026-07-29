@@ -1,0 +1,11 @@
+schema_version: 1
+status: frozen_before_main_training
+main_training: [20260730, 20260731, 20260732, 20260733, 20260734]
+pilot_training: [20260730]
+bootstrap: 20260735
+hierarchical_bootstrap: 20260736
+permutation: 20260737
+rules:
+  same_main_seeds_for_every_model_and_fold: true
+  silent_seed_replacement: prohibited
+  failed_seed_action: report_and_use_common_complete_seed_set

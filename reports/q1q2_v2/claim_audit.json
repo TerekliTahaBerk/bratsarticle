@@ -1,0 +1,118 @@
+{
+  "interpretation": "Keyword review prevents unsupported affirmative high-risk wording; it is not an authorship, originality, or scientific-validity detector.",
+  "ledger_claim_count": 12,
+  "partially_supported_count": 0,
+  "pass": true,
+  "risky_word_occurrences": [
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "q1/q2-ready",
+      "line": 54,
+      "path": "reports/q1q2_v2/blockers_initial.md",
+      "text": "external result or manuscript conclusion exists. A Q1/Q2-ready decision is prohibited."
+    },
+    {
+      "classification": "technical_or_limitation_context",
+      "keyword": "robust",
+      "line": 45,
+      "path": "reports/q1q2_v2/external_data_audit.md",
+      "text": "hashes, robust normalized-volume descriptors, geometry and institution"
+    },
+    {
+      "classification": "technical_or_limitation_context",
+      "keyword": "robust",
+      "line": 56,
+      "path": "reports/q1q2_v2/external_data_audit.md",
+      "text": "The nearest robust normalized-signature RMS distance was `0.03083456`, well"
+    },
+    {
+      "classification": "technical_or_limitation_context",
+      "keyword": "clinical",
+      "line": 10,
+      "path": "reports/q1q2_v2/external_precision_analysis.md",
+      "text": "- Rationale: a two-percentage-point average across WT, TC and ET is large enough to require a distributed regional gain rather than a rounding-level change. It is an interpretation threshold, not a clinical MCID or an equivalence/non-inferiority margin."
+    },
+    {
+      "classification": "technical_or_limitation_context",
+      "keyword": "clinical",
+      "line": 96,
+      "path": "reports/q1q2_v2/final_completion_report.md",
+      "text": "mean-regional Dice; it is not a clinical MCID or equivalence margin."
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "novel",
+      "line": 14,
+      "path": "reports/q1q2_v2/journal_target_matrix.md",
+      "text": "| IEEE Transactions on Medical Imaging | High only if the capacity-controlled component analysis yields significant methodological insight | Regular paper; prior rejection must be disclosed | Initial submission maximum 10 pages including references; abstract ≤250 words; custom code/test data sharing described as best practice; no manuscript-like supplement | Not verified | Weak fit if framed as application of established methods; requires strong novelty, impact, and open code |"
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "significant",
+      "line": 14,
+      "path": "reports/q1q2_v2/journal_target_matrix.md",
+      "text": "| IEEE Transactions on Medical Imaging | High only if the capacity-controlled component analysis yields significant methodological insight | Regular paper; prior rejection must be disclosed | Initial submission maximum 10 pages including references; abstract ≤250 words; custom code/test data sharing described as best practice; no manuscript-like supplement | Not verified | Weak fit if framed as application of established methods; requires strong novelty, impact, and open code |"
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "clinical",
+      "line": 15,
+      "path": "reports/q1q2_v2/journal_target_matrix.md",
+      "text": "| Radiology: Artificial Intelligence | High for clinically interpretable external validation and population/scanner shift | Original Research | ≤3000 words Introduction–Discussion; structured abstract ≤250; ≤35 references; ≤6 figures; ≤4 tables; applicable checklist required | Not verified | Requires genuine external evaluation, patient-level statistics, clinical framing, and declarations |"
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "novel",
+      "line": 16,
+      "path": "reports/q1q2_v2/journal_target_matrix.md",
+      "text": "| Computer Methods and Programs in Biomedicine | Moderate-to-high for reproducible computational method evaluation | Original research/method comparison | Official guide treats code/models/algorithms/protocols as research data and requests availability statements; exact live limits must be rechecked | Not verified | Plausible if novelty is rigorous workflow/control design rather than architecture novelty |"
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "reproducible",
+      "line": 16,
+      "path": "reports/q1q2_v2/journal_target_matrix.md",
+      "text": "| Computer Methods and Programs in Biomedicine | Moderate-to-high for reproducible computational method evaluation | Original research/method comparison | Official guide treats code/models/algorithms/protocols as research data and requests availability statements; exact live limits must be rechecked | Not verified | Plausible if novelty is rigorous workflow/control design rather than architecture novelty |"
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "robust",
+      "line": 72,
+      "path": "reports/q1q2_v2/novelty_assessment.md",
+      "text": "“State of the art,” “clinically robust,” and “Q1/Q2 ready” are unsupported."
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "clinical",
+      "line": 72,
+      "path": "reports/q1q2_v2/novelty_assessment.md",
+      "text": "“State of the art,” “clinically robust,” and “Q1/Q2 ready” are unsupported."
+    },
+    {
+      "classification": "limitation_or_negated",
+      "keyword": "state of the art",
+      "line": 72,
+      "path": "reports/q1q2_v2/novelty_assessment.md",
+      "text": "“State of the art,” “clinically robust,” and “Q1/Q2 ready” are unsupported."
+    },
+    {
+      "classification": "technical_or_limitation_context",
+      "keyword": "superior",
+      "line": 22,
+      "path": "reports/q1q2_v2/statistical_analysis_plan.md",
+      "text": "values, and probability of superiority."
+    },
+    {
+      "classification": "technical_or_limitation_context",
+      "keyword": "clinical",
+      "line": 26,
+      "path": "reports/q1q2_v2/statistical_analysis_plan.md",
+      "text": "regional gain from a rounding-level change. It is not a clinical MCID and is"
+    }
+  ],
+  "schema_version": 1,
+  "supported_count": 10,
+  "unsupported_count": 2,
+  "untracked_affirmative_high_risk": [],
+  "untracked_affirmative_high_risk_count": 0
+}

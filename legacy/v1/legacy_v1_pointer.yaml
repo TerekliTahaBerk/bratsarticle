@@ -1,0 +1,18 @@
+schema_version: 1
+study_id: bounded-2d-component-study
+semantic_version: v1
+status: immutable_legacy_evidence
+source_commit: ab60a79d8a49a2fe1adb000546f653485796bab1
+annotated_tag: v1-bounded-2d-component-study
+tag_target_commit: ab60a79d8a49a2fe1adb000546f653485796bab1
+branch_at_snapshot: main
+test_role: legacy_internal_evaluation_only
+internal_test_patient_count: 74
+new_model_evaluation_allowed: false
+external_validation_claim_allowed: false
+integrity:
+  tracked_artifact_manifest_sha256: 1b1fe7090a9f367c0a71796e63a9b508e3b2764afe17df3a7c973fd0e87cc0b8
+  test_access_log_sha256: 2b3734c9f68f152a7f4243d7461b6b67ba45e34fb7e11070bac983e20218edbc
+  gate14_completion_sha256: 426de18b6db38b5b71bf0c0e6feff18b98b4bd9e2bddb7d9726d6fe3b91b3932
+  final_manuscript_pdf_sha256: d018d41a49919255b0893eb4102ca5b548b499e689fbf0c7b1bb1a6953c88413
+  final_manuscript_docx_sha256: 5f44d179aff8e5c293ad17e0d6e5708dd231f9aa5ab0835c7d7bd810759981a3

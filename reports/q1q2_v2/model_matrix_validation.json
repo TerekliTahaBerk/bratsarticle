@@ -1,0 +1,33 @@
+{
+  "component_core_compute_matched_run_count": 200,
+  "convergence_matched_run_count": 300,
+  "external_inference_permitted": false,
+  "fold_count": 5,
+  "main_seeds": [
+    20260730,
+    20260731,
+    20260732,
+    20260733,
+    20260734
+  ],
+  "matrix_sha256": "a0e51e5482a05c61f16f5df97441ff13de7ed6b2e0e69b90f372cc93447063f5",
+  "model_count": 12,
+  "model_ids": [
+    "unet_small",
+    "unet_parameter_matched_res",
+    "unet_compute_matched_res",
+    "unet_res",
+    "unet_wc",
+    "bunet",
+    "resblock_unet",
+    "resblock_unet_wc",
+    "nnunetv2_2d",
+    "nnunetv2_3d_fullres",
+    "unet_2p5d_k5",
+    "swin_unetr"
+  ],
+  "schema_version": 1,
+  "seed_count": 5,
+  "seeds_sha256": "e03a748ba7cfb85b795de95444e15c407c864822eed1678b8204d5d28cd5c1bc",
+  "status": "validated_before_main_training"
+}

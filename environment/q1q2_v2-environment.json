@@ -1,0 +1,31 @@
+{
+  "artifacts": {
+    "environment/q1q2_v2-requirements-lock.txt": "b60724a89e332252d3fa51eeb9c43072b5f5437745c91a03f24d29f8ee006e6f",
+    "pyproject.toml": "2938288da80681828be9ce614e56033354324015ea7d65fdcd6900d4d7234642",
+    "scripts/generate_q1q2_environment_lock.py": "fd8af152697c234af8894371d08814c4d6497adf66abf5cf598f04568a6f1d01"
+  },
+  "boundary": "This lock captures the realized Apple/Python environment. A cluster-specific CUDA image and lock must be frozen after the blocked hardware allocation is supplied and before training.",
+  "installation": [
+    "python -m pip install -r environment/q1q2_v2-requirements-lock.txt",
+    "python -m pip install --no-deps ."
+  ],
+  "platform": {
+    "machine": "arm64",
+    "release": "25.5.0",
+    "system": "Darwin"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.11.14"
+  },
+  "pytorch": {
+    "availability_note": "Availability may be false inside a sandbox; the reportable outside-sandbox preflight is reports/q1q2_v2/hardware_preflight.json.",
+    "cuda_version": null,
+    "mps_available_in_lock_process": false,
+    "mps_built_in_lock_process": true,
+    "version": "2.13.0"
+  },
+  "schema_version": 1,
+  "scope": "realized_local_q1q2_v2_environment",
+  "status": "immutable_exact_version_snapshot"
+}

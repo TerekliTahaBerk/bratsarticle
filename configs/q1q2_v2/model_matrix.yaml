@@ -1,0 +1,118 @@
+schema_version: 1
+status: frozen_before_main_training
+seeds_config: configs/q1q2_v2/seeds.yaml
+development_folds: splits/q1q2_v2/cv_fold_{fold}.csv
+external_test: splits/q1q2_v2/external_test.csv
+common_evaluator: configs/q1q2_v2/evaluation.yaml
+main_models:
+  - id: unet_small
+    display_name: U-Net-Small
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/models/unet.yaml
+    primary_source: 10.1007/978-3-319-24574-4_28
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: unet_parameter_matched_res
+    display_name: U-Net-Parameter-Matched-to-RES
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/q1q2_v2/models/unet_parameter_matched_res.yaml
+    primary_source: 10.1007/978-3-319-24574-4_28
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: unet_compute_matched_res
+    display_name: U-Net-Compute-Matched-to-RES
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/q1q2_v2/models/unet_compute_matched_res.yaml
+    primary_source: 10.1007/978-3-319-24574-4_28
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: unet_res
+    display_name: U-Net+RES
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/models/unet_res.yaml
+    primary_source: 10.3390/electronics9122203
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: unet_wc
+    display_name: U-Net+WC
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/models/unet_wc.yaml
+    primary_source: 10.3390/electronics9122203
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: bunet
+    display_name: BU-Net
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/models/bunet.yaml
+    primary_source: 10.3390/electronics9122203
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: resblock_unet
+    display_name: ResBlock-U-Net
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/models/resunet.yaml
+    primary_source: 10.1109/TMI.2016.2610582
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: resblock_unet_wc
+    display_name: ResBlock-U-Net+WC
+    family: component_core
+    dimensionality: 2D
+    adapter: native_configurable_unet
+    config: configs/models/resunet_wc.yaml
+    primary_source: 10.3390/electronics9122203
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: nnunetv2_2d
+    display_name: nnU-Net v2 2D
+    family: strong_baseline
+    dimensionality: 2D
+    adapter: official_nnunetv2
+    config: nnUNetPlans__2d
+    primary_source: 10.1038/s41592-020-01008-z
+    implementation_source: https://github.com/MIC-DKFZ/nnUNet
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: nnunetv2_3d_fullres
+    display_name: nnU-Net v2 3D full-resolution
+    family: strong_baseline
+    dimensionality: 3D
+    adapter: official_nnunetv2
+    config: nnUNetPlans__3d_fullres
+    primary_source: 10.1038/s41592-020-01008-z
+    implementation_source: https://github.com/MIC-DKFZ/nnUNet
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: unet_2p5d_k5
+    display_name: 2.5D U-Net (five slices)
+    family: strong_baseline
+    dimensionality: 2.5D
+    adapter: native_configurable_unet
+    config: configs/q1q2_v2/models/unet_2p5d_k5.yaml
+    primary_source: 10.3390/bioengineering10020181
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+  - id: swin_unetr
+    display_name: Swin UNETR
+    family: strong_baseline
+    dimensionality: 3D
+    adapter: monai_swinunetr
+    config: configs/q1q2_v2/models/swin_unetr_monai.yaml
+    primary_source: 10.1007/978-3-031-08999-2_22
+    implementation_source: https://github.com/Project-MONAI/MONAI
+    implementation_license: Apache-2.0
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]

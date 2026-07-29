@@ -1,10 +1,10 @@
+import hashlib
 import json
+import subprocess
 from pathlib import Path
 
-from bratsarticle.utils.hashing import file_digest
 
-
-def test_tracked_artifact_manifest_hashes_are_current() -> None:
+def test_legacy_tracked_artifact_manifest_matches_immutable_tag() -> None:
     manifest = json.loads(
         Path("reports/tracked_artifact_manifest.json").read_text(
             encoding="utf-8"
@@ -19,7 +19,14 @@ def test_tracked_artifact_manifest_hashes_are_current() -> None:
         "entry_count"
     ]
     for entry in manifest["entries"]:
-        path = Path(entry["path"])
-        assert path.is_file()
-        assert path.stat().st_size == entry["size_bytes"]
-        assert file_digest(path) == entry["sha256"]
+        payload = subprocess.run(
+            [
+                "git",
+                "show",
+                f"v1-bounded-2d-component-study:{entry['path']}",
+            ],
+            check=True,
+            capture_output=True,
+        ).stdout
+        assert len(payload) == entry["size_bytes"]
+        assert hashlib.sha256(payload).hexdigest() == entry["sha256"]

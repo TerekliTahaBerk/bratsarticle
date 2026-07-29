@@ -1,0 +1,19 @@
+model:
+  name: swin_unetr_monai
+  implementation: monai.networks.nets.SwinUNETR
+  implementation_source: https://github.com/Project-MONAI/MONAI
+  primary_source_doi: 10.1007/978-3-031-08999-2_22
+  license: Apache-2.0
+  spatial_dims: 3
+  input_channels: 4
+  output_channels: 4
+  feature_size: 24
+  use_checkpoint: true
+  patch_size: [96, 96, 96]
+  inference:
+    sliding_window_overlap: 0.5
+    gaussian_blending: true
+  pretraining:
+    status: none
+    external_pretraining_cost: included
+  attribution: modern 3D hybrid baseline; no architectural novelty claim

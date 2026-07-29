@@ -306,6 +306,38 @@ def _row_mapping(row: pd.Series[Any]) -> dict[str, Any]:
     return {str(key): value for key, value in row.items()}
 
 
+def extract_context_slices(
+    image: np.ndarray,
+    center_slice: int,
+    *,
+    slice_axis: int,
+    context_offsets: tuple[int, ...],
+) -> np.ndarray:
+    """Stack modality-major neighboring slices with replicated boundaries."""
+    if image.ndim != 4 or image.shape[0] != len(MODALITY_ORDER):
+        raise ValueError("Context extraction expects image [4,X,Y,Z]")
+    if slice_axis not in {0, 1, 2}:
+        raise ValueError("slice_axis must be 0, 1, or 2")
+    if not context_offsets or 0 not in context_offsets:
+        raise ValueError("Context offsets must be nonempty and contain zero")
+    image_axis = slice_axis + 1
+    last_index = image.shape[image_axis] - 1
+    indices = [
+        min(max(center_slice + offset, 0), last_index)
+        for offset in context_offsets
+    ]
+    extracted = np.take(image, indices, axis=image_axis)
+    modality_context_first = np.moveaxis(extracted, image_axis, 1)
+    spatial_shape = modality_context_first.shape[2:]
+    return np.ascontiguousarray(
+        modality_context_first.reshape(
+            len(MODALITY_ORDER) * len(context_offsets),
+            *spatial_shape,
+        ),
+        dtype=np.float32,
+    )
+
+
 class BraTSSliceDataset(Dataset[dict[str, Any]]):
     """2D dataset that preserves complete validation/test patient volumes."""
 
@@ -318,6 +350,7 @@ class BraTSSliceDataset(Dataset[dict[str, Any]]):
         split: DatasetSplit,
         seed: int,
         test_access_authorized: bool = False,
+        context_offsets: tuple[int, ...] = (0,),
     ) -> None:
         if manifest.empty:
             raise ValueError("Dataset manifest cannot be empty")
@@ -330,6 +363,9 @@ class BraTSSliceDataset(Dataset[dict[str, Any]]):
         self.config = config
         self.split = split
         self.seed = int(seed)
+        if not context_offsets or 0 not in context_offsets:
+            raise ValueError("context_offsets must be nonempty and contain zero")
+        self.context_offsets = tuple(int(offset) for offset in context_offsets)
         self.epoch = 0
         self.cache = NormalizedVolumeCache(
             config.cache.root,
@@ -404,10 +440,11 @@ class BraTSSliceDataset(Dataset[dict[str, Any]]):
             patient_index, slice_index = self._slice_records[index]
             generator = np.random.default_rng(self.seed + index)
         volume = self._subject(patient_index)
-        image_slice = np.take(
+        image_slice = extract_context_slices(
             volume.image,
             slice_index,
-            axis=self.config.slice_axis + 1,
+            slice_axis=self.config.slice_axis,
+            context_offsets=self.context_offsets,
         )
         label_slice = np.take(
             volume.label,
@@ -453,6 +490,7 @@ def build_development_dataset(
     config: PreprocessingConfig,
     *,
     seed: int,
+    context_offsets: tuple[int, ...] = (0,),
 ) -> BraTSSliceDataset:
     """Build train/validation data without exposing the test manifest."""
     manifest = load_development_manifest(split_dir, split)
@@ -463,6 +501,7 @@ def build_development_dataset(
         config,
         split=split,
         seed=seed,
+        context_offsets=context_offsets,
     )
 
 
@@ -475,6 +514,7 @@ def build_internal_test_dataset(
     allow_test_evaluation: bool,
     purpose: str,
     audit_log: Path = Path("artifacts/test_access_log.jsonl"),
+    context_offsets: tuple[int, ...] = (0,),
 ) -> BraTSSliceDataset:
     """Build exhaustive test data only after the guarded manifest access."""
     manifest = load_internal_test_manifest(
@@ -491,4 +531,5 @@ def build_internal_test_dataset(
         split="test",
         seed=seed,
         test_access_authorized=True,
+        context_offsets=context_offsets,
     )

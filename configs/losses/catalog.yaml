@@ -60,5 +60,18 @@ losses:
     smoothing: 0.00001
     class_weights: null
     include_background: false
+    bce_include_background: false
+    overlap_include_background: false
+    reduction: mean
+    expects_logits: true
+  - name: cross_entropy_plus_focal_tversky
+    alpha: 0.3
+    beta: 0.7
+    gamma: 0.75
+    smoothing: 0.00001
+    class_weights: null
+    include_background: false
+    bce_include_background: null
+    overlap_include_background: false
     reduction: mean
     expects_logits: true

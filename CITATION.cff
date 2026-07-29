@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: Please cite the final archived release and associated article.
+title: Capacity- and Compute-Matched Evaluation of Published BU-Net Components
+type: software
+authors:
+  - family-names: Terekli
+    given-names: Taha Berk
+version: 2.0.0
+license: Apache-2.0
+repository-code: https://github.com/TerekliTahaBerk/bratsarticle
+abstract: >-
+  Research software for leakage-audited, patient-level glioma segmentation
+  experiments with capacity/compute controls and independent external
+  validation. Version 2 results remain unreleased until all scientific gates
+  pass.

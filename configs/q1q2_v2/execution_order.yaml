@@ -1,0 +1,61 @@
+schema_version: 1
+status: blocked_before_training
+external_inference_permitted: false
+legacy_internal_test_inference_permitted: false
+ordered_stages:
+  - id: unit_tests
+    class: nontraining
+    status: completed
+  - id: synthetic_overfit
+    class: training_diagnostic
+    status: blocked_by_compute_allocation
+  - id: one_patient_overfit
+    class: training_diagnostic
+    status: blocked_by_compute_allocation
+  - id: single_fold_smoke
+    class: training_diagnostic
+    status: blocked_by_compute_allocation
+  - id: single_seed_pilot
+    class: reportable_development
+    status: blocked_by_compute_allocation
+  - id: parameter_compute_search_validation
+    class: static_and_runtime_validation
+    status: static_completed_runtime_blocked
+  - id: five_fold_equal_seed_main
+    class: reportable_development
+    status: blocked_by_compute_allocation
+  - id: convergence_sensitivity
+    class: reportable_development
+    status: blocked_by_compute_allocation
+  - id: loss_interaction_sensitivity
+    class: reportable_development
+    status: blocked_by_compute_allocation
+  - id: analysis_freeze
+    class: irreversible_gate
+    status: pending_loss_and_checkpoints
+  - id: external_confirmatory_evaluation
+    class: one_time_external
+    status: prohibited_before_analysis_freeze
+  - id: robustness
+    class: postfreeze_analysis
+    status: pending
+  - id: resource_profiling
+    class: postfreeze_analysis
+    status: pending
+  - id: statistical_analysis
+    class: postfreeze_analysis
+    status: pending
+invalid_run_policy:
+  block_automatically:
+    - external_or_legacy_internal_access_before_analysis_freeze
+    - missing_or_mismatched_config_hash
+    - missing_or_mismatched_data_hash
+    - model_fold_seed_not_in_frozen_matrix
+    - nonfinite_loss
+    - resource_budget_overrun
+    - missing_best_or_terminal_checkpoint
+    - silently_replaced_failed_seed
+external_failure_policy:
+  retuning: prohibited
+  rerun_after_model_failure: prohibited
+  reporting: report_failure_for_every_frozen_model

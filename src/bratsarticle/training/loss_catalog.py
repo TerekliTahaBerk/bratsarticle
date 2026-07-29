@@ -20,6 +20,7 @@ LossName = Literal[
     "cross_entropy_plus_soft_dice",
     "binary_cross_entropy_plus_soft_dice",
     "focal_tversky",
+    "cross_entropy_plus_focal_tversky",
     "binary_cross_entropy_plus_focal_tversky",
 ]
 Reduction = Literal["mean", "sum"]
@@ -33,6 +34,7 @@ LOSS_FORMULAS: dict[str, str] = {
     "cross_entropy_plus_soft_dice": "0.5 CE + 0.5 SoftDice",
     "binary_cross_entropy_plus_soft_dice": "0.5 BCE + 0.5 SoftDice",
     "focal_tversky": "mean_c (1 - (TP+s)/(TP+alpha FP+beta FN+s))^gamma",
+    "cross_entropy_plus_focal_tversky": "0.5 CE + 0.5 FocalTversky",
     "binary_cross_entropy_plus_focal_tversky": "0.5 BCE + 0.5 FocalTversky",
 }
 
@@ -50,6 +52,8 @@ class LossConfig:
     include_background: bool
     reduction: Reduction
     expects_logits: bool
+    bce_include_background: bool | None = None
+    overlap_include_background: bool | None = None
 
     def __post_init__(self) -> None:
         """Validate loss hyperparameters."""
@@ -111,6 +115,22 @@ class ConfiguredSegmentationLoss(nn.Module):
             device=logits.device,
         )
 
+    @property
+    def _bce_include_background(self) -> bool:
+        return (
+            self.config.include_background
+            if self.config.bce_include_background is None
+            else self.config.bce_include_background
+        )
+
+    @property
+    def _overlap_include_background(self) -> bool:
+        return (
+            self.config.include_background
+            if self.config.overlap_include_background is None
+            else self.config.overlap_include_background
+        )
+
     def _cross_entropy(
         self,
         logits: torch.Tensor,
@@ -136,7 +156,7 @@ class ConfiguredSegmentationLoss(nn.Module):
         weights = self._weights(logits)
         if weights is not None:
             losses = losses * weights.view(1, -1, 1, 1)
-        losses = _select_channels(losses, self.config.include_background)
+        losses = _select_channels(losses, self._bce_include_background)
         return _reduce(losses, self.config.reduction)
 
     def _soft_dice(
@@ -147,11 +167,11 @@ class ConfiguredSegmentationLoss(nn.Module):
         probabilities = torch.softmax(logits.float(), dim=1)
         probabilities = _select_channels(
             probabilities,
-            self.config.include_background,
+            self._overlap_include_background,
         )
         selected_targets = _select_channels(
             targets.float(),
-            self.config.include_background,
+            self._overlap_include_background,
         )
         axes = (0, 2, 3)
         intersection = torch.sum(probabilities * selected_targets, dim=axes)
@@ -168,11 +188,11 @@ class ConfiguredSegmentationLoss(nn.Module):
     ) -> torch.Tensor:
         probabilities = _select_channels(
             torch.softmax(logits.float(), dim=1),
-            self.config.include_background,
+            self._overlap_include_background,
         )
         selected_targets = _select_channels(
             targets.float(),
-            self.config.include_background,
+            self._overlap_include_background,
         )
         axes = (0, 2, 3)
         true_positive = torch.sum(probabilities * selected_targets, dim=axes)
@@ -219,6 +239,10 @@ class ConfiguredSegmentationLoss(nn.Module):
             ) + 0.5 * self._soft_dice(logits, targets)
         if name == "focal_tversky":
             return self._focal_tversky(logits, targets)
+        if name == "cross_entropy_plus_focal_tversky":
+            return 0.5 * self._cross_entropy(
+                logits, indices
+            ) + 0.5 * self._focal_tversky(logits, targets)
         return 0.5 * self._binary_cross_entropy(
             logits, targets
         ) + 0.5 * self._focal_tversky(logits, targets)
@@ -246,6 +270,16 @@ def load_loss_catalog(path: Path) -> list[LossConfig]:
                 include_background=bool(raw.include_background),
                 reduction=cast(Reduction, str(raw.reduction)),
                 expects_logits=bool(raw.expects_logits),
+                bce_include_background=(
+                    None
+                    if raw.get("bce_include_background") is None
+                    else bool(raw.bce_include_background)
+                ),
+                overlap_include_background=(
+                    None
+                    if raw.get("overlap_include_background") is None
+                    else bool(raw.overlap_include_background)
+                ),
             )
         )
     return output

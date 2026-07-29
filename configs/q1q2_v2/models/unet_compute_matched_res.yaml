@@ -1,0 +1,24 @@
+model:
+  name: unet_compute_matched_to_res
+  input_channels: 4
+  output_channels: 4
+  base_channels: 30
+  depth: 4
+  batch_normalization: true
+  dropout_probability: 0.3
+  features:
+    residual_blocks: false
+    residual_extended_skips: false
+    wide_context: false
+  res:
+    kernel_sizes: [9, 11, 13, 15]
+  wc:
+    kernel_size: 15
+  parameter_matching:
+    target_parameters: null
+    tolerance_fraction: 0.02
+  compute_matching:
+    target_macs_per_slice: 9459302400
+    realized_macs_per_slice: 9348480000
+    relative_difference: 0.011715705378020264
+  attribution: topology-preserving plain U-Net compute-matched control for RES

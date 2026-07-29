@@ -1,0 +1,29 @@
+schema_version: 1
+status: frozen_before_results
+primary:
+  connectivity: 26
+  minimum_voxels: 1
+  minimum_volume_mm3: 0.0
+sensitivity_grid:
+  - id: connectivity_26_min_10_voxels
+    connectivity: 26
+    minimum_voxels: 10
+    minimum_volume_mm3: 0.0
+  - id: connectivity_6_min_1_voxel
+    connectivity: 6
+    minimum_voxels: 1
+    minimum_volume_mm3: 0.0
+  - id: connectivity_6_min_10_voxels
+    connectivity: 6
+    minimum_voxels: 10
+    minimum_volume_mm3: 0.0
+  - id: connectivity_26_min_100_mm3
+    connectivity: 26
+    minimum_voxels: 1
+    minimum_volume_mm3: 100.0
+    rationale: approximate 5.8-mm equivalent spherical diameter at 1-mm isotropic resolution; exploratory partial-volume scale, not a clinical cutoff
+hd95:
+  one_empty: infinity
+  imputation: none
+  capped_sensitivity_values_mm: [100.0, 200.0]
+  primary_summary: infinity_rate_plus_finite_median_iqr

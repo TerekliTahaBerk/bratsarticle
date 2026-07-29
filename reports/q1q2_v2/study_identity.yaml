@@ -1,0 +1,47 @@
+schema_version: 2
+study_id: q1q2-capacity-external-validation
+semantic_version: v2.0.0
+branch: q1q2-capacity-external-validation
+legacy_source_commit: ab60a79d8a49a2fe1adb000546f653485796bab1
+legacy_tag: v1-bounded-2d-component-study
+legacy_tag_target: ab60a79d8a49a2fe1adb000546f653485796bab1
+artifact_root: artifacts/q1q2_v2
+development_cohort:
+  name: BraTS_2020_training
+  unique_patients: 369
+  intended_role: five_fold_development_only
+  folds_created: true
+  fold_sizes: [74, 74, 74, 74, 73]
+external_cohort:
+  selected: true
+  name: BraTS-Africa-TCIA-v1
+  collection_doi: 10.7937/V8H6-8X67
+  license: CC_BY_4_0
+  total_patients: 146
+  primary_glioma_patients: 95
+  supportive_other_neoplasm_patients: 51
+  access_status: verified_local_release
+  overlap_status: zero_overlap_established
+  confirmatory_results_exist: false
+hardware:
+  device: Apple_M1_Max
+  backend: mps
+  available: true
+  full_matrix_feasible_on_single_host: false
+license:
+  repository_code: Apache-2.0
+  resolved: true
+gate_status:
+  A: pass
+  B: pass
+  C: pass
+  D: partial_matching_controls_selected_training_pending
+  E: design_pass_execution_pending
+  F: blocked_compute_allocation
+  G: prespecified_pending_checkpoint_and_loss_freeze
+  H: not_started
+  I: partial
+  J: not_started
+  K: blocked_scientific_results_and_author_declarations
+q1q2_ready: false
+decision: NOT_READY_COMPUTE_BLOCKER_REMAINS

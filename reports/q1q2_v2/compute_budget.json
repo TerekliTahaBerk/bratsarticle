@@ -1,0 +1,29 @@
+{
+  "available_parallel_accelerator_count": 1,
+  "core_compute_matched_hours": 800.0,
+  "full_matrix_feasible_on_current_host_in_bounded_execution": false,
+  "known_native_2d_convergence_like_runs": 315,
+  "known_upper_bound_proxy_accelerator_hours_excluding_nnunet": 4032.1637554397066,
+  "known_upper_bound_proxy_serial_days_excluding_nnunet": 168.0068231433211,
+  "legacy_median_seconds_per_optimizer_step": 0.6714784052917512,
+  "mandatory_runs": {
+    "architecture_loss_interaction_additional": 100,
+    "compute_matched_component_core": 200,
+    "convergence_matched_all_models": 300,
+    "development_loss_selection": 15,
+    "total": 615
+  },
+  "native_2d_maximum_hours_per_50000_step_run": 9.326088962385432,
+  "not_yet_benchmarked_runs": {
+    "nnunetv2_2d": 25,
+    "nnunetv2_3d_fullres_including_interaction": 50
+  },
+  "required_resolution": "A declared CUDA scheduler/cluster allocation with enough parallel GPU-hours and storage, or an explicitly revised protocol. The mandatory five-fold/equal-five-seed design cannot be silently reduced.",
+  "schema_version": 1,
+  "swin_unetr": {
+    "64_cubed_smoke_seconds_per_step": 0.8480037089902908,
+    "caution": "The frozen 96-cubed patch will not be faster; this extrapolation is a feasibility lower-bound proxy, not a training-time estimate.",
+    "extrapolated_hours_per_50000_steps_at_smoke_shape": 11.777829291531816,
+    "main_runs": 25
+  }
+}

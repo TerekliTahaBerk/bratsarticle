@@ -1,0 +1,27 @@
+model:
+  name: unet_2p5d_k5
+  input_channels: 20
+  output_channels: 4
+  base_channels: 16
+  depth: 4
+  batch_normalization: true
+  dropout_probability: 0.3
+  context_slices:
+    center_slice: true
+    offsets: [-2, -1, 0, 1, 2]
+    boundary_rule: replicate_nearest_valid_slice
+    channel_order: modality_major_then_increasing_offset
+  features:
+    residual_blocks: false
+    residual_extended_skips: false
+    wide_context: false
+  res:
+    kernel_sizes: [9, 11, 13, 15]
+  wc:
+    kernel_size: 15
+  parameter_matching:
+    target_parameters: null
+    tolerance_fraction: 0.02
+  attribution: prespecified five-slice 2.5D context baseline
+  primary_source_doi: 10.3390/bioengineering10020181
+  implementation_note: native U-Net with independently tested modality-major five-slice extraction

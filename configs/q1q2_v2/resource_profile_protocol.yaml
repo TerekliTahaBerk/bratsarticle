@@ -1,0 +1,40 @@
+schema_version: 1
+status: prespecified_not_executed
+same_device_required: true
+same_software_environment_required: true
+measurements:
+  static:
+    - parameter_count
+    - checkpoint_size_bytes
+    - mac_per_input
+    - flop_per_input
+    - tensor_shapes
+    - receptive_field_proxy
+  training:
+    - peak_training_memory
+    - synchronized_step_time
+    - total_accelerator_hours
+  inference:
+    - peak_inference_memory
+    - p50_volume_latency
+    - p95_volume_latency
+    - volumes_per_hour
+    - preprocessing_time
+    - model_forward_only_latency
+    - end_to_end_latency
+timing:
+  warmup_iterations: 20
+  measured_iterations: 100
+  synchronize_before_and_after: true
+  fixed_batch: true
+  fixed_host_load: true
+memory_terminology:
+  mps: MPS framework-reported allocated unified memory
+  cuda_allocated: allocated GPU memory
+  cuda_reserved: reserved GPU memory
+accuracy_cost_pareto:
+  source: measured_values_only
+  manual_values: prohibited
+required_control_tables:
+  - parameter_matched
+  - compute_matched

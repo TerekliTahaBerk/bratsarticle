@@ -271,14 +271,22 @@ def apply_intensity_transform(
     plan: IntensityTransformPlan,
 ) -> np.ndarray:
     """Apply modality-specific intensity changes without altering zero background."""
-    if image.ndim != 3 or image.shape[0] != len(MODALITY_ORDER):
-        raise ValueError("Intensity transform expects image [4,H,W]")
+    if (
+        image.ndim != 3
+        or image.shape[0] < len(MODALITY_ORDER)
+        or image.shape[0] % len(MODALITY_ORDER) != 0
+    ):
+        raise ValueError("Intensity transform expects [4*K,H,W] modality channels")
     output = image.astype(np.float32, copy=True)
-    for channel, (scale, shift) in enumerate(
+    context_count = image.shape[0] // len(MODALITY_ORDER)
+    for modality_index, (scale, shift) in enumerate(
         zip(plan.scales, plan.shifts, strict=True)
     ):
-        foreground = output[channel] != 0
-        output[channel, foreground] = output[channel, foreground] * scale + shift
+        start = modality_index * context_count
+        stop = start + context_count
+        foreground = output[start:stop] != 0
+        selected = output[start:stop]
+        selected[foreground] = selected[foreground] * scale + shift
     return output
 
 

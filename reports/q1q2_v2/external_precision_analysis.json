@@ -1,0 +1,16 @@
+{
+  "alpha_two_sided": 0.05,
+  "expected_95_percent_ci_half_width": 0.011994382836777232,
+  "historical_paired_difference_sd": 0.05887957821997264,
+  "historical_source": "legacy internal patient-level U-Net+RES minus U-Net mean-regional Dice after averaging declared seeds; planning only",
+  "power_by_true_mean_difference": {
+    "0.010": 0.37407751197960937,
+    "0.015": 0.6906455581484157,
+    "0.020": 0.906044040729125,
+    "0.025": 0.9836540471950136,
+    "0.030": 0.9984359680814289
+  },
+  "practical_effect_threshold": 0.02,
+  "sample_size": 95,
+  "threshold_role": "interpretive SESOI for superiority, not an equivalence or non-inferiority margin"
+}

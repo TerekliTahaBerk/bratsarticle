@@ -1,0 +1,19 @@
+{
+  "title": "Capacity- and Compute-Matched Evaluation of Published BU-Net Components",
+  "upload_type": "software",
+  "description": "Reproducible glioma-segmentation evaluation software. Scientific v2 results are released only after all frozen gates pass.",
+  "creators": [
+    {
+      "name": "Terekli, Taha Berk"
+    }
+  ],
+  "license": "Apache-2.0",
+  "version": "2.0.0",
+  "keywords": [
+    "glioma segmentation",
+    "BraTS",
+    "external validation",
+    "reproducibility",
+    "capacity matching"
+  ]
+}

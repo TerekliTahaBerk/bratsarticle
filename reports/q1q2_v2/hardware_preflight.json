@@ -1,0 +1,52 @@
+{
+  "accelerators": {
+    "cuda_available": false,
+    "mps_available": true,
+    "mps_built": true,
+    "mps_matrix_smoke_value": 1024.0
+  },
+  "disk": {
+    "free_bytes": 423960846336,
+    "free_gib": 394.8443069458008
+  },
+  "external_results_accessed": false,
+  "hardware": {
+    "chip": "Apple M1 Max",
+    "cpu_cores": 10,
+    "gpu_cores": 32,
+    "memory_terminology": "MPS framework-reported allocated unified memory",
+    "model": "MacBook Pro MacBookPro18,2",
+    "unified_memory_gb": 32
+  },
+  "internal_legacy_test_accessed": false,
+  "schema_version": 1,
+  "software": {
+    "monai": "1.6.0",
+    "nnunetv2": "2.8.1",
+    "python": "3.11.14",
+    "torch": "2.13.0"
+  },
+  "swin_unetr_mps_smoke": {
+    "forward_backward_seconds": 0.8480037089902908,
+    "input_shape": [
+      1,
+      4,
+      64,
+      64,
+      64
+    ],
+    "loss": 1.5408692359924316,
+    "mps_driver_allocated_unified_memory_bytes": 2282029056,
+    "mps_framework_reported_allocated_unified_memory_bytes": 207854592,
+    "output_shape": [
+      1,
+      4,
+      64,
+      64,
+      64
+    ],
+    "parameter_count": 15705646,
+    "status": "pass",
+    "warning": "64-cubed is an operator smoke, not the frozen 96-cubed training patch or a throughput benchmark"
+  }
+}

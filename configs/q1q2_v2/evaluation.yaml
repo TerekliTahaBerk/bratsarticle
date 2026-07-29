@@ -1,0 +1,60 @@
+evaluation:
+  output_mode: labels
+  from_logits: true
+  decoding: four_class_softmax_argmax_then_map_index_3_to_label_4
+  default_spacing_mm: [1.0, 1.0, 1.0]
+  hd_percentile: 95.0
+  surface_dice_tolerance_mm: 1.0
+
+  nested_sigmoid:
+    channel_order: [wt, tc, et]
+    thresholds:
+      wt: 0.5
+      tc: 0.5
+      et: 0.5
+    enforce_consistency: false
+    consistency_rule: outward_union
+
+  empty_masks:
+    overlap_both_empty: 1.0
+    overlap_one_empty: 0.0
+    surface_dice_both_empty: 1.0
+    surface_dice_one_empty: 0.0
+    hd95_both_empty_mm: 0.0
+    hd95_one_empty: infinity
+    undefined_rate: nan
+    relative_volume_error_empty_reference: zero_or_infinity
+
+  lesions:
+    connectivity: 26
+    minimum_voxels: 1
+    minimum_volume_mm3: 0.0
+    matching_method: maximum_total_iou
+    minimum_match_iou: 0.0
+
+  postprocessing:
+    stages: [raw]
+    minimum_prediction_voxels: 10
+    minimum_prediction_volume_mm3: 0.0
+
+  report:
+    regional:
+      - dice
+      - hd95_mm
+      - surface_dice
+      - sensitivity
+      - precision
+      - specificity
+      - relative_volume_error
+    lesion:
+      - lesion_recall
+      - lesion_precision
+      - lesion_wise_dice
+      - lesion_wise_hd95_mm
+      - false_positive_lesion_count
+    hd95_nonfinite:
+      - infinity_rate
+      - finite_median
+      - finite_iqr
+      - capped_sensitivity_analysis
+    silent_imputation: prohibited

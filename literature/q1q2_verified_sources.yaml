@@ -1,0 +1,239 @@
+schema_version: 1
+search_date: 2026-07-30
+date_range: 2015-01-01_to_2026-07-30
+scope:
+  - glioma_mri_segmentation
+  - controlled_architecture_comparison
+  - random_seed_variability
+  - patient_and_dataset_overlap
+  - external_validation
+  - segmentation_metrics
+  - reproducibility_and_reporting
+search_policy:
+  primary_sources_preferred: true
+  preprint_only_if_no_published_version_found: true
+  current_journal_policy_from_official_pages: true
+  unverified_quartiles_are_not_inferred: true
+sources:
+  - id: unet_2015
+    title: "U-Net: Convolutional Networks for Biomedical Image Segmentation"
+    year: 2015
+    venue: MICCAI
+    doi: "10.1007/978-3-319-24574-4_28"
+    url: "https://lmb.informatik.uni-freiburg.de/Publications/2015/RFB15a/"
+    source_type: primary_conference_paper
+    verified_fields: [title, authors, year, venue, doi]
+
+  - id: brats_benchmark_2015
+    title: "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)"
+    year: 2015
+    venue: IEEE Transactions on Medical Imaging
+    doi: "10.1109/TMI.2014.2377694"
+    url: "https://pubmed.ncbi.nlm.nih.gov/25494501/"
+    source_type: primary_journal_paper
+    verified_fields: [benchmark_design, human_interrater_range, wt_tc_active_regions]
+
+  - id: myronenko_2018
+    title: "3D MRI Brain Tumor Segmentation Using Autoencoder Regularization"
+    year: 2018
+    venue: MICCAI BrainLes Workshop
+    url: "https://arxiv.org/abs/1810.11654"
+    source_type: primary_paper
+    note: "Published workshop version exists; this accessible author manuscript was used for the architecture record."
+    verified_fields: [three_dimensional_model, autoencoder_regularization, brats_2018_winner]
+
+  - id: bunet_2020
+    title: "BU-Net: Brain Tumor Segmentation Using Modified U-Net Architecture"
+    year: 2020
+    venue: Electronics
+    doi: "10.3390/electronics9122203"
+    url: "https://www.mdpi.com/2079-9292/9/12/2203"
+    source_type: primary_journal_paper
+    license: CC_BY_4_0_article
+    verified_fields:
+      - two_dimensional_model
+      - brats_2017_and_2018
+      - residual_extended_skip
+      - wide_context
+      - component_attribution_to_rehman_et_al
+
+  - id: seed_variability_2020
+    title: "Variability and Reproducibility in Deep Learning for Medical Image Segmentation"
+    year: 2020
+    venue: Scientific Reports
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7426407/"
+    source_type: primary_review_and_experimental_analysis
+    verified_fields: [variability_sources, reproducibility_risk]
+
+  - id: nnunet_2021
+    title: "nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation"
+    year: 2021
+    venue: Nature Methods
+    doi: "10.1038/s41592-020-01008-z"
+    url: "https://www.nature.com/articles/s41592-020-01008-z"
+    source_type: primary_journal_paper
+    code: "https://github.com/MIC-DKFZ/nnUNet"
+    verified_fields: [self_configuration, preprocessing, architecture, training, postprocessing, 23_public_datasets]
+
+  - id: transbts_2022
+    title: "TransBTS: Multimodal Brain Tumor Segmentation Using Transformer"
+    year: 2022
+    venue: Medical Image Analysis
+    url: "https://arxiv.org/abs/2103.04430"
+    source_type: author_manuscript_of_published_work
+    code: "https://github.com/Wenxuan-1119/TransBTS"
+    verified_fields: [three_dimensional_cnn_transformer_hybrid, brats_2019, brats_2020]
+
+  - id: swin_unetr_2022
+    title: "Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images"
+    year: 2022
+    venue: "BrainLes 2021, LNCS 12962"
+    doi: "10.1007/978-3-031-08999-2_22"
+    url: "https://link.springer.com/chapter/10.1007/978-3-031-08999-2_22"
+    source_type: primary_conference_paper
+    code: "https://monai.io/research/swin-unetr"
+    note: "The published BrainLes chapter is the architecture source; the related CVPR paper covers self-supervised pretraining."
+    verified_fields: [three_dimensional_swin_encoder, brats_2021_validation]
+
+  - id: avesta_2p5d_2023
+    title: "Comparing 3D, 2.5D, and 2D Approaches to Brain Image Auto-Segmentation"
+    year: 2023
+    venue: Bioengineering
+    doi: "10.3390/bioengineering10020181"
+    url: "https://pubmed.ncbi.nlm.nih.gov/36829675/"
+    source_type: primary_journal_paper
+    license: CC_BY_4_0_article
+    note: "Primary support for the five-consecutive-slice 2.5D U-Net comparator definition; the present study independently freezes modality-major ordering and boundary replication."
+    verified_fields:
+      - five_consecutive_slices_predict_middle_slice
+      - two_dimensional_unet
+      - brain_mri_segmentation
+      - explicit_2d_2p5d_3d_comparison
+
+  - id: upenn_gbm_2022
+    title: "The University of Pennsylvania glioblastoma (UPenn-GBM) cohort: advanced MRI, clinical, genomics, & radiomics"
+    year: 2022
+    venue: Scientific Data
+    doi: "10.1038/s41597-022-01560-7"
+    data_doi: "10.7937/TCIA.709X-DN49"
+    url: "https://www.nature.com/articles/s41597-022-01560-7"
+    data_url: "https://www.cancerimagingarchive.net/collection/upenn-gbm/"
+    source_type: primary_data_descriptor
+    license: CC_BY_4_0_data
+    verified_fields:
+      - 630_collection_patients
+      - 611_baseline_four_modality_patients
+      - automated_label_fusion_with_manual_review
+      - 173_cases_previously_in_brats_and_fets
+
+  - id: ucsf_pdgm_2022
+    title: "The University of California San Francisco Preoperative Diffuse Glioma MRI Dataset"
+    year: 2022
+    venue: Radiology Artificial Intelligence
+    doi: "10.1148/ryai.220058"
+    data_doi: "10.7937/TCIA.BDGF-8V37"
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC9748624/"
+    data_url: "https://www.cancerimagingarchive.net/collection/ucsf-pdgm/"
+    source_type: primary_data_descriptor
+    license: CC_BY_4_0_data
+    verified_fields:
+      - 495_unique_patients_in_current_collection
+      - 501_exams
+      - standardized_3T_protocol
+      - grade_2_to_4_diffuse_glioma
+      - brats_compatible_multicompartment_segmentation
+      - portion_in_brats_2021
+
+  - id: nnformer_2023
+    title: "nnFormer: Volumetric Medical Image Segmentation via a 3D Transformer"
+    year: 2023
+    venue: IEEE Transactions on Image Processing
+    doi: "10.1109/TIP.2023.3293771"
+    url: "https://ieeexplore.ieee.org/document/10183842/"
+    source_type: primary_journal_paper
+    verified_fields: [three_dimensional_transformer, skip_attention, comparison_with_nnunet]
+
+  - id: metrics_reloaded_2024
+    title: "Metrics Reloaded: recommendations for image analysis validation"
+    year: 2024
+    venue: Nature Methods
+    doi: "10.1038/s41592-023-02151-z"
+    url: "https://www.nature.com/articles/s41592-023-02151-z"
+    source_type: consensus_recommendation
+    verified_fields: [problem_fingerprint, complementary_metric_families, semantic_and_instance_segmentation]
+
+  - id: claim_2024
+    title: "Checklist for Artificial Intelligence in Medical Imaging: 2024 Update"
+    year: 2024
+    venue: Radiology Artificial Intelligence
+    doi: "10.1148/ryai.240300"
+    url: "https://pubs.rsna.org/doi/10.1148/ryai.240300"
+    source_type: reporting_guideline
+    verified_fields: [prespecification, external_evaluation, reporting_guidance]
+
+  - id: nnunet_revisited_2024
+    title: "nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation"
+    year: 2024
+    venue: MICCAI
+    url: "https://papers.miccai.org/miccai-2024/paper/2847_paper.pdf"
+    source_type: primary_conference_paper
+    verified_fields: [controlled_benchmarking, cnn_transformer_mamba_comparison, rigorous_validation]
+
+  - id: random_effects_2024
+    title: "Random effects during training: Implications for deep learning-based medical image segmentation"
+    year: 2024
+    venue: Computers in Biology and Medicine
+    url: "https://www.sciencedirect.com/science/article/pii/S0010482524010291"
+    source_type: primary_journal_paper
+    verified_fields: [multiple_seeds, holdout_and_fivefold_variability, seed_selection_risk]
+
+  - id: brats_africa_2025
+    title: "The BraTS-Africa Dataset: Expanding the Brain Tumor Segmentation Data to Capture African Populations"
+    year: 2025
+    venue: Radiology Artificial Intelligence
+    doi: "10.1148/ryai.240528"
+    data_doi: "10.7937/V8H6-8X67"
+    url: "https://pubs.rsna.org/doi/10.1148/ryai.240528"
+    data_url: "https://www.cancerimagingarchive.net/collection/BraTS-Africa/"
+    source_type: primary_data_descriptor
+    license: CC_BY_4_0_for_processed_images_labels_and_metadata
+    verified_fields:
+      - 146_subject_collection
+      - four_modality_processed_images
+      - tumor_subregion_labels
+      - african_multi_institution_domain
+      - access_constraints_for_unprocessed_images
+
+  - id: fets_2025
+    title: "Towards fair decentralized benchmarking of healthcare AI algorithms with the Federated Tumor Segmentation challenge"
+    year: 2025
+    venue: Nature Communications
+    doi: "10.1038/s41467-025-60466-1"
+    url: "https://www.nature.com/articles/s41467-025-60466-1"
+    source_type: primary_challenge_report
+    verified_fields:
+      - training_and_validation_identical_to_brats_2021
+      - 23_sites
+      - protected_decentralized_test_data
+      - public_labels_not_available_for_confirmatory_test
+
+  - id: tmi_policy_2025
+    title: "IEEE Transactions on Medical Imaging Instructions to Authors"
+    year: 2025
+    url: "https://ieeetmi.org/authors-instructions/"
+    source_type: official_journal_policy
+    verified_fields: [scope, ten_page_initial_limit, open_code_best_practice, prior_review_disclosure]
+
+  - id: radiology_ai_policy_2026
+    title: "Radiology: Artificial Intelligence Author Instructions"
+    year: 2026
+    url: "https://pubs.rsna.org/page/ai/author-instructions"
+    source_type: official_journal_policy
+    verified_fields: [original_research_3000_words, abstract_250_words, six_figures, four_tables, checklists]
+
+  - id: media_policy_2026
+    title: "Medical Image Analysis — Aims and Scope"
+    year: 2026
+    url: "https://www.sciencedirect.com/journal/medical-image-analysis"
+    source_type: official_journal_page
+    verified_fields: [miccai_society_affiliation, medical_and_biological_image_analysis_scope]

@@ -1,0 +1,59 @@
+schema_version: 1
+status: frozen_for_smoke_and_development_only
+hardware:
+  backend: mps
+  device: Apple M1 Max
+  gpu_cores: 32
+  unified_memory_gb: 32
+  terminology: MPS framework-reported allocated unified memory
+  identical_device_required_within_regime: true
+training:
+  optimizer_family:
+    native_2d: AdamW
+    official_nnunetv2: official_nnUNet_v2_optimizer_and_schedule
+    monai_swinunetr: AdamW
+  initial_learning_rate:
+    native_2d: 0.0003
+    monai_swinunetr: 0.0001
+  weight_decay: 0.00001
+  mixed_precision: false
+  effective_batch_size:
+    native_2d: 16
+    native_2p5d: 8
+    nnunetv2: plans_derived_and_recorded
+    swin_unetr: 2_with_gradient_accumulation_if_required
+  validation_frequency_optimizer_steps: 500
+  checkpoint_steps:
+    short_budget: 2000
+    medium_budget: 10000
+    full_budget: best_and_terminal
+convergence_matched:
+  maximum_optimizer_steps: 50000
+  early_stopping:
+    monitored_metric: validation_patient_mean_regional_dice
+    mode: maximize
+    minimum_delta: 0.001
+    patience_validation_checks: 12
+  best_checkpoint_rule: maximum_metric_then_lower_validation_loss_then_earlier_step
+  terminal_checkpoint_required: true
+compute_matched:
+  component_core_only: true
+  maximum_accelerator_hours_per_run: 4.0
+  maximum_optimizer_steps: 30000
+  stop_at_first_exhausted_budget: true
+  same_preprocessing_folds_seeds_and_validation_frequency: true
+  maximum_tuning_trials_per_model_loss_family: 4
+  maximum_tuning_accelerator_hours_per_family: 8.0
+  epoch_count_is_fairness_criterion: false
+pretraining:
+  permitted: false
+  external_pretraining_cost: included
+invalid_run_rules:
+  - nonfinite_loss
+  - wrong_model_seed_or_fold
+  - config_or_data_hash_mismatch
+  - missing_best_or_terminal_checkpoint
+  - validation_patient_set_mismatch
+  - external_or_legacy_test_access_before_gate_g
+  - budget_overrun
+  - convergence_evidence_missing

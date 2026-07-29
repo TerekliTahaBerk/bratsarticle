@@ -1,0 +1,166 @@
+schema_version: 1
+study: q1q2_capacity_external_validation
+status: prespecified_pending_training_and_checkpoint_freeze
+external_inference_permitted: false
+
+cohorts:
+  development:
+    dataset: BraTS_2020_training
+    patient_count: 369
+    design: patient_level_five_fold_cross_validation
+  external_confirmatory:
+    dataset: BraTS-Africa-TCIA-v1
+    patient_count: 95
+    disease_group: glioma
+    use: one_time_confirmatory_inference_after_gate_g
+  supportive_external:
+    dataset: BraTS-Africa-TCIA-v1
+    patient_count: 51
+    disease_group: other_neoplasm
+    use: separately_labelled_exploratory_only
+  legacy_internal:
+    patient_count: 74
+    new_model_inference: prohibited
+
+estimands:
+  same_width_component_effect:
+    contrast: unet_res_minus_unet_small
+    interpretation: RES effect at the published common base width; capacity confounded
+  capacity_matched_component_effect:
+    contrast: unet_res_minus_unet_parameter_matched_res
+    interpretation: primary capacity-controlled RES estimand
+  compute_matched_component_effect:
+    contrast: unet_res_minus_unet_compute_matched_res
+    interpretation: compute-controlled RES estimand
+
+primary_question: Does RES improve external patient-level mean regional Dice compared with a parameter-matched plain U-Net?
+primary_endpoint:
+  name: mean_regional_dice
+  statistical_unit: patient
+  definition: arithmetic_mean_of_patient_WT_TC_ET_Dice
+  direction: higher_is_better
+  replicate_aggregation: arithmetic_mean_over_all_valid_frozen_fold_seed_models_before_patient_contrast
+primary_contrast:
+  id: unet_res_vs_unet_parameter_matched_res
+  first: unet_res
+  second: unet_parameter_matched_res
+  difference: first_minus_second
+
+confirmatory_secondary_contrasts:
+  - id: bunet_vs_unet_res
+    first: bunet
+    second: unet_res
+  - id: unet_res_vs_unet_compute_matched_res
+    first: unet_res
+    second: unet_compute_matched_res
+  - id: bunet_vs_unet_parameter_matched_res
+    first: bunet
+    second: unet_parameter_matched_res
+  - id: nnunetv2_3d_fullres_vs_best_2d_development_model
+    first: nnunetv2_3d_fullres
+    second_selection: highest_development_cv_mean_regional_dice_among_frozen_2d_models
+
+multiplicity:
+  family: primary_plus_four_confirmatory_secondary_contrasts
+  method: holm
+  alpha_two_sided: 0.05
+  selection_ties: lower_resource_cost_then_lexicographic_model_id
+
+estimation:
+  paired_patient_bootstrap:
+    resamples: 10000
+    seed: 20260735
+    confidence_level: 0.95
+    interval: percentile
+    resampling_unit: patient
+  hierarchical_bootstrap:
+    resamples: 10000
+    seed: 20260736
+    order:
+      - resample_training_seed_with_replacement
+      - resample_patient_with_replacement
+    fold_handling: average_folds_with_fold_resampling_sensitivity
+  paired_permutation:
+    method: sign_flip_two_sided
+    resamples: 100000
+    seed: 20260737
+  mixed_effects_sensitivity:
+    outcome: patient_seed_fold_mean_regional_dice
+    fixed_effects: [model, fold]
+    random_intercepts: [patient, seed]
+    role: sensitivity_not_primary
+  report:
+    - mean_difference
+    - median_difference
+    - confidence_interval_95
+    - standardized_paired_effect_dz
+    - raw_p
+    - holm_adjusted_p
+    - probability_of_superiority
+
+practical_interpretation:
+  smallest_effect_size_of_interest: 0.02
+  unit: mean_regional_dice
+  role: superiority_interpretation_threshold
+  rationale: two percentage points averaged across WT_TC_ET requires a distributed regional gain rather than a rounding-level change
+  clinical_mcid_claim: false
+  equivalence_or_noninferiority: not_performed
+
+safety_and_failure_endpoints:
+  - et_lesion_recall
+  - et_lesion_wise_dice
+  - wt_hd95_mm
+  - tc_hd95_mm
+  - et_hd95_mm
+  - false_positive_lesion_count
+
+secondary_endpoints:
+  regions: [wt, tc, et]
+  metrics:
+    - dice
+    - hd95_mm
+    - surface_dice
+    - sensitivity
+    - precision
+    - specificity
+    - relative_volume_error
+    - lesion_recall
+    - lesion_precision
+    - lesion_wise_dice
+    - lesion_wise_hd95_mm
+    - false_positive_lesion_count
+  inferential_role: estimation_only_unless_named_confirmatory
+
+missingness_and_failures:
+  metric_imputation: none
+  hd95_one_empty: positive_infinity
+  hd95_reporting: infinity_rate_and_finite_median_iqr_plus_prespecified_caps
+  failed_training_seed: no_silent_replacement
+  common_complete_seed_analysis: required_if_any_seed_fails
+  failed_external_inference: report_for_every_frozen_model
+
+subgroups:
+  role: exploratory_estimation_only
+  minimum_reportable_patients: 10
+  dimensions:
+    - institution
+    - scanner_vendor
+    - scanner_model
+    - field_strength_t
+    - grade_if_available
+    - et_present
+    - development_derived_tumor_burden_tertile
+    - resolution
+  missing_metadata: explicit_unknown_category
+
+conduct:
+  external_threshold_tuning: prohibited
+  external_postprocessing_selection: prohibited
+  external_loss_selection: prohibited
+  external_normalization_adaptation:
+    permitted: prespecified_label_free_only
+    selected: none
+  external_retraining: prohibited
+  internal_and_external_results_separate: true
+  report_all_frozen_models: true
+  negative_results_suppression: prohibited

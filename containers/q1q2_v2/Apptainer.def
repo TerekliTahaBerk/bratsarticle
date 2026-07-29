@@ -1,0 +1,19 @@
+Bootstrap: docker
+From: python:3.11.14-slim-bookworm
+
+%files
+    environment/q1q2_v2-requirements-lock.txt /tmp/requirements-lock.txt
+    . /workspace/bratsarticle
+
+%environment
+    export PYTHONDONTWRITEBYTECODE=1
+    export PYTHONUNBUFFERED=1
+    export PIP_DISABLE_PIP_VERSION_CHECK=1
+
+%post
+    python -m pip install --no-cache-dir -r /tmp/requirements-lock.txt
+    python -m pip install --no-cache-dir --no-deps /workspace/bratsarticle
+
+%runscript
+    cd /workspace/bratsarticle
+    exec python -m pytest -q "$@"

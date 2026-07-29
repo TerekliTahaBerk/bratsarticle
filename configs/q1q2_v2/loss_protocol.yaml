@@ -1,0 +1,33 @@
+schema_version: 1
+status: frozen_for_development_cv_selection
+catalog: configs/losses/catalog.yaml
+selection:
+  cohort: BraTS_2020_369_patient_development
+  folds: [1, 2, 3, 4, 5]
+  pilot_seed: 20260730
+  model: unet_small
+  endpoint: validation_patient_mean_regional_dice
+  external_data_permitted: false
+  tie_breakers:
+    - lower_mean_validation_loss
+    - lower_loss_name_lexicographic
+  candidates:
+    - cross_entropy_plus_soft_dice
+    - binary_cross_entropy_plus_focal_tversky
+    - cross_entropy_plus_focal_tversky
+final_architecture_attribution:
+  selected_loss: pending_development_cv
+  output_interpretation: mutually_exclusive_four_class_softmax
+  inference: argmax_classes_0_1_2_3_then_map_3_to_brats_label_4
+interaction_sensitivity:
+  finalists:
+    - unet_parameter_matched_res
+    - unet_res
+    - bunet
+    - nnunetv2_3d_fullres
+  minimum_distinct_losses_per_finalist: 2
+  analysis: architecture_by_loss_interaction
+conduct:
+  no_external_loss_selection: true
+  no_internal_legacy_test_loss_selection: true
+  report_negative_interactions: true

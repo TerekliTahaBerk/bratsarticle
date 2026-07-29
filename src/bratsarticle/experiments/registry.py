@@ -141,7 +141,7 @@ class RunDescriptor:
 
 
 class ResourceTracker:
-    """Measure elapsed GPU time and peak CUDA/MPS memory for one run."""
+    """Measure elapsed accelerator time and peak CUDA/MPS memory for one run."""
 
     def __init__(self, device: torch.device) -> None:
         self.device = device
@@ -186,19 +186,30 @@ class ResourceTracker:
         else:
             peak_allocated = self._peak_allocated_bytes
             peak_reserved = self._peak_reserved_bytes
+        memory_semantics = (
+            "CUDA peak allocated and reserved GPU memory"
+            if self.device.type == "cuda"
+            else (
+                "MPS framework-reported allocated unified memory and "
+                "driver-allocated memory"
+            )
+            if self.device.type == "mps"
+            else "not applicable"
+        )
+        accelerator_hours = elapsed_seconds / 3600.0 if gpu_active else 0.0
         return {
             "device": str(self.device),
+            "accelerator_backend": self.device.type,
             "elapsed_seconds": elapsed_seconds,
-            "gpu_hours": elapsed_seconds / 3600.0 if gpu_active else 0.0,
+            "accelerator_hours": accelerator_hours,
+            "peak_memory_allocated_bytes": peak_allocated,
+            "peak_memory_reserved_or_driver_bytes": peak_reserved,
+            "memory_semantics": memory_semantics,
+            # Legacy aliases are retained so v1 readers remain byte/schema
+            # compatible. New reports must use the backend-neutral fields.
+            "gpu_hours": accelerator_hours,
             "peak_allocated_vram_bytes": peak_allocated,
             "peak_reserved_vram_bytes": peak_reserved,
-            "memory_semantics": (
-                "CUDA peak allocated/reserved"
-                if self.device.type == "cuda"
-                else "MPS sampled allocated/driver"
-                if self.device.type == "mps"
-                else "not applicable"
-            ),
         }
 
     def elapsed_seconds(self) -> float:
@@ -254,6 +265,9 @@ class ExperimentRegistry:
             "hardware": _hardware(),
             "start_timestamp_utc": _timestamp(),
             "end_timestamp_utc": None,
+            "accelerator_hours": None,
+            "peak_memory_allocated_bytes": None,
+            "peak_memory_reserved_or_driver_bytes": None,
             "gpu_hours": None,
             "peak_allocated_vram_bytes": None,
             "peak_reserved_vram_bytes": None,
@@ -321,10 +335,27 @@ class ExperimentRegistry:
         }
         if not required_resources.issubset(resource_profile):
             raise ValueError("Resource profile is missing required fields")
+        accelerator_hours = resource_profile.get(
+            "accelerator_hours",
+            resource_profile["gpu_hours"],
+        )
+        peak_memory_allocated = resource_profile.get(
+            "peak_memory_allocated_bytes",
+            resource_profile["peak_allocated_vram_bytes"],
+        )
+        peak_memory_reserved_or_driver = resource_profile.get(
+            "peak_memory_reserved_or_driver_bytes",
+            resource_profile["peak_reserved_vram_bytes"],
+        )
         self.write_resource_profile(resource_profile)
         self._metadata.update(
             {
                 "end_timestamp_utc": _timestamp(),
+                "accelerator_hours": accelerator_hours,
+                "peak_memory_allocated_bytes": peak_memory_allocated,
+                "peak_memory_reserved_or_driver_bytes": (
+                    peak_memory_reserved_or_driver
+                ),
                 "gpu_hours": resource_profile["gpu_hours"],
                 "peak_allocated_vram_bytes": resource_profile[
                     "peak_allocated_vram_bytes"

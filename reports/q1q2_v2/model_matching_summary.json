@@ -1,0 +1,107 @@
+{
+  "compute_match": {
+    "absolute_difference": -110822400,
+    "criterion": "macs_per_slice",
+    "profile": {
+      "base_channels": 30,
+      "depth": 4,
+      "flops_per_slice": 18696960000,
+      "input_shape": [
+        1,
+        4,
+        240,
+        240
+      ],
+      "largest_single_activation_bytes": 6912000,
+      "macs_per_slice": 9348480000,
+      "name": "plain_unet_w30_d4",
+      "output_shape": [
+        1,
+        4,
+        240,
+        240
+      ],
+      "parameter_count": 6823774,
+      "receptive_field_proxy_pixels": 215
+    },
+    "relative_difference": 0.011715705378020264,
+    "target_value": 9459302400,
+    "within_tolerance": true
+  },
+  "mac_definition": "convolution and transposed-convolution multiply-accumulate pairs; FLOP=2*MAC",
+  "memory_field_definition": "largest single float32 activation tensor from a meta-device shape trace; not measured peak training memory",
+  "parameter_match": {
+    "absolute_difference": -82088,
+    "criterion": "parameter_count",
+    "profile": {
+      "base_channels": 24,
+      "depth": 4,
+      "flops_per_slice": 11988172800,
+      "input_shape": [
+        1,
+        4,
+        240,
+        240
+      ],
+      "largest_single_activation_bytes": 5529600,
+      "macs_per_slice": 5994086400,
+      "name": "plain_unet_w24_d4",
+      "output_shape": [
+        1,
+        4,
+        240,
+        240
+      ],
+      "parameter_count": 4368364,
+      "receptive_field_proxy_pixels": 215
+    },
+    "relative_difference": 0.01844486807182731,
+    "target_value": 4450452,
+    "within_tolerance": true
+  },
+  "parameter_selection_policy": "preserve target depth when at least one same-depth candidate is within tolerance; otherwise select the globally closest width/depth",
+  "receptive_field_field_definition": "transparent longest-path axial theoretical proxy in pixels",
+  "schema_version": 1,
+  "search_space": {
+    "base_channels": [
+      4,
+      64
+    ],
+    "candidate_count": 305,
+    "depth": [
+      2,
+      6
+    ],
+    "input_shape": [
+      1,
+      4,
+      240,
+      240
+    ],
+    "plain_unet_only": true,
+    "tolerance_fraction": 0.02
+  },
+  "status": "selected_before_main_training",
+  "target_unet_plus_res": {
+    "base_channels": 16,
+    "depth": 4,
+    "flops_per_slice": 18918604800,
+    "input_shape": [
+      1,
+      4,
+      240,
+      240
+    ],
+    "largest_single_activation_bytes": 3686400,
+    "macs_per_slice": 9459302400,
+    "name": "unet_plus_res",
+    "output_shape": [
+      1,
+      4,
+      240,
+      240
+    ],
+    "parameter_count": 4450452,
+    "receptive_field_proxy_pixels": 243
+  }
+}

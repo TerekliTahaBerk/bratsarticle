@@ -1,0 +1,35 @@
+schema_version: 1
+status: prespecified_not_executed
+interpretation: robustness_analysis_not_clinical_validation
+development_perturbations:
+  intensity_shift:
+    factors: [0.8, 0.9, 1.1, 1.2]
+    modality_coupling: independent_prespecified_draw
+  gaussian_noise:
+    standard_deviation_fraction_of_training_iqr: [0.02, 0.05, 0.1]
+  rician_like_noise:
+    standard_deviation_fraction_of_training_iqr: [0.02, 0.05, 0.1]
+  bias_field:
+    coefficient_ranges: [0.0, 0.3, 0.5]
+  resolution_degradation:
+    target_spacing_mm: [1.5, 2.0, 3.0]
+    restore_to_model_grid: trilinear_image_nearest_label
+  modality_dropout:
+    modes: [t1, t1ce, t2, flair]
+    replacement: zero_after_training_fold_normalization
+    execute_only_if_training_included_modality_dropout: false
+external_subgroups:
+  - institution
+  - scanner_vendor
+  - scanner_model
+  - field_strength_t
+  - grade_if_available
+  - et_present
+  - development_derived_tumor_burden_tertile
+  - resolution
+minimum_reportable_patients: 10
+small_cells: descriptive_with_explicit_denominator
+missing_metadata: explicit_unknown_category
+calibration_uncertainty:
+  enabled: false
+  reason: excluded_to_preserve_scope

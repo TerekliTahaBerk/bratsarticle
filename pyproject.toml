@@ -4,13 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bratsarticle"
-version = "0.1.0"
+version = "2.0.0"
 description = "Leakage-safe and reproducible BraTS segmentation research pipeline"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
-license = {text = "Proprietary research code; license to be selected before public release"}
+license = {text = "Apache-2.0"}
 authors = [
   {name = "Taha Berk Terekli"},
+]
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
 ]
 dependencies = [
   "matplotlib>=3.9,<4",

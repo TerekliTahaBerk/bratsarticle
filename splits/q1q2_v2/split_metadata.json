@@ -1,0 +1,69 @@
+{
+  "development": {
+    "assignment_seed": 20261414,
+    "balance_objective": 0.004037814457425019,
+    "candidate_count": 1000,
+    "candidate_index": 684,
+    "canonical_manifest": "manifests/canonical/brats2020_canonical_manifest.csv",
+    "canonical_manifest_sha256": "b9ab5bdf598521df5b3e26348ef4561f6ace631187385e180841e1712938e78b",
+    "dataset": "BraTS 2020 training",
+    "fold_count": 5,
+    "fold_counts": {
+      "cv_fold_1": {
+        "train": 295,
+        "validation": 74
+      },
+      "cv_fold_2": {
+        "train": 295,
+        "validation": 74
+      },
+      "cv_fold_3": {
+        "train": 295,
+        "validation": 74
+      },
+      "cv_fold_4": {
+        "train": 295,
+        "validation": 74
+      },
+      "cv_fold_5": {
+        "train": 296,
+        "validation": 73
+      }
+    },
+    "fold_sha256": {
+      "cv_fold_1": "f532c85a3d6e5ee2a429a5b16ae38769eb799ce15b4a82209b24d19f37bb06a3",
+      "cv_fold_2": "0f8f1a99d6c73341af50eb3beacbe6fd211838f906021250319145e9d1da36ac",
+      "cv_fold_3": "cd7f0bf9849d2118331ab28f9a5f69c89a69c63042c61b80dda96c61e1d6df91",
+      "cv_fold_4": "ff958e4032f77103dcb6bcd8bc37b674a3e1d85487cd25d935705750b4f25242",
+      "cv_fold_5": "1a35b5754d9d76526032eceb79e096a8f721f158f42032a5b827376b3d96cd94"
+    },
+    "patient_count": 369,
+    "stratification": [
+      "grade",
+      "ET presence",
+      "WT volume quartile"
+    ]
+  },
+  "external": {
+    "dataset": "BraTS-Africa-TCIA-v1",
+    "external_test_sha256": "b714811c97bb28328298598012fc4ba18894d478149148b5f636295c881f1382",
+    "inventory_sha256": "82710419cf7277e0ae1e78ef1b7931e5bc4eef01bf6a2e9b09cea1dd455517ec",
+    "model_inference_run": false,
+    "primary_patient_count": 95,
+    "results_accessed": false,
+    "supportive_other_neoplasm_count": 51
+  },
+  "legacy_internal_test": {
+    "patient_count": 74,
+    "permitted_for_new_models": false,
+    "role": "legacy replication appendix only"
+  },
+  "precision_plan_sha256": "cc8473b272d94391fd181e9d1d7ae731e2d6e5be31cb9ad413f58eeba2b8ed56",
+  "preprocessing": {
+    "cohort_level_parameters": "none",
+    "fold_training_only_rule": "Any learned normalization, sampling, augmentation, threshold, or post-processing parameter must be derived from that fold's training rows only.",
+    "per_volume_nonzero_voxel_normalization": true
+  },
+  "schema_version": 1,
+  "status": "cohort_membership_frozen_before_external_inference"
+}

@@ -70,9 +70,22 @@ def test_registry_creates_required_artifact_contract(tmp_path: Path) -> None:
     assert metadata["data_manifest_sha256"]
     assert metadata["repository_dirty"] in {True, False}
     assert metadata["gpu_hours"] == 0.0
+    assert metadata["accelerator_hours"] == 0.0
+    assert "peak_memory_allocated_bytes" in metadata
+    assert "peak_memory_reserved_or_driver_bytes" in metadata
     assert metadata["test_access"]["accessed"] is False
     assert metadata["tags"]["pilot_arm_id"] == "architecture_unet"
     assert cases.loc[0, "patient_id"] == "subject-1"
+
+
+def test_resource_tracker_uses_backend_neutral_memory_fields() -> None:
+    profile = ResourceTracker(torch.device("cpu")).snapshot()
+
+    assert profile["accelerator_backend"] == "cpu"
+    assert profile["accelerator_hours"] == 0.0
+    assert "peak_memory_allocated_bytes" in profile
+    assert "peak_memory_reserved_or_driver_bytes" in profile
+    assert profile["memory_semantics"] == "not applicable"
 
 
 def test_registry_rejects_unsafe_or_duplicate_run_ids(tmp_path: Path) -> None:

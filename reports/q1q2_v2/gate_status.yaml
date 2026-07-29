@@ -1,0 +1,48 @@
+schema_version: 1
+report_date: 2026-07-30
+overall: NOT_READY_COMPUTE_BLOCKER
+q1q2_ready: false
+external_inference_permitted: false
+gates:
+  A:
+    status: pass
+    evidence: legacy/v1/legacy_v1_pointer.yaml
+  B:
+    status: pass
+    evidence: reports/q1q2_v2/repository_gap_audit.md
+  C:
+    status: pass
+    evidence: reports/q1q2_v2/external_gate_c_summary.json
+  D:
+    status: static_design_pass_runtime_profiling_pending
+    evidence: reports/q1q2_v2/model_matching_summary.json
+  E:
+    status: design_pass_execution_pending
+    evidence: reports/q1q2_v2/model_matrix_validation.json
+  F:
+    status: blocked
+    evidence: reports/q1q2_v2/compute_budget.json
+  G:
+    status: prespecified_not_frozen
+    evidence: configs/q1q2_v2/statistical_analysis_plan.yaml
+  H:
+    status: not_started
+    evidence: artifacts/q1q2_v2/external_access_log.jsonl
+  I:
+    status: partial
+    evidence: environment/q1q2_v2-environment.json
+  J:
+    status: pass_for_blocker_package
+    evidence: reports/q1q2_v2/claim_audit.json
+  K:
+    status: blocked
+    evidence: submission/AUTHOR_CONFIRMATION_REQUIRED.md
+required_user_action:
+  provide:
+    - scheduler_and_launch_command
+    - exact_gpu_model_and_count
+    - per_job_wall_time
+    - total_gpu_hours
+    - storage_and_checkpoint_limits
+  alternative: explicitly_authorize_a_prespecified_protocol_revision_before_results
+  invariant: five_folds_and_five_common_seeds_cannot_be_silently_reduced

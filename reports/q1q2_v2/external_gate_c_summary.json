@@ -1,0 +1,45 @@
+{
+  "collection_doi": "10.7937/V8H6-8X67",
+  "complete_four_modality_and_label_count": 146,
+  "external_cohort_version": "BraTS-Africa-TCIA-v1",
+  "external_results_accessed": false,
+  "gate": "C",
+  "gate_c_pass": true,
+  "group_counts": {
+    "glioma": 95,
+    "other_neoplasm": 51
+  },
+  "integrity_failure_patient_ids": [],
+  "label_mapping": "0->0;1->1(NCR/NET);2->2(ED);3->4(ET)",
+  "license": "CC BY 4.0",
+  "model_inference_run": false,
+  "overlap": {
+    "decisions": [
+      "no_overlap_detected"
+    ],
+    "development_patient_count": 369,
+    "external_patient_count": 146,
+    "file_sha256_match_count": 0,
+    "identifier_match_count": 0,
+    "image_content_signature_match_count": 0,
+    "maximum_normalized_signature_rms_distance": 0.11541344402432689,
+    "median_normalized_signature_rms_distance": 0.04992061555448704,
+    "minimum_normalized_signature_rms_distance": 0.03083456348146163,
+    "near_match_threshold": 1e-05,
+    "normalized_volume_signature_match_count": 0,
+    "pairwise_comparison_count": 53874,
+    "sampled_content_signature_match_count": 0,
+    "zero_overlap_established": true
+  },
+  "patient_count": 146,
+  "primary_confirmatory_patient_count": 95,
+  "schema_version": 1,
+  "source_label_sets": [
+    "[0,1,2,3]",
+    "[0,1,2]",
+    "[0,1,3]",
+    "[0,2,3]",
+    "[0,2]"
+  ],
+  "supportive_other_neoplasm_patient_count": 51
+}
