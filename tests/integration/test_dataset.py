@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 import torch
 
-from bratsarticle.data.dataset import BraTSSliceDataset
+from bratsarticle.data.dataset import BraTSSliceDataset, NormalizedVolumeCache
 from bratsarticle.data.preprocessing import (
     CacheConfig,
     IntensityAugmentationConfig,
@@ -157,6 +157,50 @@ def test_disk_cache_is_outside_and_does_not_modify_raw_tree(
     assert before == after
     assert len(list(cache_root.glob("*.npz"))) == 1
     assert not cache_root.is_relative_to(raw_root)
+
+
+def test_memory_mapped_cache_reads_arrays_without_full_volume_copy(
+    tmp_path: Path,
+) -> None:
+    raw_root = tmp_path / "raw"
+    cache_root = tmp_path / "cache"
+    raw_root.mkdir()
+    manifest, modalities = _write_subject(raw_root)
+    config = _deterministic_config(
+        cache=CacheConfig(
+            enabled=True,
+            root=cache_root,
+            memory_subjects=0,
+            storage_format="memory_mapped_npy",
+        )
+    )
+    dataset = BraTSSliceDataset(
+        manifest,
+        raw_root,
+        config,
+        split="validation",
+        seed=4,
+    )
+
+    expected_image = preprocess_modalities(modalities, config)
+    _ = dataset[0]
+    cache_directories = list(cache_root.glob("*.npycache"))
+    assert len(cache_directories) == 1
+    assert (cache_directories[0] / "COMPLETE").is_file()
+
+    row = {str(key): value for key, value in manifest.iloc[0].items()}
+    cache = NormalizedVolumeCache(cache_root, raw_root, enabled=True)
+    loaded = cache.load(row, config)
+    assert loaded is not None
+    assert isinstance(loaded.image, np.memmap)
+    assert isinstance(loaded.label, np.memmap)
+    assert np.array_equal(loaded.image, expected_image)
+    assert np.array_equal(
+        loaded.label,
+        nib.load(raw_root / str(row["seg_relative_path"])).get_fdata().astype(
+            np.int16
+        ),
+    )
 
 
 def test_cache_below_raw_root_is_rejected(tmp_path: Path) -> None:

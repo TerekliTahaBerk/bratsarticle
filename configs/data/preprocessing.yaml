@@ -38,3 +38,4 @@ preprocessing:
     enabled: false
     root: ${oc.env:BRATS_CACHE_ROOT,null}
     memory_subjects: 1
+    storage_format: compressed_npz

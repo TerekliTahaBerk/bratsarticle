@@ -38,3 +38,4 @@ preprocessing:
     enabled: true
     root: ${oc.env:BRATS_CACHE_ROOT}
     memory_subjects: 1
+    storage_format: memory_mapped_npy

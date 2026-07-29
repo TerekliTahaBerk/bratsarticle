@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import tempfile
 from collections import OrderedDict
 from collections.abc import Mapping
@@ -160,7 +161,12 @@ class NormalizedVolumeCache:
             raise RuntimeError("Cache is disabled")
         subject_id = str(row["subject_id"])
         fingerprint = _cache_fingerprint(row, config)
-        return self.root / f"{subject_id}-{fingerprint[:20]}.npz"
+        suffix = (
+            ".npz"
+            if config.cache.storage_format == "compressed_npz"
+            else ".npycache"
+        )
+        return self.root / f"{subject_id}-{fingerprint[:20]}{suffix}"
 
     def load(
         self,
@@ -171,19 +177,54 @@ class NormalizedVolumeCache:
         if not self.enabled:
             return None
         path = self._path(row, config)
-        if not path.is_file():
+        if config.cache.storage_format == "compressed_npz":
+            if not path.is_file():
+                return None
+            with np.load(path, allow_pickle=False) as cached:
+                spacing_array = np.asarray(cached["spacing_mm"], dtype=np.float64)
+                return SubjectVolume(
+                    image=np.asarray(cached["image"], dtype=np.float32),
+                    label=np.asarray(cached["label"], dtype=np.int16),
+                    spacing_mm=(
+                        float(spacing_array[0]),
+                        float(spacing_array[1]),
+                        float(spacing_array[2]),
+                    ),
+                )
+        completion_marker = path / "COMPLETE"
+        image_path = path / "image.npy"
+        label_path = path / "label.npy"
+        spacing_path = path / "spacing_mm.npy"
+        if not (
+            completion_marker.is_file()
+            and image_path.is_file()
+            and label_path.is_file()
+            and spacing_path.is_file()
+        ):
             return None
-        with np.load(path, allow_pickle=False) as cached:
-            spacing_array = np.asarray(cached["spacing_mm"], dtype=np.float64)
-            return SubjectVolume(
-                image=np.asarray(cached["image"], dtype=np.float32),
-                label=np.asarray(cached["label"], dtype=np.int16),
-                spacing_mm=(
-                    float(spacing_array[0]),
-                    float(spacing_array[1]),
-                    float(spacing_array[2]),
-                ),
-            )
+        image = np.load(image_path, mmap_mode="r", allow_pickle=False)
+        label = np.load(label_path, mmap_mode="r", allow_pickle=False)
+        spacing_array = np.asarray(
+            np.load(spacing_path, allow_pickle=False),
+            dtype=np.float64,
+        )
+        if image.dtype != np.float32 or label.dtype != np.int16:
+            raise ValueError(f"Invalid memory-mapped cache dtypes at {path}")
+        if image.ndim != 4 or image.shape[0] != len(MODALITY_ORDER):
+            raise ValueError(f"Invalid memory-mapped image shape at {path}")
+        if label.shape != image.shape[1:]:
+            raise ValueError(f"Memory-mapped image/label shape mismatch at {path}")
+        if spacing_array.shape != (3,):
+            raise ValueError(f"Invalid memory-mapped spacing at {path}")
+        return SubjectVolume(
+            image=image,
+            label=label,
+            spacing_mm=(
+                float(spacing_array[0]),
+                float(spacing_array[1]),
+                float(spacing_array[2]),
+            ),
+        )
 
     def store(
         self,
@@ -195,6 +236,39 @@ class NormalizedVolumeCache:
         if not self.enabled:
             return
         destination = self._path(row, config)
+        if config.cache.storage_format == "memory_mapped_npy":
+            temporary = Path(
+                tempfile.mkdtemp(
+                    dir=destination.parent,
+                    prefix=f".{destination.name}.",
+                )
+            )
+            try:
+                np.save(
+                    temporary / "image.npy",
+                    np.asarray(volume.image, dtype=np.float32),
+                    allow_pickle=False,
+                )
+                np.save(
+                    temporary / "label.npy",
+                    np.asarray(volume.label, dtype=np.int16),
+                    allow_pickle=False,
+                )
+                np.save(
+                    temporary / "spacing_mm.npy",
+                    np.asarray(volume.spacing_mm, dtype=np.float32),
+                    allow_pickle=False,
+                )
+                (temporary / "COMPLETE").touch()
+                try:
+                    temporary.replace(destination)
+                except OSError:
+                    if not destination.is_dir():
+                        raise
+            finally:
+                if temporary.exists():
+                    shutil.rmtree(temporary)
+            return
         descriptor, raw_temporary = tempfile.mkstemp(
             dir=destination.parent,
             prefix=f".{destination.name}.",

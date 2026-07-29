@@ -58,6 +58,7 @@ class CacheConfig:
     enabled: bool = False
     root: Path | None = None
     memory_subjects: int = 1
+    storage_format: Literal["compressed_npz", "memory_mapped_npy"] = "compressed_npz"
 
 
 @dataclass(frozen=True)
@@ -130,6 +131,11 @@ class PreprocessingConfig:
             raise ValueError("Test must retain all slices deterministically")
         if self.cache.memory_subjects < 0:
             raise ValueError("memory_subjects cannot be negative")
+        if self.cache.storage_format not in {
+            "compressed_npz",
+            "memory_mapped_npy",
+        }:
+            raise ValueError("Unsupported normalized-volume cache storage format")
         if self.cache.enabled and self.cache.root is None:
             raise ValueError("Enabled disk cache requires a separate cache root")
 
@@ -388,5 +394,9 @@ def load_preprocessing_config(path: Path) -> PreprocessingConfig:
             enabled=bool(raw.cache.enabled),
             root=cache_root,
             memory_subjects=int(raw.cache.memory_subjects),
+            storage_format=cast(
+                Literal["compressed_npz", "memory_mapped_npy"],
+                str(raw.cache.storage_format),
+            ),
         ),
     )
