@@ -142,6 +142,22 @@ post-processing are frozen. After internal-test access there is no checkpoint
 replacement, model selection, threshold adjustment, post-processing tuning, or
 unreported candidate/seed exclusion.
 
+## Internal held-out test conduct
+
+Gate 11 opened `splits/frozen/test.csv` once through the guarded loader, with
+the purpose, manifest hash, code commit, and command recorded in the append-only
+access log. It evaluated all 13 frozen checkpoints over all 74 patients. The
+three-seed reference and both five-seed finalists were aggregated within
+patient before inference. No model, seed, patient, metric, or comparison was
+removed after viewing results.
+
+The complete audit, per-seed rows, candidate-level rows, estimates, paired
+comparisons, subgroup summaries, resource measurements, and generated report
+are stored under `reports/gate11_*`. Infinite HD95 and undefined lesion rates
+remain visible through explicit finite, NaN, and infinity counts. Qualitative
+case roles and the fixed prediction seed were declared before access; the
+resulting cases are illustrative and are not additional inferential units.
+
 ## Preprocessing
 
 The versioned preprocessing contract is `configs/data/preprocessing.yaml`,

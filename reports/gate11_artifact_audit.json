@@ -1,0 +1,26 @@
+{
+  "access_event_count": 1,
+  "access_event_valid": true,
+  "expected_checkpoint_count": 13,
+  "expected_patient_count_per_checkpoint": 74,
+  "invalid_runs": {},
+  "run_metadata_status": "completed",
+  "status": "complete",
+  "test_manifest_sha256": "455b3b661be73a84fc99458798ee9a5cbbf9c70deac0b425397220fbbab7a525",
+  "valid_checkpoint_count": 13,
+  "valid_runs": [
+    "unet_reference:20260729",
+    "unet_reference:20260730",
+    "unet_reference:20260731",
+    "bunet:20260729",
+    "bunet:20260730",
+    "bunet:20260731",
+    "bunet:20260732",
+    "bunet:20260733",
+    "unet_res:20260729",
+    "unet_res:20260730",
+    "unet_res:20260731",
+    "unet_res:20260732",
+    "unet_res:20260733"
+  ]
+}
