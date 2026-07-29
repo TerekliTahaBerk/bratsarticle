@@ -44,3 +44,14 @@ opening development data.
 The Gate 8 analyzer accepts only all 12 clean, tagged, in-budget runs with the
 frozen hashes, A100 identity, checkpoint, and exact validation-patient set.
 Missing or invalid artifacts produce an audit but no shortlist.
+
+Gate 13 adds `reports/tracked_artifact_manifest.json`, which hashes the tracked
+computational source, configs, tests, frozen splits, machine-readable results,
+final reporting outputs, and the compact derived arrays required by the
+qualitative figures. `scripts/run_gate13_clean_clone_audit.py` removes all raw
+BraTS and cache environment variables, clones the repository to an isolated
+temporary directory, verifies those hashes, runs lint, strict source typing,
+and tests, and regenerates every Gate 12 output twice. Both generations must
+leave the clean clone byte-identical to the committed snapshot. This verifies
+artifact-level reproducibility without pretending that raw-data training or a
+new guarded internal-test pass can occur in a data-free clone.

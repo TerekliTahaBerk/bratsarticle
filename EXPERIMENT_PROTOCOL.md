@@ -169,6 +169,20 @@ environment. The reporting step does not reopen raw images or the internal-test
 manifest; qualitative panels use the fixed, derived arrays and predeclared
 case roles produced during Gate 11.
 
+## Clean-clone audit
+
+Gate 13 packages only the small, derived Gate 11 arrays needed to regenerate
+the predeclared qualitative panels; it does not package raw MRI data or model
+checkpoints. A deterministic SHA-256 manifest covers the computational source,
+configs, tests, frozen splits, machine-readable reports, final figures and
+tables, and the derived reporting bundle. The audit removes all BraTS root and
+cache environment variables, creates a non-local temporary Git clone, verifies
+the manifest, runs lint, strict source typing, and the complete test suite,
+then regenerates all Gate 12 outputs twice and requires a clean Git diff after
+each pass. Full training and another internal-test inference run are outside
+this data-free verification and require separately authorized inputs and
+access logging.
+
 ## Preprocessing
 
 The versioned preprocessing contract is `configs/data/preprocessing.yaml`,
