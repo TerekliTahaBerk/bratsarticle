@@ -67,8 +67,18 @@ def test_complete_artifacts_produce_paired_shortlists(tmp_path: Path) -> None:
             },
             "tags": {
                 "gate": 8,
+                "pilot_protocol_revision": plan.protocol_revision,
                 "pilot_arm_id": arm.arm_id,
                 "pilot_config_sha256": plan_hash,
+                "fairness_protocol_sha256": file_digest(
+                    plan.fairness_protocol_path
+                ),
+                "preprocessing_config_sha256": file_digest(
+                    plan.preprocessing_config_path
+                ),
+                "evaluation_config_sha256": file_digest(
+                    plan.evaluation_config_path
+                ),
             },
         }
         (run_directory / "metadata.json").write_text(

@@ -1,4 +1,4 @@
-"""Guarded single-arm Gate 8 pilot runner for an eligible CUDA host."""
+"""Guarded single-arm Gate 8 pilot runner for an eligible accelerator host."""
 
 from __future__ import annotations
 
@@ -311,9 +311,19 @@ def run_pilot_arm(
             split_hashes=_split_hashes(plan.split_dir),
             tags={
                 "gate": 8,
+                "pilot_protocol_revision": plan.protocol_revision,
                 "pilot_arm_id": arm.arm_id,
                 "pilot_screen": arm.screen,
                 "pilot_config_sha256": file_digest(plan_path),
+                "fairness_protocol_sha256": file_digest(
+                    plan.fairness_protocol_path
+                ),
+                "preprocessing_config_sha256": file_digest(
+                    plan.preprocessing_config_path
+                ),
+                "evaluation_config_sha256": file_digest(
+                    plan.evaluation_config_path
+                ),
             },
         ),
         config_path=plan_path,

@@ -171,8 +171,20 @@ def _validate_candidate(
     tags = metadata.get("tags", {})
     if tags.get("gate") != 8 or tags.get("pilot_arm_id") != arm.arm_id:
         reasons.append("pilot arm tags mismatch")
+    if tags.get("pilot_protocol_revision") != plan.protocol_revision:
+        reasons.append("pilot protocol revision mismatch")
     if tags.get("pilot_config_sha256") != file_digest(plan_path):
         reasons.append("pilot config hash tag mismatch")
+    expected_config_hashes = {
+        "fairness_protocol_sha256": file_digest(plan.fairness_protocol_path),
+        "preprocessing_config_sha256": file_digest(
+            plan.preprocessing_config_path
+        ),
+        "evaluation_config_sha256": file_digest(plan.evaluation_config_path),
+    }
+    for tag, expected_hash in expected_config_hashes.items():
+        if tags.get(tag) != expected_hash:
+            reasons.append(f"{tag} mismatch")
     validation_checks = resources.get("completed_validation_checks")
     if (
         not isinstance(validation_checks, int)

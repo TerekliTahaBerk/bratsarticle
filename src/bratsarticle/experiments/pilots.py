@@ -42,6 +42,7 @@ class PilotPlan:
 
     name: str
     status: str
+    protocol_revision: int
     seed: int
     fairness_protocol_path: Path
     registry_config_path: Path
@@ -73,6 +74,8 @@ class PilotPlan:
         """Validate budgets, unique arms, and screen scope."""
         if self.maximum_optimizer_steps < 1 or self.maximum_gpu_hours <= 0:
             raise ValueError("Pilot budgets must be positive")
+        if self.protocol_revision < 1:
+            raise ValueError("Pilot protocol revision must be positive")
         if self.validation_frequency_optimizer_steps < 1:
             raise ValueError("Validation frequency must be positive")
         possible_checks = (
@@ -139,6 +142,7 @@ def load_pilot_plan(path: Path) -> PilotPlan:
     plan = PilotPlan(
         name=str(pilot.name),
         status=str(pilot.status),
+        protocol_revision=int(pilot.protocol_revision),
         seed=seed,
         fairness_protocol_path=Path(str(pilot.fairness_protocol)),
         registry_config_path=Path(str(pilot.registry_config)),
@@ -258,8 +262,14 @@ def pilot_plan_record(plan: PilotPlan, source_path: Path) -> dict[str, Any]:
     return {
         "name": plan.name,
         "status": plan.status,
+        "protocol_revision": plan.protocol_revision,
         "source_config": source_path.as_posix(),
         "source_config_sha256": file_digest(source_path),
+        "referenced_config_sha256": {
+            "fairness_protocol": file_digest(plan.fairness_protocol_path),
+            "preprocessing": file_digest(plan.preprocessing_config_path),
+            "evaluation": file_digest(plan.evaluation_config_path),
+        },
         "git": _git_state(),
         "seed": plan.seed,
         "budget": {

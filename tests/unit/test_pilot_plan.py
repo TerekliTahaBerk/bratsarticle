@@ -9,6 +9,7 @@ def test_gate8_plan_is_single_seed_and_non_factorial() -> None:
 
     assert len(plan.arms) == 12
     assert len(pairs) == 12
+    assert plan.protocol_revision == 2
     assert {arm.seed for arm in plan.arms} == {20260729}
     assert {arm.screen for arm in plan.arms} == {"architecture", "loss"}
     assert plan.maximum_optimizer_steps == 2000
