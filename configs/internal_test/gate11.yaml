@@ -1,0 +1,64 @@
+gate11:
+  gate: 11
+  name: single_opening_frozen_internal_test_evaluation
+  revision: 1
+  status: frozen_pre_access
+
+  gate10:
+    plan: configs/statistics/gate10.yaml
+    analysis_freeze: reports/gate10_analysis_freeze.json
+    checkpoint_manifest: reports/gate10_checkpoint_manifest.json
+    frozen_split_dir: splits/frozen
+    evaluation_config: configs/evaluation/default.yaml
+    preprocessing_config: configs/data/preprocessing_pilot_cached.yaml
+
+  environment:
+    dataset_root_variable: BRATS2020_ROOT
+    cache_root_variable: BRATS_CACHE_ROOT
+    accelerator_backend: mps
+    accelerator_device_name: Apple M1 Max
+    minimum_free_disk_bytes: 21474836480
+
+  inference:
+    batch_size_slices: 16
+    mixed_precision: false
+    warmup_batches_per_checkpoint: 1
+    seed: 20260729
+    synchronize_for_latency: true
+    latency_scope: model_forward_only_per_patient_volume
+    prediction_decoding: four_class_argmax_then_labels_0_1_2_4
+    artifact_root: artifacts/internal_test/gate11
+    expected_patients: 74
+    expected_checkpoints: 13
+
+  access:
+    require_explicit_flag: true
+    audit_log: artifacts/test_access_log.jsonl
+    purpose: Gate 11 frozen 13-checkpoint internal held-out test evaluation
+    maximum_manifest_open_events: 1
+    refuse_if_prior_access_event_exists: true
+
+  qualitative:
+    frozen_seed: 20260729
+    save_full_prediction_labels_for_candidates:
+      [unet_reference, bunet, unet_res]
+    context_candidate: bunet
+    representative_slice_rule: maximum_ground_truth_WT_area_then_lowest_index
+    error_slice_rule: maximum_voxel_label_disagreement_then_lowest_index
+    case_selection_after_evaluation:
+      success: highest_bunet_mean_regional_dice_among_ET_present
+      hard: closest_to_bunet_median_mean_regional_dice_among_ET_present
+      failure: lowest_bunet_ET_dice_among_ET_present
+      ties: lexicographic_patient_id
+
+  outputs:
+    preflight: reports/gate11_preflight.json
+    audit: reports/gate11_artifact_audit.json
+    patient_seed_metrics: reports/gate11_patient_seed_metrics.csv
+    patient_candidate_metrics: reports/gate11_patient_candidate_metrics.csv
+    metric_summary: reports/gate11_metric_summary.csv
+    comparisons: reports/gate11_comparisons.csv
+    subgroups: reports/gate11_subgroups.csv
+    resources: reports/gate11_resource_summary.csv
+    analysis: reports/gate11_analysis.json
+    completion: reports/gate11_completion.md

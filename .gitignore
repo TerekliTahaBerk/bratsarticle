@@ -41,6 +41,7 @@ tensorboard/
 artifacts/runs/
 artifacts/checkpoints/
 artifacts/cache/
+artifacts/internal_test/
 *.ckpt
 *.pt
 *.pth
