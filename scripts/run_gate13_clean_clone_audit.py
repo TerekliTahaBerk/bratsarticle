@@ -251,16 +251,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 commands.append(result)
                 if name == "pytest":
                     match = re.search(
-                        r"(\d+ passed(?:, \d+ skipped)?[^\\n]*)",
+                        r"(\d+ passed(?:, \d+ skipped)?[^\n]*)",
                         result["stdout"],
                     )
                     pytest_summary = match.group(1) if match else "unparsed"
             identity_results = [
                 result
                 for result in commands
-                if result["name"].startswith("Gate 12 byte identity")
+                if result["name"].startswith("Gate 12 ")
             ]
-            reporting_outputs_identical = bool(identity_results) and all(
+            reporting_outputs_identical = len(identity_results) == 4 and all(
                 result["returncode"] == 0 for result in identity_results
             )
             status = _git_value(
