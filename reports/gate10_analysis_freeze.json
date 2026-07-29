@@ -1,0 +1,80 @@
+{
+  "checkpoint_count": 13,
+  "checkpoint_manifest_path": "reports/gate10_checkpoint_manifest.json",
+  "checkpoint_manifest_sha256": "8c8dcc5322e002dceb21754c6e03ec3cfc6109e72f771af71746000721cc1396",
+  "conduct": {
+    "append_only_test_access_audit": "artifacts/test_access_log.jsonl",
+    "clinical_applicability_claims_permitted": false,
+    "no_checkpoint_replacement_after_test_access": true,
+    "no_model_selection_after_test_access": true,
+    "no_threshold_or_postprocessing_tuning_after_test_access": true,
+    "one_guarded_internal_test_opening": true,
+    "report_all_frozen_candidates_and_seeds": true
+  },
+  "frozen_at_git_commit": "adadfa2556ae265cdacf87371d52190c6a636f8b",
+  "frozen_split_metadata_path": "splits/frozen/split_metadata.json",
+  "frozen_split_metadata_sha256": "b3be59a3fb2bdc8d61674500c02df5bec44ff0b6583aa5ae68da0856e0f490d9",
+  "gate": 10,
+  "hypothesis_testing": {
+    "alpha": 0.05,
+    "comparisons": [
+      {
+        "first": "bunet",
+        "id": "bunet_vs_unet_reference",
+        "role": "primary",
+        "second": "unet_reference"
+      },
+      {
+        "first": "unet_res",
+        "id": "unet_res_vs_unet_reference",
+        "role": "multiplicity_controlled_secondary",
+        "second": "unet_reference"
+      },
+      {
+        "first": "bunet",
+        "id": "bunet_vs_unet_res",
+        "role": "multiplicity_controlled_secondary",
+        "second": "unet_res"
+      }
+    ],
+    "difference_direction": "first_candidate_minus_second_candidate",
+    "endpoint": "mean_regional_dice",
+    "method": "paired_sign_flip_permutation_two_sided",
+    "multiplicity": {
+      "correction": "holm",
+      "family": "all_three_primary_endpoint_comparisons"
+    },
+    "resamples": 100000,
+    "secondary_endpoints": {
+      "multiplicity_adjusted_p_values": false,
+      "role": "estimation_only"
+    },
+    "seed": 20260730
+  },
+  "internal_test_accessed": false,
+  "manifest_sha256": {
+    "test": "455b3b661be73a84fc99458798ee9a5cbbf9c70deac0b425397220fbbab7a525",
+    "train": "49a8d6836aba5f69bb39d5eb513e29c3746adaae72f02ecdc0df094cd86d7425",
+    "validation": "95df721b5b013475b2100224279247e53afcc19c6ab79debf54283d27dc3d5bf"
+  },
+  "ordered_candidates": [
+    "unet_reference",
+    "bunet",
+    "unet_res"
+  ],
+  "plan_path": "configs/statistics/gate10.yaml",
+  "plan_sha256": "55f4964ed3de1fc8be89c11d9153ab26a147dc873cbbae3f3b8e29a597fbfd22",
+  "primary_endpoint": {
+    "definition": "arithmetic_mean_of_patient_WT_TC_ET_Dice",
+    "direction": "higher_is_better",
+    "name": "mean_regional_dice"
+  },
+  "resolved_subgroups": {
+    "boundaries": "small_le_q1_medium_le_q2_large_gt_q2",
+    "whole_tumor_burden_train_only_tertiles": {
+      "q1_mm3": 64267.0,
+      "q2_mm3": 123163.33333333331
+    }
+  },
+  "status": "frozen"
+}

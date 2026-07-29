@@ -39,8 +39,10 @@ All partitions are patient-level. The provisional split contains 258 training,
 37 validation, and 74 internal held-out test subjects. It was deterministically
 selected from 256 stratified candidates using seed `20260729`. Exact membership
 and SHA-256 hashes are recorded in `splits/provisional/split_metadata.json`.
-The split remains provisional until the statistical plan and finalist
-definitions are frozen.
+Gate 10 copied all three manifests byte-for-byte into `splits/frozen/` after
+the statistical plan and finalist definitions were fixed. The frozen metadata
+retains the original hashes and records the clean protocol commit used for the
+freeze.
 
 ## Evaluation discipline
 
@@ -113,6 +115,32 @@ finalist. BU-Net ranked first at Gate 9, but the paired bootstrap interval
 between the finalists included zero; this ranking is not a superiority claim.
 The frozen internal-test candidate set is Standard 2D U-Net, BU-Net, and
 residual U-Net. Gate 9 used no internal-test data.
+
+## Statistical freeze
+
+The Gate 10 plan is `configs/statistics/gate10.yaml`. It pins Standard 2D U-Net
+as the mandatory three-seed reference and pins all five development seeds for
+BU-Net and residual U-Net. Each of the 13 best-validation checkpoints is
+identified by path, model-config hash, and checkpoint SHA-256 in
+`reports/gate10_checkpoint_manifest.json`. Every seed is evaluated separately;
+there is no probability, logit, or label ensemble. Candidate metrics first
+average the frozen seed values within each patient, preserving the patient as
+the inferential unit.
+
+The primary endpoint is the patient's arithmetic mean WT/TC/ET Dice. Three
+predeclared paired comparisons share one family: BU-Net versus Standard U-Net,
+residual U-Net versus Standard U-Net, and BU-Net versus residual U-Net.
+Two-sided paired sign-flip permutation tests use 100,000 resamples and Holm
+correction at alpha 0.05. Paired percentile bootstrap intervals use 10,000
+patient resamples. Secondary endpoints and grade, ET-presence, and tumor-burden
+subgroups are estimation-only. Small/medium/large whole-tumor thresholds were
+fixed from training patients alone. Missing and infinite metric values are not
+imputed.
+
+Raw evaluation, four-class argmax decoding, 1 mm Surface Dice, HD95, and no
+post-processing are frozen. After internal-test access there is no checkpoint
+replacement, model selection, threshold adjustment, post-processing tuning, or
+unreported candidate/seed exclusion.
 
 ## Preprocessing
 
