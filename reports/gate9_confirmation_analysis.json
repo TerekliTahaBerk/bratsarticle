@@ -1,0 +1,52 @@
+{
+  "audit": {
+    "artifact_root": "artifacts/runs",
+    "duplicate_arm_runs": {},
+    "expected_arm_count": 12,
+    "expected_validation_patients": 37,
+    "foreign_config_run_ids_ignored": [
+      "gate8_architecture_bunet_s20260729_d0bdc0c4",
+      "gate8_architecture_resunet_s20260729_d0bdc0c4",
+      "gate8_architecture_resunet_wc_s20260729_d0bdc0c4",
+      "gate8_architecture_unet_res_s20260729_d0bdc0c4",
+      "gate8_architecture_unet_res_s20260729_dd160ea6",
+      "gate8_architecture_unet_s20260729_d0bdc0c4",
+      "gate8_architecture_unet_s20260729_dd160ea6",
+      "gate8_architecture_unet_wc_s20260729_d0bdc0c4",
+      "gate8_loss_binary_cross_entropy_plus_focal_tversky_s20260729_d0bdc0c4",
+      "gate8_loss_binary_cross_entropy_plus_soft_dice_s20260729_d0bdc0c4",
+      "gate8_loss_binary_cross_entropy_s20260729_d0bdc0c4",
+      "gate8_loss_cross_entropy_s20260729_d0bdc0c4",
+      "gate8_loss_focal_tversky_s20260729_d0bdc0c4",
+      "gate8_loss_soft_dice_s20260729_d0bdc0c4",
+      "gate8_mps_diagnostic_20260729T053619Z",
+      "gate8_mps_diagnostic_20260729T054604Z",
+      "gate8_mps_diagnostic_20260729T062855Z"
+    ],
+    "invalid_runs": {},
+    "missing_or_invalid_arms": [],
+    "shortlist_permitted": true,
+    "status": "complete",
+    "test_access_used": false,
+    "untagged_run_ids_ignored": [],
+    "valid_arm_count": 12
+  },
+  "best_confirmation_candidate": "bunet",
+  "confirmation_seeds": [
+    20260729,
+    20260730,
+    20260731
+  ],
+  "finalist_extension_seeds": [
+    20260732,
+    20260733
+  ],
+  "finalists": [
+    "bunet",
+    "unet_res"
+  ],
+  "internal_test_access": false,
+  "mandatory_reference_candidate": "unet_reference",
+  "minimum_finalist_fallback_applied": false,
+  "status": "confirmation_complete"
+}
