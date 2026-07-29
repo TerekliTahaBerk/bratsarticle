@@ -1,0 +1,278 @@
+{
+  "arms": [
+    {
+      "arm_id": "confirm_unet_reference_20260729",
+      "candidate_id": "unet_reference",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "confirm_unet_reference_20260730",
+      "candidate_id": "unet_reference",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "architecture",
+      "seed": 20260730
+    },
+    {
+      "arm_id": "confirm_unet_reference_20260731",
+      "candidate_id": "unet_reference",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "architecture",
+      "seed": 20260731
+    },
+    {
+      "arm_id": "confirm_bunet_20260729",
+      "candidate_id": "bunet",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/bunet.yaml",
+      "model_config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "confirm_bunet_20260730",
+      "candidate_id": "bunet",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/bunet.yaml",
+      "model_config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "screen": "architecture",
+      "seed": 20260730
+    },
+    {
+      "arm_id": "confirm_bunet_20260731",
+      "candidate_id": "bunet",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/bunet.yaml",
+      "model_config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "screen": "architecture",
+      "seed": 20260731
+    },
+    {
+      "arm_id": "confirm_unet_res_20260729",
+      "candidate_id": "unet_res",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_res.yaml",
+      "model_config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "confirm_unet_res_20260730",
+      "candidate_id": "unet_res",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_res.yaml",
+      "model_config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "screen": "architecture",
+      "seed": 20260730
+    },
+    {
+      "arm_id": "confirm_unet_res_20260731",
+      "candidate_id": "unet_res",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_res.yaml",
+      "model_config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "screen": "architecture",
+      "seed": 20260731
+    },
+    {
+      "arm_id": "confirm_unet_wc_20260729",
+      "candidate_id": "unet_wc",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_wc.yaml",
+      "model_config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "screen": "architecture",
+      "seed": 20260729
+    },
+    {
+      "arm_id": "confirm_unet_wc_20260730",
+      "candidate_id": "unet_wc",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_wc.yaml",
+      "model_config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "screen": "architecture",
+      "seed": 20260730
+    },
+    {
+      "arm_id": "confirm_unet_wc_20260731",
+      "candidate_id": "unet_wc",
+      "execution_stage": "confirmation",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_wc.yaml",
+      "model_config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "screen": "architecture",
+      "seed": 20260731
+    },
+    {
+      "arm_id": "extend_unet_reference_20260732",
+      "candidate_id": "unet_reference",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "architecture",
+      "seed": 20260732
+    },
+    {
+      "arm_id": "extend_unet_reference_20260733",
+      "candidate_id": "unet_reference",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet.yaml",
+      "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "screen": "architecture",
+      "seed": 20260733
+    },
+    {
+      "arm_id": "extend_bunet_20260732",
+      "candidate_id": "bunet",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/bunet.yaml",
+      "model_config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "screen": "architecture",
+      "seed": 20260732
+    },
+    {
+      "arm_id": "extend_bunet_20260733",
+      "candidate_id": "bunet",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/bunet.yaml",
+      "model_config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "screen": "architecture",
+      "seed": 20260733
+    },
+    {
+      "arm_id": "extend_unet_res_20260732",
+      "candidate_id": "unet_res",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_res.yaml",
+      "model_config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "screen": "architecture",
+      "seed": 20260732
+    },
+    {
+      "arm_id": "extend_unet_res_20260733",
+      "candidate_id": "unet_res",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_res.yaml",
+      "model_config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "screen": "architecture",
+      "seed": 20260733
+    },
+    {
+      "arm_id": "extend_unet_wc_20260732",
+      "candidate_id": "unet_wc",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_wc.yaml",
+      "model_config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "screen": "architecture",
+      "seed": 20260732
+    },
+    {
+      "arm_id": "extend_unet_wc_20260733",
+      "candidate_id": "unet_wc",
+      "execution_stage": "finalist_extension",
+      "loss": "binary_cross_entropy_plus_focal_tversky",
+      "model_config": "configs/models/unet_wc.yaml",
+      "model_config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "screen": "architecture",
+      "seed": 20260733
+    }
+  ],
+  "budget": {
+    "maximum_gpu_hours": 0.5,
+    "maximum_optimizer_steps": 2000,
+    "minimum_completed_validation_checks": 1,
+    "validation_frequency_optimizer_steps": 2000
+  },
+  "data_loader_workers": {
+    "training": 4,
+    "validation": 0
+  },
+  "elimination": {
+    "confidence_level": 0.95,
+    "confirmation_seeds": [
+      20260729,
+      20260730,
+      20260731
+    ],
+    "eliminate_if": {
+      "both_conditions_required": true,
+      "paired_bootstrap_upper_bound_below_zero": true,
+      "paired_mean_delta_below_negative_margin": true
+    },
+    "endpoint": "validation_patient_mean_regional_dice",
+    "finalist_eligible_candidates": [
+      "bunet",
+      "unet_res",
+      "unet_wc"
+    ],
+    "finalist_extension_seeds": [
+      20260732,
+      20260733
+    ],
+    "finalist_top_k": 2,
+    "internal_test_permitted": false,
+    "mandatory_reference_candidate": "unet_reference",
+    "minimum_finalists": 2,
+    "paired_bootstrap_resamples": 10000,
+    "practical_noninferiority_margin": 0.01,
+    "seed_aggregation": "per_patient_arithmetic_mean",
+    "statistical_unit": "patient"
+  },
+  "expected_arm_count": 20,
+  "factorial_combinations_not_scheduled": true,
+  "gate": 9,
+  "git": {
+    "commit": "40a740cbfcf05a7b05151ecebdab9470211ab5e4",
+    "dirty": false
+  },
+  "internal_test_access": false,
+  "loss_screen_reused_arms": {},
+  "memory_cache_subjects": {
+    "training": 4,
+    "validation": 37
+  },
+  "name": "gate9_multiseed_shortlist_confirmation",
+  "optimization": {
+    "learning_rate": 0.001,
+    "minimum_learning_rate_fraction": 0.01,
+    "mixed_precision": false,
+    "optimizer": "adamw",
+    "scheduler": "linear_warmup_cosine_decay",
+    "warmup_optimizer_steps": 200,
+    "weight_decay": 1e-05
+  },
+  "protocol_revision": 1,
+  "referenced_config_sha256": {
+    "evaluation": "e7da40fc2ff6fabada3737af2940f3e826fa1c9f02e58342471f8832377d70e0",
+    "fairness_protocol": "681e9230cf673171b9d113c13207371b86a74da5cc092d8e7adc027f0e556d44",
+    "preprocessing": "63043f37245a0a709e4c8dc2da05934ce4305e7885feff988b31a74de73b1616"
+  },
+  "seed": 20260729,
+  "source_config": "configs/pilots/gate9.yaml",
+  "source_config_sha256": "48e84344236a039f407198e00f9ea92815b6455e5c34867cba6d8e3d78563275",
+  "status": "frozen_pending_preflight"
+}

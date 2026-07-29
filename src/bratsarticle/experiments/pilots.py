@@ -392,5 +392,7 @@ def pilot_preflight(plan: PilotPlan) -> dict[str, Any]:
         "required_gpu_model": fairness.gpu_model,
         "visible_accelerators": visible_devices,
         "checks": checks,
-        "action_if_ineligible": "Do not start Gate 8 reportable pilot training",
+        "action_if_ineligible": (
+            f"Do not start Gate {plan.gate} reportable development training"
+        ),
     }
