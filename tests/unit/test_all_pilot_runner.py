@@ -9,7 +9,7 @@ from bratsarticle.experiments.pilot_batch import (
 
 def test_all_pilot_run_id_is_deterministic() -> None:
     assert (
-        pilot_run_id("architecture_unet", 20260729, "abcdef012345")
+        pilot_run_id(8, "architecture_unet", 20260729, "abcdef012345")
         == "gate8_architecture_unet_s20260729_abcdef01"
     )
 

@@ -30,6 +30,8 @@ class PilotArm:
     """One predeclared architecture/loss screening run."""
 
     arm_id: str
+    candidate_id: str
+    execution_stage: str
     screen: str
     model_config_path: Path
     loss_name: str
@@ -41,6 +43,8 @@ class PilotPlan:
     """Resolved single-seed Gate 8 pilot plan."""
 
     name: str
+    gate: int
+    expected_arm_count: int
     status: str
     protocol_revision: int
     seed: int
@@ -74,6 +78,8 @@ class PilotPlan:
         """Validate budgets, unique arms, and screen scope."""
         if self.maximum_optimizer_steps < 1 or self.maximum_gpu_hours <= 0:
             raise ValueError("Pilot budgets must be positive")
+        if self.gate < 1 or self.expected_arm_count < 1:
+            raise ValueError("Gate and expected arm count must be positive")
         if self.protocol_revision < 1:
             raise ValueError("Pilot protocol revision must be positive")
         if self.validation_frequency_optimizer_steps < 1:
@@ -104,30 +110,40 @@ class PilotPlan:
 
 def _architecture_arms(config: DictConfig, seed: int) -> list[PilotArm]:
     fixed_loss = str(config.fixed_loss)
-    return [
-        PilotArm(
-            arm_id=str(raw.id),
-            screen="architecture",
-            model_config_path=Path(str(raw.model_config)),
-            loss_name=fixed_loss,
-            seed=seed,
+    arms: list[PilotArm] = []
+    for raw in config.arms:
+        arm_id = str(raw.id)
+        arms.append(
+            PilotArm(
+                arm_id=arm_id,
+                candidate_id=str(raw.get("candidate_id", arm_id)),
+                execution_stage=str(raw.get("execution_stage", "screen")),
+                screen="architecture",
+                model_config_path=Path(str(raw.model_config)),
+                loss_name=fixed_loss,
+                seed=int(raw.get("seed", seed)),
+            )
         )
-        for raw in config.arms
-    ]
+    return arms
 
 
 def _loss_arms(config: DictConfig, seed: int) -> list[PilotArm]:
     fixed_model = Path(str(config.fixed_model_config))
-    return [
-        PilotArm(
-            arm_id=str(raw.id),
-            screen="loss",
-            model_config_path=fixed_model,
-            loss_name=str(raw.loss),
-            seed=seed,
+    arms: list[PilotArm] = []
+    for raw in config.arms:
+        arm_id = str(raw.id)
+        arms.append(
+            PilotArm(
+                arm_id=arm_id,
+                candidate_id=str(raw.get("candidate_id", arm_id)),
+                execution_stage=str(raw.get("execution_stage", "screen")),
+                screen="loss",
+                model_config_path=fixed_model,
+                loss_name=str(raw.loss),
+                seed=int(raw.get("seed", seed)),
+            )
         )
-        for raw in config.arms
-    ]
+    return arms
 
 
 def load_pilot_plan(path: Path) -> PilotPlan:
@@ -141,6 +157,8 @@ def load_pilot_plan(path: Path) -> PilotPlan:
     )
     plan = PilotPlan(
         name=str(pilot.name),
+        gate=int(pilot.get("gate", 8)),
+        expected_arm_count=int(pilot.get("expected_arm_count", 12)),
         status=str(pilot.status),
         protocol_revision=int(pilot.protocol_revision),
         seed=seed,
@@ -231,11 +249,15 @@ def _validate_references(plan: PilotPlan) -> None:
         load_model_config(arm.model_config_path)
         if arm.loss_name not in catalog:
             raise ValueError(f"Unknown pilot loss: {arm.loss_name}")
-    if len(plan.arms) != 12:
-        raise ValueError("Gate 8 plan must contain 12 unique non-factorial arms")
-    pairs = {(arm.model_config_path, arm.loss_name) for arm in plan.arms}
+    if len(plan.arms) != plan.expected_arm_count:
+        raise ValueError(
+            "Development plan arm count differs from expected_arm_count"
+        )
+    pairs = {
+        (arm.model_config_path, arm.loss_name, arm.seed) for arm in plan.arms
+    }
     if len(pairs) != len(plan.arms):
-        raise ValueError("Duplicate model/loss pilot combination")
+        raise ValueError("Duplicate model/loss/seed development combination")
 
 
 def _git_state() -> dict[str, Any]:
@@ -261,6 +283,8 @@ def pilot_plan_record(plan: PilotPlan, source_path: Path) -> dict[str, Any]:
     """Return a machine-readable, hash-linked representation of the plan."""
     return {
         "name": plan.name,
+        "gate": plan.gate,
+        "expected_arm_count": plan.expected_arm_count,
         "status": plan.status,
         "protocol_revision": plan.protocol_revision,
         "source_config": source_path.as_posix(),
@@ -302,6 +326,8 @@ def pilot_plan_record(plan: PilotPlan, source_path: Path) -> dict[str, Any]:
         "arms": [
             {
                 "arm_id": arm.arm_id,
+                "candidate_id": arm.candidate_id,
+                "execution_stage": arm.execution_stage,
                 "screen": arm.screen,
                 "model_config": arm.model_config_path.as_posix(),
                 "model_config_sha256": file_digest(arm.model_config_path),

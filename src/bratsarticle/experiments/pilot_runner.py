@@ -138,11 +138,11 @@ def _arm(plan: PilotPlan, arm_id: str) -> PilotArm:
     return matches[0]
 
 
-def _run_id(arm: PilotArm, supplied: str | None) -> str:
+def _run_id(arm: PilotArm, supplied: str | None, *, gate: int) -> str:
     if supplied:
         return supplied
     timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    return f"gate8_{arm.arm_id}_s{arm.seed}_{timestamp}"
+    return f"gate{gate}_{arm.arm_id}_s{arm.seed}_{timestamp}"
 
 
 def _loss(plan_arm: PilotArm) -> torch.nn.Module:
@@ -299,7 +299,7 @@ def run_pilot_arm(
     registry = ExperimentRegistry(
         artifact_root=plan.artifact_root,
         descriptor=RunDescriptor(
-            run_id=_run_id(arm, run_id),
+            run_id=_run_id(arm, run_id, gate=plan.gate),
             seed=arm.seed,
             model=model_config.name,
             loss=arm.loss_name,
@@ -310,9 +310,11 @@ def run_pilot_arm(
             data_manifest_path=plan.canonical_manifest_path,
             split_hashes=_split_hashes(plan.split_dir),
             tags={
-                "gate": 8,
+                "gate": plan.gate,
                 "pilot_protocol_revision": plan.protocol_revision,
                 "pilot_arm_id": arm.arm_id,
+                "candidate_id": arm.candidate_id,
+                "execution_stage": arm.execution_stage,
                 "pilot_screen": arm.screen,
                 "pilot_config_sha256": file_digest(plan_path),
                 "fairness_protocol_sha256": file_digest(

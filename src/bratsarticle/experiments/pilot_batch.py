@@ -11,9 +11,9 @@ from bratsarticle.experiments.pilots import load_pilot_plan, pilot_preflight
 from bratsarticle.utils.hashing import file_digest
 
 
-def pilot_run_id(arm_id: str, seed: int, config_hash: str) -> str:
+def pilot_run_id(gate: int, arm_id: str, seed: int, config_hash: str) -> str:
     """Build a deterministic run ID from the frozen scientific identity."""
-    return f"gate8_{arm_id}_s{seed}_{config_hash[:8]}"
+    return f"gate{gate}_{arm_id}_s{seed}_{config_hash[:8]}"
 
 
 def existing_run_is_reusable(
@@ -54,7 +54,7 @@ def run_all_pilot_arms(
     config_hash = file_digest(config_path)
     events: list[dict[str, Any]] = []
     for index, arm in enumerate(plan.arms, start=1):
-        run_id = pilot_run_id(arm.arm_id, arm.seed, config_hash)
+        run_id = pilot_run_id(plan.gate, arm.arm_id, arm.seed, config_hash)
         run_directory = plan.artifact_root.resolve() / run_id
         if run_directory.exists():
             if not existing_run_is_reusable(

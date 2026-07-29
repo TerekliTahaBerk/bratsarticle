@@ -169,8 +169,13 @@ def _validate_candidate(
     if hardware.get("accelerator_device_names") != [fairness.gpu_model]:
         reasons.append("GPU model differs from frozen protocol")
     tags = metadata.get("tags", {})
-    if tags.get("gate") != 8 or tags.get("pilot_arm_id") != arm.arm_id:
+    if tags.get("gate") != plan.gate or tags.get("pilot_arm_id") != arm.arm_id:
         reasons.append("pilot arm tags mismatch")
+    if plan.gate != 8:
+        if tags.get("candidate_id") != arm.candidate_id:
+            reasons.append("candidate tag mismatch")
+        if tags.get("execution_stage") != arm.execution_stage:
+            reasons.append("execution-stage tag mismatch")
     if tags.get("pilot_protocol_revision") != plan.protocol_revision:
         reasons.append("pilot protocol revision mismatch")
     if tags.get("pilot_config_sha256") != file_digest(plan_path):
@@ -228,9 +233,11 @@ def audit_pilot_artifacts(
     plan: PilotPlan,
     plan_path: Path,
     artifact_root: Path | None = None,
+    expected_arms: tuple[PilotArm, ...] | None = None,
 ) -> tuple[dict[str, Any], dict[str, ValidPilotArtifact]]:
     """Audit all expected pilot runs without producing a shortlist."""
     root = artifact_root or plan.artifact_root
+    arms = expected_arms or plan.arms
     expected_patients = _expected_patients(plan)
     candidates_by_arm: dict[str, list[tuple[Path, dict[str, Any]]]] = {}
     untagged_run_ids: list[str] = []
@@ -250,7 +257,7 @@ def audit_pilot_artifacts(
     valid: dict[str, ValidPilotArtifact] = {}
     invalid: dict[str, list[dict[str, Any]]] = {}
     duplicates: dict[str, int] = {}
-    for arm in plan.arms:
+    for arm in arms:
         candidates = candidates_by_arm.get(arm.arm_id, [])
         if len(candidates) > 1:
             duplicates[arm.arm_id] = len(candidates)
@@ -275,12 +282,12 @@ def audit_pilot_artifacts(
                         "reasons": reasons,
                     }
                 )
-    missing = sorted(arm.arm_id for arm in plan.arms if arm.arm_id not in valid)
-    complete = not missing and not duplicates and len(valid) == len(plan.arms)
+    missing = sorted(arm.arm_id for arm in arms if arm.arm_id not in valid)
+    complete = not missing and not duplicates and len(valid) == len(arms)
     audit = {
         "status": "complete" if complete else "incomplete",
         "artifact_root": root.as_posix(),
-        "expected_arm_count": len(plan.arms),
+        "expected_arm_count": len(arms),
         "valid_arm_count": len(valid),
         "missing_or_invalid_arms": missing,
         "duplicate_arm_runs": duplicates,
