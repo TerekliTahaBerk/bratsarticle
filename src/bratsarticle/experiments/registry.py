@@ -17,6 +17,11 @@ import psutil
 import torch
 from omegaconf import DictConfig, OmegaConf
 
+from bratsarticle.experiments.hardware import (
+    AcceleratorBackend,
+    accelerator_available,
+    accelerator_device_names,
+)
 from bratsarticle.utils.hashing import file_digest, text_digest
 from bratsarticle.utils.paths import assert_output_paths_safe
 from bratsarticle.utils.serialization import (
@@ -60,6 +65,15 @@ def _version(package: str) -> str:
 
 def _hardware() -> dict[str, Any]:
     cuda_available = torch.cuda.is_available()
+    mps_available = accelerator_available("mps")
+    accelerator_backend: AcceleratorBackend | None = (
+        "cuda" if cuda_available else "mps" if mps_available else None
+    )
+    accelerator_names = (
+        accelerator_device_names(accelerator_backend)
+        if accelerator_backend is not None
+        else []
+    )
     return {
         "platform": platform.platform(),
         "processor": platform.processor(),
@@ -68,15 +82,13 @@ def _hardware() -> dict[str, Any]:
         "memory_total_bytes": psutil.virtual_memory().total,
         "cuda_available": cuda_available,
         "cuda_device_count": torch.cuda.device_count(),
-        "cuda_device_names": [
-            torch.cuda.get_device_name(index)
-            for index in range(torch.cuda.device_count())
-        ],
+        "cuda_device_names": accelerator_device_names("cuda"),
         "cuda_version": torch.version.cuda,
         "cudnn_version": torch.backends.cudnn.version(),  # type: ignore[no-untyped-call]
-        "mps_available": bool(
-            hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
-        ),
+        "mps_available": mps_available,
+        "mps_device_names": accelerator_device_names("mps"),
+        "accelerator_backend": accelerator_backend or "none",
+        "accelerator_device_names": accelerator_names,
         "torch_version": torch.__version__,
         "python_version": platform.python_version(),
         "package_versions": {
@@ -129,35 +141,69 @@ class RunDescriptor:
 
 
 class ResourceTracker:
-    """Measure elapsed accelerator time and peak CUDA memory for one run."""
+    """Measure elapsed GPU time and peak CUDA/MPS memory for one run."""
 
     def __init__(self, device: torch.device) -> None:
         self.device = device
         self.started_at = time.perf_counter()
+        self._peak_allocated_bytes: int | None = None
+        self._peak_reserved_bytes: int | None = None
         if device.type == "cuda":
             torch.cuda.synchronize(device)
             torch.cuda.reset_peak_memory_stats(device)
+        elif device.type == "mps":
+            torch.mps.synchronize()
+            self._sample_mps_memory()
+
+    def _sample_mps_memory(self) -> None:
+        if self.device.type != "mps":
+            return
+        allocated = int(torch.mps.current_allocated_memory())
+        reserved = int(torch.mps.driver_allocated_memory())
+        self._peak_allocated_bytes = max(
+            allocated,
+            self._peak_allocated_bytes or 0,
+        )
+        self._peak_reserved_bytes = max(
+            reserved,
+            self._peak_reserved_bytes or 0,
+        )
 
     def snapshot(self) -> dict[str, Any]:
         """Return the current resource measurement."""
         if self.device.type == "cuda":
             torch.cuda.synchronize(self.device)
+        elif self.device.type == "mps":
+            torch.mps.synchronize()
+            self._sample_mps_memory()
         elapsed_seconds = time.perf_counter() - self.started_at
-        cuda_active = self.device.type == "cuda"
+        gpu_active = self.device.type in {"cuda", "mps"}
+        peak_allocated: int | None
+        peak_reserved: int | None
+        if self.device.type == "cuda":
+            peak_allocated = torch.cuda.max_memory_allocated(self.device)
+            peak_reserved = torch.cuda.max_memory_reserved(self.device)
+        else:
+            peak_allocated = self._peak_allocated_bytes
+            peak_reserved = self._peak_reserved_bytes
         return {
             "device": str(self.device),
             "elapsed_seconds": elapsed_seconds,
-            "gpu_hours": elapsed_seconds / 3600.0 if cuda_active else 0.0,
-            "peak_allocated_vram_bytes": (
-                torch.cuda.max_memory_allocated(self.device) if cuda_active else None
-            ),
-            "peak_reserved_vram_bytes": (
-                torch.cuda.max_memory_reserved(self.device) if cuda_active else None
+            "gpu_hours": elapsed_seconds / 3600.0 if gpu_active else 0.0,
+            "peak_allocated_vram_bytes": peak_allocated,
+            "peak_reserved_vram_bytes": peak_reserved,
+            "memory_semantics": (
+                "CUDA peak allocated/reserved"
+                if self.device.type == "cuda"
+                else "MPS sampled allocated/driver"
+                if self.device.type == "mps"
+                else "not applicable"
             ),
         }
 
     def elapsed_seconds(self) -> float:
         """Return elapsed wall time without forcing a device synchronization."""
+        self._sample_mps_memory()
         return time.perf_counter() - self.started_at
 
 

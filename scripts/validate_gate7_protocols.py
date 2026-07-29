@@ -8,12 +8,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
 
-import torch
 from omegaconf import DictConfig, OmegaConf
 
 from bratsarticle.experiments.fairness import (
     load_compute_matched_protocol,
     load_convergence_matched_protocol,
+)
+from bratsarticle.experiments.hardware import (
+    accelerator_available,
+    accelerator_device_names,
 )
 from bratsarticle.utils.hashing import file_digest
 from bratsarticle.utils.serialization import atomic_write_json
@@ -61,15 +64,16 @@ def run(
     """Validate the Gate 7 configs and write their hashes and host eligibility."""
     compute = load_compute_matched_protocol(compute_path)
     convergence = load_convergence_matched_protocol(convergence_path)
-    if compute.gpu_model != convergence.gpu_model:
+    if (
+        compute.gpu_model != convergence.gpu_model
+        or compute.accelerator_backend != convergence.accelerator_backend
+    ):
         raise ValueError("Both fairness regimes must target the same GPU")
-    cuda_names = [
-        torch.cuda.get_device_name(index) for index in range(torch.cuda.device_count())
-    ]
+    visible_devices = accelerator_device_names(compute.accelerator_backend)
     host_eligible = (
-        torch.cuda.is_available()
-        and len(cuda_names) == 1
-        and cuda_names[0] == compute.gpu_model
+        accelerator_available(compute.accelerator_backend)
+        and len(visible_devices) == 1
+        and visible_devices[0] == compute.gpu_model
     )
     payload = {
         "generated_at_utc": datetime.now(UTC).isoformat(),
@@ -86,9 +90,10 @@ def run(
         },
         "registry": _registry_contract(registry_path),
         "host_eligibility": {
+            "required_accelerator_backend": compute.accelerator_backend,
             "required_gpu_model": compute.gpu_model,
-            "cuda_available": torch.cuda.is_available(),
-            "visible_cuda_devices": cuda_names,
+            "accelerator_available": accelerator_available(compute.accelerator_backend),
+            "visible_accelerators": visible_devices,
             "eligible_for_reportable_pilots": host_eligible,
             "action_if_false": (
                 "Do not start reportable pilot or full training on this host"
@@ -105,12 +110,12 @@ def main() -> int:
     parser.add_argument(
         "--compute-config",
         type=Path,
-        default=Path("configs/protocols/compute_matched.yaml"),
+        default=Path("configs/protocols/compute_matched_mps.yaml"),
     )
     parser.add_argument(
         "--convergence-config",
         type=Path,
-        default=Path("configs/protocols/convergence_matched.yaml"),
+        default=Path("configs/protocols/convergence_matched_mps.yaml"),
     )
     parser.add_argument(
         "--registry-config",

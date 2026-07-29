@@ -164,7 +164,9 @@ def _validate_candidate(
     if test_access.get("allowed") or test_access.get("accessed"):
         reasons.append("test access was allowed or recorded")
     hardware = metadata.get("hardware", {})
-    if hardware.get("cuda_device_names") != [fairness.gpu_model]:
+    if hardware.get("accelerator_backend") != fairness.accelerator_backend:
+        reasons.append("accelerator backend differs from frozen protocol")
+    if hardware.get("accelerator_device_names") != [fairness.gpu_model]:
         reasons.append("GPU model differs from frozen protocol")
     tags = metadata.get("tags", {})
     if tags.get("gate") != 8 or tags.get("pilot_arm_id") != arm.arm_id:
@@ -220,11 +222,16 @@ def audit_pilot_artifacts(
     expected_patients = _expected_patients(plan)
     candidates_by_arm: dict[str, list[tuple[Path, dict[str, Any]]]] = {}
     untagged_run_ids: list[str] = []
+    foreign_config_run_ids: list[str] = []
+    expected_plan_hash = file_digest(plan_path)
     for directory in _run_directories(root):
         metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
         arm_id = str(metadata.get("tags", {}).get("pilot_arm_id", ""))
         if not arm_id:
             untagged_run_ids.append(str(metadata.get("run_id", directory.name)))
+            continue
+        if metadata.get("tags", {}).get("pilot_config_sha256") != expected_plan_hash:
+            foreign_config_run_ids.append(str(metadata.get("run_id", directory.name)))
             continue
         candidates_by_arm.setdefault(arm_id, []).append((directory, metadata))
 
@@ -267,6 +274,7 @@ def audit_pilot_artifacts(
         "duplicate_arm_runs": duplicates,
         "invalid_runs": invalid,
         "untagged_run_ids_ignored": sorted(untagged_run_ids),
+        "foreign_config_run_ids_ignored": sorted(foreign_config_run_ids),
         "expected_validation_patients": len(expected_patients),
         "test_access_used": False,
         "shortlist_permitted": complete,

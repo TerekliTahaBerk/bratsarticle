@@ -17,7 +17,7 @@ def _autocast_context(
 ) -> AbstractContextManager[None]:
     if not enabled:
         return nullcontext()
-    dtype = torch.float16 if device.type == "cuda" else torch.bfloat16
+    dtype = torch.float16 if device.type in {"cuda", "mps"} else torch.bfloat16
     return torch.autocast(
         device_type=device.type,
         dtype=dtype,
@@ -38,8 +38,8 @@ class TrainingEngine:
         mixed_precision: bool,
         state: TrainingState | None = None,
     ) -> None:
-        if device.type not in {"cpu", "cuda"}:
-            raise ValueError("Training engine currently supports CPU or CUDA")
+        if device.type not in {"cpu", "cuda", "mps"}:
+            raise ValueError("Training engine supports CPU, CUDA, or MPS")
         self.model = model.to(device)
         self.optimizer = optimizer
         self.loss_function = loss_function
@@ -47,7 +47,7 @@ class TrainingEngine:
         self.mixed_precision = mixed_precision
         self.state = state or TrainingState()
         self.scaler = torch.amp.GradScaler(
-            device.type,
+            device.type if device.type in {"cpu", "cuda"} else "cuda",
             enabled=mixed_precision and device.type == "cuda",
         )
 

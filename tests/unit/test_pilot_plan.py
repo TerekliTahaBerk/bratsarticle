@@ -18,7 +18,7 @@ def test_gate8_plan_is_single_seed_and_non_factorial() -> None:
     assert plan.loss_reuse == {"cross_entropy_plus_soft_dice": "architecture_unet"}
 
 
-def test_gate8_preflight_refuses_current_non_cuda_host() -> None:
+def test_gate8_preflight_refuses_sandboxed_accelerator() -> None:
     plan = load_pilot_plan(Path("configs/pilots/gate8.yaml"))
 
     preflight = pilot_preflight(plan)

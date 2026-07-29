@@ -9,13 +9,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
-import torch
 from omegaconf import DictConfig, OmegaConf
 
 from bratsarticle.experiments.fairness import load_compute_matched_protocol
+from bratsarticle.experiments.hardware import (
+    accelerator_available,
+    accelerator_device_names,
+)
 from bratsarticle.models.configurable_unet import load_model_config
 from bratsarticle.training.loss_catalog import load_loss_catalog
 from bratsarticle.utils.hashing import file_digest
+from bratsarticle.utils.serialization import atomic_write_text
 
 _ARM_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
 
@@ -174,6 +178,25 @@ def load_pilot_plan(path: Path) -> PilotPlan:
     return plan
 
 
+def write_mps_diagnostic_config(source: Path, destination: Path) -> Path:
+    """Create a short non-selection diagnostic from the frozen pilot config."""
+    root = cast(DictConfig, OmegaConf.load(source))
+    root.pilot.name = "gate8_mps_integration_diagnostic"
+    root.pilot.status = "diagnostic_only_not_for_selection"
+    root.pilot.budget.maximum_optimizer_steps = 10
+    root.pilot.budget.maximum_gpu_hours = 0.25
+    root.pilot.budget.validation_frequency_optimizer_steps = 10
+    root.pilot.budget.minimum_completed_validation_checks = 1
+    root.pilot.optimization.warmup_optimizer_steps = 2
+    root.pilot.data.training_workers = 0
+    root.pilot.data.validation_workers = 0
+    atomic_write_text(
+        destination,
+        OmegaConf.to_yaml(root, resolve=False),
+    )
+    return destination
+
+
 def _validate_references(plan: PilotPlan) -> None:
     required_paths = (
         plan.fairness_protocol_path,
@@ -274,16 +297,15 @@ def pilot_plan_record(plan: PilotPlan, source_path: Path) -> dict[str, Any]:
 def pilot_preflight(plan: PilotPlan) -> dict[str, Any]:
     """Check hardware and development-data prerequisites without training."""
     fairness = load_compute_matched_protocol(plan.fairness_protocol_path)
-    visible_devices = [
-        torch.cuda.get_device_name(index) for index in range(torch.cuda.device_count())
-    ]
+    visible_devices = accelerator_device_names(fairness.accelerator_backend)
+    backend_available = accelerator_available(fairness.accelerator_backend)
     data_root_value = os.environ.get("BRATS2020_ROOT")
     data_root = (
         None if not data_root_value else Path(data_root_value).expanduser().resolve()
     )
     checks = {
-        "cuda_available": torch.cuda.is_available(),
-        "exactly_one_visible_cuda_device": len(visible_devices) == 1,
+        "accelerator_backend_available": backend_available,
+        "exactly_one_visible_accelerator": len(visible_devices) == 1,
         "gpu_model_matches_frozen_protocol": (
             len(visible_devices) == 1 and visible_devices[0] == fairness.gpu_model
         ),
@@ -300,8 +322,9 @@ def pilot_preflight(plan: PilotPlan) -> dict[str, Any]:
     }
     return {
         "eligible": all(checks.values()),
+        "required_accelerator_backend": fairness.accelerator_backend,
         "required_gpu_model": fairness.gpu_model,
-        "visible_cuda_devices": visible_devices,
+        "visible_accelerators": visible_devices,
         "checks": checks,
         "action_if_ineligible": "Do not start Gate 8 reportable pilot training",
     }

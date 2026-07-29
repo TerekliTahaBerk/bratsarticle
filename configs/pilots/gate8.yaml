@@ -2,7 +2,7 @@ pilot:
   name: gate8_single_seed_development_screen
   status: frozen_pending_eligible_hardware
   seed: 20260729
-  fairness_protocol: configs/protocols/compute_matched.yaml
+  fairness_protocol: configs/protocols/compute_matched_mps.yaml
   registry_config: configs/experiments/registry.yaml
   artifact_root: artifacts/runs
 

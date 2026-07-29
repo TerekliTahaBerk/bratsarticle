@@ -1,21 +1,23 @@
 protocol:
-  name: compute_matched_v1
+  name: compute_matched_mps_v2
   regime: compute_matched
   status: frozen_for_pilot
   hardware:
-    accelerator_backend: cuda
-    gpu_model: NVIDIA A100-SXM4-80GB
+    accelerator_backend: mps
+    gpu_model: Apple M1 Max
+    gpu_core_count: 32
+    unified_memory_gb: 32
     identical_gpu_required: true
-    maximum_gpu_hours_per_run: 8.0
+    maximum_gpu_hours_per_run: 4.0
   budget:
     maximum_optimizer_steps: 30000
     tuning:
       maximum_trials_per_model_loss_family: 4
-      maximum_gpu_hours_per_model_loss_family: 16.0
+      maximum_gpu_hours_per_model_loss_family: 8.0
       validation_data_only: true
   training:
-    mixed_precision: true
-    autocast_dtype: float16
+    mixed_precision: false
+    autocast_dtype: disabled
     input_shape_channels_height_width: [4, 240, 240]
     batch_size: 16
     gradient_accumulation_steps: 1

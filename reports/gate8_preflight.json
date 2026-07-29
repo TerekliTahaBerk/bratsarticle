@@ -1,20 +1,23 @@
 {
   "action_if_ineligible": "Do not start Gate 8 reportable pilot training",
   "checks": {
-    "brats2020_root_exists": false,
-    "brats2020_root_set": false,
+    "accelerator_backend_available": true,
+    "brats2020_root_exists": true,
+    "brats2020_root_set": true,
     "canonical_manifest_exists": true,
-    "cuda_available": false,
-    "exactly_one_visible_cuda_device": false,
-    "gpu_model_matches_frozen_protocol": false,
+    "exactly_one_visible_accelerator": true,
+    "gpu_model_matches_frozen_protocol": true,
     "pilot_budget_within_compute_protocol": true,
     "test_manifest_not_referenced_by_plan": true,
     "train_manifest_exists": true,
     "validation_manifest_exists": true
   },
-  "eligible": false,
-  "generated_at_utc": "2026-07-29T05:24:10.211384+00:00",
-  "pilot_config_sha256": "2c6dbbc491739eac8d7f4cd3cc90455f3af876227ef9f2b7b1bd16ce8e78fc21",
-  "required_gpu_model": "NVIDIA A100-SXM4-80GB",
-  "visible_cuda_devices": []
+  "eligible": true,
+  "generated_at_utc": "2026-07-29T05:33:01.561127+00:00",
+  "pilot_config_sha256": "b4bbc5bfdf5e697852998ae5129854745a747500ce3a2910c543b053060bf7d7",
+  "required_accelerator_backend": "mps",
+  "required_gpu_model": "Apple M1 Max",
+  "visible_accelerators": [
+    "Apple M1 Max"
+  ]
 }

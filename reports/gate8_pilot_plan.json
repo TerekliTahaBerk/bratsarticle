@@ -132,8 +132,8 @@
   },
   "factorial_combinations_not_scheduled": true,
   "git": {
-    "commit": "b8b288855708f2fb0a764eb2b36579b505c161ed",
-    "dirty": false
+    "commit": "ecc425548ce2863d34dd5d41d389a4b433f1a63e",
+    "dirty": true
   },
   "internal_test_access": false,
   "loss_screen_reused_arms": {
@@ -151,6 +151,6 @@
   },
   "seed": 20260729,
   "source_config": "configs/pilots/gate8.yaml",
-  "source_config_sha256": "2c6dbbc491739eac8d7f4cd3cc90455f3af876227ef9f2b7b1bd16ce8e78fc21",
+  "source_config_sha256": "b4bbc5bfdf5e697852998ae5129854745a747500ce3a2910c543b053060bf7d7",
   "status": "frozen_pending_eligible_hardware"
 }

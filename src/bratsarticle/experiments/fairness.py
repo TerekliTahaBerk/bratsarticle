@@ -8,6 +8,8 @@ from typing import Literal, cast
 
 from omegaconf import DictConfig, OmegaConf
 
+from bratsarticle.experiments.hardware import AcceleratorBackend
+
 
 @dataclass(frozen=True)
 class SchedulerProtocol:
@@ -39,6 +41,7 @@ class ComputeMatchedProtocol:
 
     name: str
     status: str
+    accelerator_backend: AcceleratorBackend
     gpu_model: str
     identical_gpu_required: bool
     maximum_gpu_hours_per_run: float
@@ -64,6 +67,8 @@ class ComputeMatchedProtocol:
         """Validate the compute-matched comparison contract."""
         if not self.gpu_model.strip():
             raise ValueError("An exact target GPU model is required")
+        if self.accelerator_backend not in {"cuda", "mps"}:
+            raise ValueError("Accelerator backend must be cuda or mps")
         if self.maximum_gpu_hours_per_run <= 0 or self.maximum_optimizer_steps < 1:
             raise ValueError("Compute budgets must be positive")
         if (
@@ -96,6 +101,7 @@ class ConvergenceMatchedProtocol:
 
     name: str
     status: str
+    accelerator_backend: AcceleratorBackend
     gpu_model: str
     identical_gpu_required: bool
     maximum_optimizer_steps: int
@@ -123,6 +129,8 @@ class ConvergenceMatchedProtocol:
         """Validate the convergence-matched comparison contract."""
         if not self.gpu_model.strip():
             raise ValueError("An exact target GPU model is required")
+        if self.accelerator_backend not in {"cuda", "mps"}:
+            raise ValueError("Accelerator backend must be cuda or mps")
         if self.maximum_optimizer_steps < 1:
             raise ValueError("Maximum optimizer steps must be positive")
         if self.validation_frequency_optimizer_steps < 1:
@@ -179,6 +187,10 @@ def load_compute_matched_protocol(path: Path) -> ComputeMatchedProtocol:
     return ComputeMatchedProtocol(
         name=str(protocol.name),
         status=str(protocol.status),
+        accelerator_backend=cast(
+            AcceleratorBackend,
+            str(protocol.hardware.accelerator_backend),
+        ),
         gpu_model=str(protocol.hardware.gpu_model),
         identical_gpu_required=bool(protocol.hardware.identical_gpu_required),
         maximum_gpu_hours_per_run=float(protocol.hardware.maximum_gpu_hours_per_run),
@@ -227,6 +239,10 @@ def load_convergence_matched_protocol(path: Path) -> ConvergenceMatchedProtocol:
     return ConvergenceMatchedProtocol(
         name=str(protocol.name),
         status=str(protocol.status),
+        accelerator_backend=cast(
+            AcceleratorBackend,
+            str(protocol.hardware.accelerator_backend),
+        ),
         gpu_model=str(protocol.hardware.gpu_model),
         identical_gpu_required=bool(protocol.hardware.identical_gpu_required),
         maximum_optimizer_steps=int(protocol.stopping.maximum_optimizer_steps),

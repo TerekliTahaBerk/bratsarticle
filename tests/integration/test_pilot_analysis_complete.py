@@ -62,7 +62,8 @@ def test_complete_artifacts_produce_paired_shortlists(tmp_path: Path) -> None:
             "best_validation_checkpoint": "checkpoints/best.pt",
             "test_access": {"allowed": False, "accessed": False},
             "hardware": {
-                "cuda_device_names": ["NVIDIA A100-SXM4-80GB"],
+                "accelerator_backend": "mps",
+                "accelerator_device_names": ["Apple M1 Max"],
             },
             "tags": {
                 "gate": 8,

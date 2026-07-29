@@ -11,6 +11,7 @@ def test_compute_matched_protocol_is_explicit_and_not_epoch_matched() -> None:
         Path("configs/protocols/compute_matched.yaml")
     )
 
+    assert protocol.accelerator_backend == "cuda"
     assert protocol.gpu_model == "NVIDIA A100-SXM4-80GB"
     assert protocol.maximum_gpu_hours_per_run == 8.0
     assert protocol.maximum_optimizer_steps == 30000
@@ -22,6 +23,18 @@ def test_compute_matched_protocol_is_explicit_and_not_epoch_matched() -> None:
     assert protocol.scheduler.name == "linear_warmup_cosine_decay"
     assert not protocol.epoch_count_is_fairness_criterion
     assert not protocol.test_subset_permitted
+
+
+def test_mps_compute_protocol_is_explicit_and_full_precision() -> None:
+    protocol = load_compute_matched_protocol(
+        Path("configs/protocols/compute_matched_mps.yaml")
+    )
+
+    assert protocol.accelerator_backend == "mps"
+    assert protocol.gpu_model == "Apple M1 Max"
+    assert protocol.batch_size == 16
+    assert not protocol.mixed_precision
+    assert protocol.autocast_dtype == "disabled"
 
 
 def test_convergence_protocol_uses_one_scheduler_and_patient_metric() -> None:
@@ -38,3 +51,16 @@ def test_convergence_protocol_uses_one_scheduler_and_patient_metric() -> None:
     assert protocol.scheduler_count == 1
     assert not protocol.epoch_count_is_fairness_criterion
     assert not protocol.test_subset_permitted
+
+
+def test_mps_convergence_protocol_matches_mps_compute_hardware() -> None:
+    compute = load_compute_matched_protocol(
+        Path("configs/protocols/compute_matched_mps.yaml")
+    )
+    convergence = load_convergence_matched_protocol(
+        Path("configs/protocols/convergence_matched_mps.yaml")
+    )
+
+    assert convergence.accelerator_backend == compute.accelerator_backend
+    assert convergence.gpu_model == compute.gpu_model
+    assert not convergence.mixed_precision

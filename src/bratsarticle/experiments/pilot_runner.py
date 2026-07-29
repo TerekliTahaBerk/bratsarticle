@@ -5,16 +5,17 @@ from __future__ import annotations
 import json
 import os
 import traceback
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Sampler
 
 from bratsarticle.experiments.fairness import load_compute_matched_protocol
+from bratsarticle.experiments.hardware import accelerator_device
 from bratsarticle.experiments.pilots import (
     PilotArm,
     PilotPlan,
@@ -45,6 +46,43 @@ if TYPE_CHECKING:
     from bratsarticle.data.dataset import BraTSSliceDataset
 
 
+class PatientGroupedSampler(Sampler[int]):
+    """Shuffle patients while keeping each patient's sampled slices contiguous."""
+
+    def __init__(
+        self,
+        *,
+        patient_count: int,
+        samples_per_patient: int,
+        seed: int,
+    ) -> None:
+        if patient_count < 1 or samples_per_patient < 1:
+            raise ValueError("Patient and sample counts must be positive")
+        self.patient_count = patient_count
+        self.samples_per_patient = samples_per_patient
+        self.seed = seed
+        self.epoch = 0
+
+    def set_epoch(self, epoch: int) -> None:
+        """Select a deterministic patient order for the next iterator."""
+        if epoch < 0:
+            raise ValueError("Sampler epoch cannot be negative")
+        self.epoch = epoch
+
+    def __iter__(self) -> Iterator[int]:
+        generator = torch.Generator().manual_seed(self.seed + self.epoch)
+        patient_order = torch.randperm(
+            self.patient_count,
+            generator=generator,
+        ).tolist()
+        for patient_index in patient_order:
+            start = patient_index * self.samples_per_patient
+            yield from range(start, start + self.samples_per_patient)
+
+    def __len__(self) -> int:
+        return self.patient_count * self.samples_per_patient
+
+
 def _loader(
     dataset: BraTSSliceDataset,
     *,
@@ -52,12 +90,14 @@ def _loader(
     workers: int,
     seed: int,
     shuffle: bool,
+    sampler: Sampler[int] | None = None,
 ) -> DataLoader[dict[str, Any]]:
     generator = torch.Generator().manual_seed(seed)
     return DataLoader(
         dataset,
         batch_size=batch_size,
-        shuffle=shuffle,
+        shuffle=shuffle if sampler is None else False,
+        sampler=sampler,
         num_workers=workers,
         worker_init_fn=seed_dataloader_worker,
         generator=generator,
@@ -194,12 +234,20 @@ def run_pilot_arm(
         preprocessing,
         seed=arm.seed,
     )
+    train_sampler = PatientGroupedSampler(
+        patient_count=len(train_dataset.manifest),
+        samples_per_patient=(
+            preprocessing.training_sampling.samples_per_patient_per_epoch
+        ),
+        seed=arm.seed,
+    )
     train_loader = _loader(
         train_dataset,
         batch_size=fairness.batch_size,
         workers=plan.training_workers,
         seed=arm.seed,
-        shuffle=True,
+        shuffle=False,
+        sampler=train_sampler,
     )
     validation_loader = _loader(
         validation_dataset,
@@ -222,7 +270,7 @@ def run_pilot_arm(
         total_steps=plan.maximum_optimizer_steps,
         minimum_fraction=plan.minimum_learning_rate_fraction,
     )
-    device = torch.device("cuda")
+    device = accelerator_device(fairness.accelerator_backend)
     engine = TrainingEngine(
         model=model,
         optimizer=optimizer,
@@ -263,6 +311,7 @@ def run_pilot_arm(
     try:
         while stop_reason is None:
             train_dataset.set_epoch(epoch)
+            train_sampler.set_epoch(epoch)
             losses, stop_reason = _train_until_validation(
                 engine=engine,
                 scheduler=scheduler,

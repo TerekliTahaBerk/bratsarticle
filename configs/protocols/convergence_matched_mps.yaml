@@ -1,10 +1,12 @@
 protocol:
-  name: convergence_matched_v1
+  name: convergence_matched_mps_v2
   regime: convergence_matched
   status: frozen_for_pilot
   hardware:
-    accelerator_backend: cuda
-    gpu_model: NVIDIA A100-SXM4-80GB
+    accelerator_backend: mps
+    gpu_model: Apple M1 Max
+    gpu_core_count: 32
+    unified_memory_gb: 32
     identical_gpu_required: true
   stopping:
     maximum_optimizer_steps: 50000
@@ -14,8 +16,8 @@ protocol:
     mode: maximize
     monitored_metric: validation_patient_mean_regional_dice
   training:
-    mixed_precision: true
-    autocast_dtype: float16
+    mixed_precision: false
+    autocast_dtype: disabled
     input_shape_channels_height_width: [4, 240, 240]
     batch_size: 16
     gradient_accumulation_steps: 1
