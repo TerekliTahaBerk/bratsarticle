@@ -1,0 +1,14 @@
+{
+  "complete_cache_directory_count": 295,
+  "converted_subject_count": 295,
+  "destination_cache_root": "/Users/berk.terekli/Documents/braintumorarticle/cache/brats-mmap-v2",
+  "destination_storage_format": "memory_mapped_npy",
+  "development_subject_count": 295,
+  "reused_subject_count": 0,
+  "source_cache_root": "/Users/berk.terekli/Documents/braintumorarticle/cache/brats-normalized-v1",
+  "source_storage_format": "compressed_npz",
+  "status": "complete",
+  "test_manifest_accessed": false,
+  "train_subject_count": 258,
+  "validation_subject_count": 37
+}
