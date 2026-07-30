@@ -26,6 +26,7 @@ ordered_stages:
     status: queues_prepared_blocked_by_loss_freeze_and_serial_m1_runtime
     required_queues:
       native_configurable_unet: 225
+      native_component_compute_matched: 200
       monai_swin_unetr: 25
       official_nnunetv2: 50
   - id: convergence_sensitivity
@@ -33,7 +34,7 @@ ordered_stages:
     status: blocked_by_compute_allocation
   - id: loss_interaction_sensitivity
     class: reportable_development
-    status: blocked_by_compute_allocation
+    status: 100_job_queue_prepared_blocked_by_loss_freeze_and_serial_m1_runtime
   - id: analysis_freeze
     class: irreversible_gate
     status: pending_loss_and_checkpoints

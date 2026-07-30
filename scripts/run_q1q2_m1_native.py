@@ -8,7 +8,9 @@ import json
 from pathlib import Path
 
 from bratsarticle.experiments.q1q2_native_runner import (
+    resolve_loss_interaction_spec,
     resolve_loss_screen_spec,
+    resolve_main_compute_matched_spec,
     resolve_main_convergence_spec,
     run_native_development,
 )
@@ -21,7 +23,12 @@ def main() -> int:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument(
         "--stage",
-        choices=("loss_screen", "main_convergence"),
+        choices=(
+            "loss_screen",
+            "main_convergence",
+            "main_compute_matched",
+            "loss_interaction",
+        ),
         default="loss_screen",
     )
     parser.add_argument("--dataset-root", type=Path, required=True)
@@ -41,13 +48,39 @@ def main() -> int:
             seed=arguments.seed,
             loss_name=arguments.loss,
         )
-    else:
+    elif arguments.stage == "main_convergence":
         if arguments.loss:
             parser.error(
                 "--loss cannot be supplied for main_convergence; "
                 "the frozen selection is mandatory"
             )
         spec = resolve_main_convergence_spec(
+            runner_config,
+            Path("configs/q1q2_v2/selected_loss.yaml"),
+            model_id=arguments.model,
+            fold=arguments.fold,
+            seed=arguments.seed,
+        )
+    elif arguments.stage == "main_compute_matched":
+        if arguments.loss:
+            parser.error(
+                "--loss cannot be supplied for main_compute_matched; "
+                "the frozen selection is mandatory"
+            )
+        spec = resolve_main_compute_matched_spec(
+            runner_config,
+            Path("configs/q1q2_v2/selected_loss.yaml"),
+            model_id=arguments.model,
+            fold=arguments.fold,
+            seed=arguments.seed,
+        )
+    else:
+        if arguments.loss:
+            parser.error(
+                "--loss cannot be supplied for loss_interaction; "
+                "the deterministic alternative is mandatory"
+            )
+        spec = resolve_loss_interaction_spec(
             runner_config,
             Path("configs/q1q2_v2/selected_loss.yaml"),
             model_id=arguments.model,

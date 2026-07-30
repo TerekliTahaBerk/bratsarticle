@@ -22,6 +22,7 @@ import torch
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 
 DEFAULT_DEVICE = torch.device("cuda")
+Q1Q2_BUDGET_SENSITIVITY_STEPS = frozenset({2_000, 10_000})
 
 
 def _canonical_sha256(payload: Any) -> str:
@@ -258,11 +259,25 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
     def on_epoch_end(self) -> None:
         super().on_epoch_end()
         self._sample_mps_memory()
+        completed_optimizer_steps = (
+            int(self.current_epoch) * int(self.num_iterations_per_epoch)
+        )
+        if completed_optimizer_steps in Q1Q2_BUDGET_SENSITIVITY_STEPS:
+            self.save_checkpoint(
+                str(
+                    Path(self.output_folder)
+                    / (
+                        "checkpoint_q1q2_step_"
+                        f"{completed_optimizer_steps}.pth"
+                    )
+                )
+            )
         cumulative = self.q1q2_elapsed_before_session + (
             time.perf_counter() - self.q1q2_started_at
         )
         self._update_metadata(
             last_completed_epoch=int(self.current_epoch),
+            completed_optimizer_steps=completed_optimizer_steps,
             cumulative_elapsed_seconds=cumulative,
             framework_peak_allocated_unified_memory_bytes=(
                 self.q1q2_framework_peak_bytes
@@ -277,6 +292,13 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
         self._sample_mps_memory()
         checkpoint_best = Path(self.output_folder) / "checkpoint_best.pth"
         checkpoint_final = Path(self.output_folder) / "checkpoint_final.pth"
+        milestone_paths = {
+            str(step): (
+                Path(self.output_folder)
+                / f"checkpoint_q1q2_step_{step}.pth"
+            )
+            for step in sorted(Q1Q2_BUDGET_SENSITIVITY_STEPS)
+        }
         session_elapsed_seconds = time.perf_counter() - self.q1q2_started_at
         cumulative_elapsed_seconds = (
             self.q1q2_elapsed_before_session + session_elapsed_seconds
@@ -284,6 +306,7 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
         self._update_metadata(
             status="completed",
             completed_epochs=int(self.current_epoch),
+            final_learning_rate=float(self.optimizer.param_groups[0]["lr"]),
             elapsed_seconds_this_session=session_elapsed_seconds,
             cumulative_elapsed_seconds=cumulative_elapsed_seconds,
             accelerator_hours=cumulative_elapsed_seconds / 3600.0,
@@ -303,6 +326,15 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
                 if checkpoint_final.is_file()
                 else "missing"
             ),
+            budget_sensitivity_checkpoints={
+                step: {
+                    "path": path.as_posix(),
+                    "sha256": (
+                        _file_sha256(path) if path.is_file() else "missing"
+                    ),
+                }
+                for step, path in milestone_paths.items()
+            },
         )
 
 

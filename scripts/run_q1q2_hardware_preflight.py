@@ -155,7 +155,7 @@ def run_preflight(output_json: Path, budget_json: Path, budget_report: Path) -> 
         },
         "not_yet_benchmarked_runs": {
             "nnunetv2_2d": 25,
-            "nnunetv2_3d_fullres_including_interaction": 50,
+            "nnunetv2_3d_fullres": 25,
         },
         "known_upper_bound_proxy_accelerator_hours_excluding_nnunet": (
             known_upper_hours
@@ -203,7 +203,7 @@ def run_preflight(output_json: Path, budget_json: Path, budget_report: Path) -> 
         (
             f"The combined known upper-bound proxy is {known_upper_hours:,.0f} "
             f"accelerator-hours ({known_upper_hours / 24:,.0f} serial days) and "
-            "still excludes 25 nnU-Net 2D and 50 nnU-Net 3D/interaction runs."
+            "still excludes 25 nnU-Net 2D and 25 nnU-Net 3D runs."
         ),
         "",
         (

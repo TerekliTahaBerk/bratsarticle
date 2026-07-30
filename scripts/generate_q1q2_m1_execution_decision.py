@@ -52,6 +52,7 @@ def main() -> int:
     )
     known_interaction_ids = (
         "unet_parameter_matched_res",
+        "unet_compute_matched_res",
         "unet_res",
         "bunet",
     )
@@ -90,7 +91,7 @@ def main() -> int:
                 measured_training_hours
             ),
             "fixed_200_core_compute_matched_hours": fixed_core_compute_hours,
-            "known_3_of_4_interaction_training_proxy_hours": (
+            "known_4_of_4_interaction_training_proxy_hours": (
                 known_interaction_hours
             ),
             "known_scheduled_work_proxy_hours": known_scheduled_proxy,
@@ -98,7 +99,6 @@ def main() -> int:
             "explicit_exclusions": [
                 "nnU-Net v2 2D convergence",
                 "nnU-Net v2 3D full-resolution convergence",
-                "nnU-Net v2 3D architecture-loss interaction",
                 "all main-run repeated validation overhead",
                 "best and terminal full-metric evaluation",
                 "checkpoint I/O",
@@ -154,7 +154,7 @@ def main() -> int:
             f"The 10 measured convergence models alone require "
             f"{measured_training_hours:,.1f} optimizer-work hours at the frozen "
             "50,000-step ceiling. Adding the fixed core compute regime, the known "
-            "three interaction finalists, and the loss screen yields "
+            "four interaction finalists, and the loss screen yields "
             f"{known_scheduled_proxy:,.1f} hours "
             f"({known_scheduled_proxy / 24.0:,.1f} serial days). This is not a "
             "complete total: both nnU-Net baselines, repeated validation, full "

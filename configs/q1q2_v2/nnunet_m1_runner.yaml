@@ -24,6 +24,7 @@ matrix:
 training:
   implementation: official_nnunetv2
   preserve_official_architecture_loss_optimizer_schedule_and_1000_epochs: true
+  budget_sensitivity_checkpoint_steps: [2000, 10000]
   allow_continuation_after_interruption: true
   continuation_bitwise_reproducibility_claimed: false
   require_best_checkpoint: true
@@ -39,5 +40,7 @@ guards:
   mutually_exclusive_mps_queues:
     - loss_screen.lock
     - native_main.lock
+    - native_compute_matched.lock
+    - native_loss_interaction.lock
     - swin_main.lock
     - nnunetv2_preflight.lock

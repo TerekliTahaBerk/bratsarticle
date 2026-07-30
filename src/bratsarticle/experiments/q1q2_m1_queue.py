@@ -10,7 +10,9 @@ from typing import Any, cast
 
 from bratsarticle.experiments.q1q2_native_runner import (
     NativeRunSpec,
+    loss_interaction_specs,
     loss_screen_specs,
+    main_compute_matched_specs,
     main_convergence_specs,
     run_native_development,
 )
@@ -73,6 +75,23 @@ def run_loss_screen_queue(
             "Loss-screen queue requires reportable development authorization"
         )
     runtime_root.mkdir(parents=True, exist_ok=True)
+    conflicts = [
+        name
+        for name in (
+            "native_main.lock",
+            "native_compute_matched.lock",
+            "native_loss_interaction.lock",
+            "swin_main.lock",
+            "nnunetv2_main.lock",
+            "nnunetv2_preflight.lock",
+        )
+        if (runtime_root / name).exists()
+    ]
+    if conflicts:
+        raise RuntimeError(
+            "Loss-screen queue conflicts with active MPS work: "
+            + ", ".join(conflicts)
+        )
     lock_path = runtime_root / "loss_screen.lock"
     try:
         descriptor = os.open(
@@ -132,9 +151,23 @@ def run_native_main_queue(
             "Native main queue requires reportable development authorization"
         )
     runtime_root.mkdir(parents=True, exist_ok=True)
-    loss_lock = runtime_root / "loss_screen.lock"
-    if loss_lock.exists():
-        raise RuntimeError("Loss-screen queue is still active")
+    conflicts = [
+        name
+        for name in (
+            "loss_screen.lock",
+            "native_compute_matched.lock",
+            "native_loss_interaction.lock",
+            "swin_main.lock",
+            "nnunetv2_main.lock",
+            "nnunetv2_preflight.lock",
+        )
+        if (runtime_root / name).exists()
+    ]
+    if conflicts:
+        raise RuntimeError(
+            "Native main queue conflicts with active MPS work: "
+            + ", ".join(conflicts)
+        )
     lock_path = runtime_root / "native_main.lock"
     try:
         descriptor = os.open(
@@ -180,8 +213,168 @@ def run_native_main_queue(
         lock_path.unlink(missing_ok=True)
 
 
+def run_native_compute_matched_queue(
+    *,
+    runner_config_path: Path,
+    selected_loss_path: Path,
+    dataset_root: Path,
+    runtime_root: Path,
+    allow_reportable_development_training: bool,
+) -> dict[str, Any]:
+    """Run or resume all 200 frozen native compute-matched jobs."""
+    if not allow_reportable_development_training:
+        raise PermissionError(
+            "Native compute-matched queue requires reportable authorization"
+        )
+    runtime_root.mkdir(parents=True, exist_ok=True)
+    conflicts = [
+        name
+        for name in (
+            "loss_screen.lock",
+            "native_main.lock",
+            "native_loss_interaction.lock",
+            "swin_main.lock",
+            "nnunetv2_main.lock",
+            "nnunetv2_preflight.lock",
+        )
+        if (runtime_root / name).exists()
+    ]
+    if conflicts:
+        raise RuntimeError(
+            "Native compute-matched queue conflicts with active MPS work: "
+            + ", ".join(conflicts)
+        )
+    lock_path = runtime_root / "native_compute_matched.lock"
+    try:
+        descriptor = os.open(
+            lock_path,
+            os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+            0o600,
+        )
+    except FileExistsError as error:
+        raise RuntimeError(
+            "Native compute-matched queue lock already exists"
+        ) from error
+    with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+        handle.write(f"{os.getpid()}\n")
+    specs = main_compute_matched_specs(
+        runner_config_path,
+        selected_loss_path,
+    )
+    artifact_root = Path("artifacts/q1q2_v2/native_runs").resolve()
+    state_path = runtime_root / "native_compute_matched_runtime.json"
+    try:
+        snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+        atomic_write_json(state_path, snapshot)
+        for spec in specs:
+            status = _run_status(artifact_root, spec)
+            if status == "completed":
+                continue
+            output_dir = artifact_root / spec.run_id
+            run_native_development(
+                runner_config_path=runner_config_path,
+                spec=spec,
+                dataset_root=dataset_root,
+                allow_reportable_development_training=True,
+                resume=output_dir.exists(),
+            )
+            snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+            atomic_write_json(state_path, snapshot)
+        snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+        snapshot["status"] = (
+            "completed"
+            if int(snapshot["completed_count"]) == len(specs)
+            else "incomplete"
+        )
+        atomic_write_json(state_path, snapshot)
+        return snapshot
+    finally:
+        lock_path.unlink(missing_ok=True)
+
+
+def run_native_loss_interaction_queue(
+    *,
+    runner_config_path: Path,
+    selected_loss_path: Path,
+    dataset_root: Path,
+    runtime_root: Path,
+    allow_reportable_development_training: bool,
+) -> dict[str, Any]:
+    """Run or resume all 100 frozen alternative-loss finalist jobs."""
+    if not allow_reportable_development_training:
+        raise PermissionError(
+            "Native loss-interaction queue requires reportable authorization"
+        )
+    runtime_root.mkdir(parents=True, exist_ok=True)
+    conflicts = [
+        name
+        for name in (
+            "loss_screen.lock",
+            "native_main.lock",
+            "native_compute_matched.lock",
+            "swin_main.lock",
+            "nnunetv2_main.lock",
+            "nnunetv2_preflight.lock",
+        )
+        if (runtime_root / name).exists()
+    ]
+    if conflicts:
+        raise RuntimeError(
+            "Native loss-interaction queue conflicts with active MPS work: "
+            + ", ".join(conflicts)
+        )
+    lock_path = runtime_root / "native_loss_interaction.lock"
+    try:
+        descriptor = os.open(
+            lock_path,
+            os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+            0o600,
+        )
+    except FileExistsError as error:
+        raise RuntimeError(
+            "Native loss-interaction queue lock already exists"
+        ) from error
+    with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+        handle.write(f"{os.getpid()}\n")
+    specs = loss_interaction_specs(
+        runner_config_path,
+        selected_loss_path,
+    )
+    artifact_root = Path("artifacts/q1q2_v2/native_runs").resolve()
+    state_path = runtime_root / "native_loss_interaction_runtime.json"
+    try:
+        snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+        atomic_write_json(state_path, snapshot)
+        for spec in specs:
+            status = _run_status(artifact_root, spec)
+            if status == "completed":
+                continue
+            output_dir = artifact_root / spec.run_id
+            run_native_development(
+                runner_config_path=runner_config_path,
+                spec=spec,
+                dataset_root=dataset_root,
+                allow_reportable_development_training=True,
+                resume=output_dir.exists(),
+            )
+            snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+            atomic_write_json(state_path, snapshot)
+        snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+        snapshot["status"] = (
+            "completed"
+            if int(snapshot["completed_count"]) == len(specs)
+            else "incomplete"
+        )
+        atomic_write_json(state_path, snapshot)
+        return snapshot
+    finally:
+        lock_path.unlink(missing_ok=True)
+
+
 __all__ = [
     "queue_snapshot",
     "run_loss_screen_queue",
+    "run_native_compute_matched_queue",
+    "run_native_loss_interaction_queue",
     "run_native_main_queue",
 ]

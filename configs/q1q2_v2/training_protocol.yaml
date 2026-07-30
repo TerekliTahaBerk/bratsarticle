@@ -29,6 +29,8 @@ training:
     full_budget: best_and_terminal
 convergence_matched:
   maximum_optimizer_steps: 50000
+  minimum_optimizer_steps_before_early_stopping: 10000
+  budget_sensitivity_checkpoint_steps: [2000, 10000]
   early_stopping:
     monitored_metric: validation_patient_mean_regional_dice
     mode: maximize
@@ -40,6 +42,7 @@ compute_matched:
   component_core_only: true
   maximum_accelerator_hours_per_run: 4.0
   maximum_optimizer_steps: 30000
+  required_stop_reason: compute_budget_accelerator_hours
   stop_at_first_exhausted_budget: true
   same_preprocessing_folds_seeds_and_validation_frequency: true
   maximum_tuning_trials_per_model_loss_family: 4

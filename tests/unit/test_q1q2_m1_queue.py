@@ -47,7 +47,7 @@ def test_native_main_queue_rejects_active_loss_screen(tmp_path: Path) -> None:
     runtime.mkdir()
     (runtime / "loss_screen.lock").write_text("123\n", encoding="utf-8")
 
-    with pytest.raises(RuntimeError, match="still active"):
+    with pytest.raises(RuntimeError, match="conflicts"):
         run_native_main_queue(
             runner_config_path=tmp_path / "unused_runner.yaml",
             selected_loss_path=tmp_path / "unused_loss.yaml",

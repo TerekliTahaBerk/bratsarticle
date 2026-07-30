@@ -61,6 +61,45 @@ stages:
     loss: pending_development_cv
     maximum_optimizer_steps: 50000
     warmup_optimizer_steps: 1000
+    minimum_optimizer_steps_before_early_stopping: 10000
+    budget_sensitivity_checkpoint_steps: [2000, 10000]
+    full_metric_evaluation: true
+  main_compute_matched:
+    status: blocked_until_loss_screen_freeze
+    scientific_role: reportable_compute_matched_development_cross_validation
+    models:
+      - unet_small
+      - unet_parameter_matched_res
+      - unet_compute_matched_res
+      - unet_res
+      - unet_wc
+      - bunet
+      - resblock_unet
+      - resblock_unet_wc
+    folds: [1, 2, 3, 4, 5]
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+    loss: pending_development_cv
+    maximum_optimizer_steps: 30000
+    maximum_accelerator_hours: 4.0
+    warmup_optimizer_steps: 1000
+    minimum_optimizer_steps_before_early_stopping: 30000
+    budget_sensitivity_checkpoint_steps: [2000, 10000]
+    full_metric_evaluation: true
+  loss_interaction:
+    status: blocked_until_loss_screen_freeze
+    scientific_role: reportable_architecture_by_loss_sensitivity
+    models:
+      - unet_parameter_matched_res
+      - unet_compute_matched_res
+      - unet_res
+      - bunet
+    folds: [1, 2, 3, 4, 5]
+    seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+    loss: deterministic_alternative_to_selected
+    maximum_optimizer_steps: 50000
+    warmup_optimizer_steps: 1000
+    minimum_optimizer_steps_before_early_stopping: 10000
+    budget_sensitivity_checkpoint_steps: []
     full_metric_evaluation: true
 artifacts:
   root: artifacts/q1q2_v2/native_runs

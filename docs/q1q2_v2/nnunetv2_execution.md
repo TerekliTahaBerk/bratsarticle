@@ -227,3 +227,6 @@ continuation, partial outputs without an official continuation checkpoint,
 and silent seed replacement. The official trainer records cumulative
 accelerator-hours, MPS framework- and driver-allocated unified-memory peaks,
 best/final checkpoint hashes, and completion of the full 1,000 epochs.
+Additional exact checkpoints at 2,000 and 10,000 optimizer steps support the
+same predeclared short/medium/full ranking-sensitivity analysis used for the
+other main models.

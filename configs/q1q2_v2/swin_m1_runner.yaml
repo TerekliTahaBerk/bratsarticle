@@ -29,6 +29,8 @@ training:
   effective_batch_size: 2
   maximum_optimizer_steps: 50000
   warmup_optimizer_steps: 1000
+  minimum_optimizer_steps_before_early_stopping: 10000
+  budget_sensitivity_checkpoint_steps: [2000, 10000]
   minimum_learning_rate_fraction: 0.01
   validation_frequency_optimizer_steps: 500
   early_stopping_minimum_delta: 0.001

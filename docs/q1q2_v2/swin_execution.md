@@ -13,6 +13,11 @@ accumulation. Validation uses untouched complete patient volumes, sliding
 window inference, and the common central evaluator. The loss is read only
 from the completed development-CV loss-selection freeze.
 
+Every run is trained for at least 10,000 optimizer steps before early
+stopping can activate. Exact short- and medium-budget checkpoints and
+validation-patient rows are saved at 2,000 and 10,000 steps. The best and
+terminal checkpoints remain separate.
+
 MPS exposes a known nondeterministic backward kernel for this architecture.
 This is not silently ignored. Before any reportable Swin run, execute the
 predeclared real-data repeat-tolerance audit:

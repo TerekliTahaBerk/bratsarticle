@@ -48,7 +48,12 @@ from bratsarticle.utils.serialization import (
 )
 from evaluation import CentralEvaluator, load_evaluation_config
 
-NativeStage = Literal["loss_screen", "main_convergence"]
+NativeStage = Literal[
+    "loss_screen",
+    "main_convergence",
+    "main_compute_matched",
+    "loss_interaction",
+]
 
 
 @dataclass(frozen=True)
@@ -272,6 +277,177 @@ def resolve_main_convergence_spec(
     return matches[0]
 
 
+def main_compute_matched_specs(
+    config_path: Path,
+    selected_loss_path: Path,
+) -> tuple[NativeRunSpec, ...]:
+    """Expand the eight-model, five-fold, five-seed compute-matched matrix."""
+    selected_loss = main_convergence_specs(
+        config_path,
+        selected_loss_path,
+    )[0].loss_name
+    config = _load_yaml(config_path)
+    stage = cast(
+        dict[str, Any],
+        cast(dict[str, Any], config["stages"])["main_compute_matched"],
+    )
+    if str(stage["loss"]) not in {"pending_development_cv", selected_loss}:
+        raise PermissionError(
+            "Compute-matched config conflicts with the frozen selected loss"
+        )
+    if float(stage["maximum_accelerator_hours"]) != 4.0:
+        raise ValueError("Compute-matched runs must use the frozen four-hour budget")
+    specs = tuple(
+        NativeRunSpec(
+            stage="main_compute_matched",
+            model_id=str(model),
+            fold=int(fold),
+            seed=int(seed),
+            loss_name=selected_loss,
+            maximum_optimizer_steps=int(stage["maximum_optimizer_steps"]),
+            warmup_optimizer_steps=int(stage["warmup_optimizer_steps"]),
+            full_metric_evaluation=bool(stage["full_metric_evaluation"]),
+        )
+        for model in cast(list[Any], stage["models"])
+        for fold in cast(list[Any], stage["folds"])
+        for seed in cast(list[Any], stage["seeds"])
+    )
+    expected_count = 8 * 5 * 5
+    if (
+        len(specs) != expected_count
+        or len({spec.run_id for spec in specs}) != expected_count
+    ):
+        raise ValueError(
+            "Frozen native compute-matched matrix must contain "
+            f"{expected_count} unique runs"
+        )
+    return specs
+
+
+def resolve_main_compute_matched_spec(
+    config_path: Path,
+    selected_loss_path: Path,
+    *,
+    model_id: str,
+    fold: int,
+    seed: int,
+) -> NativeRunSpec:
+    """Resolve a compute-matched run only if it belongs to the frozen matrix."""
+    matches = [
+        spec
+        for spec in main_compute_matched_specs(config_path, selected_loss_path)
+        if (
+            spec.model_id == model_id
+            and spec.fold == fold
+            and spec.seed == seed
+        )
+    ]
+    if len(matches) != 1:
+        raise PermissionError(
+            "Requested run is outside the frozen native compute-matched matrix"
+        )
+    return matches[0]
+
+
+def loss_interaction_specs(
+    config_path: Path,
+    selected_loss_path: Path,
+) -> tuple[NativeRunSpec, ...]:
+    """Expand the four-finalist alternative-loss interaction matrix."""
+    selected_loss = main_convergence_specs(
+        config_path,
+        selected_loss_path,
+    )[0].loss_name
+    config = _load_yaml(config_path)
+    loss_protocol_path = Path(
+        str(cast(dict[str, Any], config["losses"])["protocol"])
+    )
+    loss_protocol = _load_yaml(loss_protocol_path)
+    interaction = cast(
+        dict[str, Any],
+        loss_protocol["interaction_sensitivity"],
+    )
+    alternative_rule = cast(
+        dict[str, Any],
+        interaction["alternative_loss_rule"],
+    )
+    priority = [
+        str(value)
+        for value in cast(
+            list[Any],
+            alternative_rule["choose_first_not_equal_to_selected"],
+        )
+    ]
+    alternatives = [name for name in priority if name != selected_loss]
+    if not alternatives:
+        raise ValueError("Loss-interaction rule has no alternative to selected loss")
+    alternative_loss = alternatives[0]
+    stage = cast(
+        dict[str, Any],
+        cast(dict[str, Any], config["stages"])["loss_interaction"],
+    )
+    if str(stage["loss"]) != "deterministic_alternative_to_selected":
+        raise PermissionError("Loss-interaction alternative rule changed")
+    if int(interaction["minimum_distinct_losses_per_finalist"]) != 2:
+        raise ValueError("Loss interaction must contain exactly two loss settings")
+    configured_models = [str(value) for value in cast(list[Any], stage["models"])]
+    protocol_models = [
+        str(value) for value in cast(list[Any], interaction["finalists"])
+    ]
+    if configured_models != protocol_models:
+        raise ValueError("Loss-interaction runner differs from the loss protocol")
+    specs = tuple(
+        NativeRunSpec(
+            stage="loss_interaction",
+            model_id=model,
+            fold=int(fold),
+            seed=int(seed),
+            loss_name=alternative_loss,
+            maximum_optimizer_steps=int(stage["maximum_optimizer_steps"]),
+            warmup_optimizer_steps=int(stage["warmup_optimizer_steps"]),
+            full_metric_evaluation=bool(stage["full_metric_evaluation"]),
+        )
+        for model in configured_models
+        for fold in cast(list[Any], stage["folds"])
+        for seed in cast(list[Any], stage["seeds"])
+    )
+    expected_count = 4 * 5 * 5
+    if (
+        len(specs) != expected_count
+        or len({spec.run_id for spec in specs}) != expected_count
+    ):
+        raise ValueError(
+            "Frozen loss-interaction matrix must contain "
+            f"{expected_count} unique runs"
+        )
+    return specs
+
+
+def resolve_loss_interaction_spec(
+    config_path: Path,
+    selected_loss_path: Path,
+    *,
+    model_id: str,
+    fold: int,
+    seed: int,
+) -> NativeRunSpec:
+    """Resolve an alternative-loss run only within the frozen matrix."""
+    matches = [
+        spec
+        for spec in loss_interaction_specs(config_path, selected_loss_path)
+        if (
+            spec.model_id == model_id
+            and spec.fold == fold
+            and spec.seed == seed
+        )
+    ]
+    if len(matches) != 1:
+        raise PermissionError(
+            "Requested run is outside the frozen loss-interaction matrix"
+        )
+    return matches[0]
+
+
 def _loader(
     dataset: BraTSSliceDataset,
     *,
@@ -323,7 +499,15 @@ def _metadata(
     scientific_role = (
         "development_only_loss_selection"
         if spec.stage == "loss_screen"
-        else "reportable_development_cross_validation"
+        else (
+            "reportable_compute_matched_development_cross_validation"
+            if spec.stage == "main_compute_matched"
+            else (
+                "reportable_architecture_by_loss_sensitivity"
+                if spec.stage == "loss_interaction"
+                else "reportable_development_cross_validation"
+            )
+        )
     )
     return {
         "schema_version": 1,
@@ -416,7 +600,24 @@ def run_native_development(
     allowed_specs = (
         loss_screen_specs(runner_config_path)
         if spec.stage == "loss_screen"
-        else main_convergence_specs(runner_config_path, selected_loss_path)
+        else (
+            main_compute_matched_specs(
+                runner_config_path,
+                selected_loss_path,
+            )
+            if spec.stage == "main_compute_matched"
+            else (
+                loss_interaction_specs(
+                    runner_config_path,
+                    selected_loss_path,
+                )
+                if spec.stage == "loss_interaction"
+                else main_convergence_specs(
+                    runner_config_path,
+                    selected_loss_path,
+                )
+            )
+        )
     )
     if spec.sha256 not in {allowed.sha256 for allowed in allowed_specs}:
         raise PermissionError("Run specification is outside the frozen stage matrix")
@@ -462,7 +663,11 @@ def run_native_development(
     checkpoint_dir = output_dir / "checkpoints"
     checkpoint_dir.mkdir(exist_ok=True)
     extra_hashes: dict[str, str] = {}
-    if spec.stage == "main_convergence":
+    if spec.stage in {
+        "main_convergence",
+        "main_compute_matched",
+        "loss_interaction",
+    }:
         selected = _load_yaml(selected_loss_path)
         selection_artifact = Path(str(selected["selection_artifact"]))
         extra_hashes = {
@@ -587,6 +792,26 @@ def run_native_development(
     )
     minimum_delta = float(training["early_stopping_minimum_delta"])
     patience = int(training["early_stopping_patience_validation_checks"])
+    stage_config = cast(
+        dict[str, Any],
+        cast(dict[str, Any], config["stages"])[spec.stage],
+    )
+    minimum_steps_before_early_stopping = int(
+        stage_config.get("minimum_optimizer_steps_before_early_stopping", 0)
+    )
+    milestone_steps = {
+        int(value)
+        for value in cast(
+            list[Any],
+            stage_config.get("budget_sensitivity_checkpoint_steps", []),
+        )
+    }
+    maximum_accelerator_hours = (
+        float(stage_config["maximum_accelerator_hours"])
+        if spec.stage == "main_compute_matched"
+        else None
+    )
+    progress.setdefault("budget_sensitivity_checkpoints", {})
     stop = False
     try:
         while engine.state.global_step < spec.maximum_optimizer_steps and not stop:
@@ -598,6 +823,21 @@ def run_native_development(
                 training_loss = engine.train_step(batch["image"], batch["label"])
                 scheduler.step()
                 engine.state.batches_consumed_in_epoch = batch_index + 1
+                if (
+                    maximum_accelerator_hours is not None
+                    and (
+                        cumulative_before_session + tracker.elapsed_seconds()
+                    )
+                    / 3600.0
+                    >= maximum_accelerator_hours
+                ):
+                    progress["stop_reason"] = "compute_budget_accelerator_hours"
+                    progress["cumulative_elapsed_seconds"] = (
+                        cumulative_before_session + tracker.elapsed_seconds()
+                    )
+                    stop = True
+                    atomic_write_json(progress_path, progress)
+                    break
                 at_validation = (
                     engine.state.global_step % validation_frequency == 0
                     or engine.state.global_step >= spec.maximum_optimizer_steps
@@ -637,6 +877,41 @@ def run_native_development(
                         state=engine.state,
                         metadata=metadata,
                     )
+                if engine.state.global_step in milestone_steps:
+                    milestone_path = (
+                        checkpoint_dir
+                        / f"budget_step_{engine.state.global_step}.pt"
+                    )
+                    save_checkpoint(
+                        milestone_path,
+                        model=engine.model,
+                        optimizer=engine.optimizer,
+                        scaler=engine.scaler,
+                        scheduler=scheduler,
+                        state=engine.state,
+                        metadata=metadata,
+                    )
+                    milestone_metrics = (
+                        output_dir
+                        / (
+                            "validation_step_"
+                            f"{engine.state.global_step}_per_patient.csv"
+                        )
+                    )
+                    atomic_write_csv(
+                        milestone_metrics,
+                        list(selection.patient_rows),
+                    )
+                    progress["budget_sensitivity_checkpoints"][
+                        str(engine.state.global_step)
+                    ] = {
+                        "checkpoint": milestone_path.as_posix(),
+                        "checkpoint_sha256": file_digest(milestone_path),
+                        "patient_metrics": milestone_metrics.as_posix(),
+                        "patient_metrics_sha256": file_digest(
+                            milestone_metrics
+                        ),
+                    }
                 reference = progress["early_stopping_reference_metric"]
                 if reference is None or metric > float(reference) + minimum_delta:
                     progress["early_stopping_reference_metric"] = metric
@@ -686,10 +961,17 @@ def run_native_development(
                     metadata=metadata,
                 )
                 if (
-                    int(
-                        progress["validation_checks_without_minimum_improvement"]
+                    spec.stage != "main_compute_matched"
+                    and engine.state.global_step
+                    >= minimum_steps_before_early_stopping
+                    and (
+                        int(
+                            progress[
+                                "validation_checks_without_minimum_improvement"
+                            ]
+                        )
+                        >= patience
                     )
-                    >= patience
                 ):
                     progress["stop_reason"] = "early_stopping_patience"
                     stop = True
@@ -719,7 +1001,17 @@ def run_native_development(
             "terminal_checkpoint": (checkpoint_dir / "terminal.pt").is_file(),
             "validation_checks": int(progress["completed_validation_checks"]) > 0,
             "stop_reason": progress["stop_reason"]
-            in {"early_stopping_patience", "maximum_optimizer_steps"},
+            in (
+                {"compute_budget_accelerator_hours"}
+                if spec.stage == "main_compute_matched"
+                else {"early_stopping_patience", "maximum_optimizer_steps"}
+            ),
+            "budget_sensitivity_checkpoints": (
+                set(progress["budget_sensitivity_checkpoints"])
+                == {str(value) for value in milestone_steps}
+                if spec.stage == "main_convergence"
+                else True
+            ),
         }
         progress["status"] = (
             "completed" if all(acceptance.values()) else "invalid"
@@ -757,9 +1049,13 @@ def run_native_development(
 
 __all__ = [
     "NativeRunSpec",
+    "loss_interaction_specs",
     "loss_screen_specs",
+    "main_compute_matched_specs",
     "main_convergence_specs",
+    "resolve_loss_interaction_spec",
     "resolve_loss_screen_spec",
+    "resolve_main_compute_matched_spec",
     "resolve_main_convergence_spec",
     "run_native_development",
 ]

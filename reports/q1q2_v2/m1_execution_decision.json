@@ -4,7 +4,6 @@
     "explicit_exclusions": [
       "nnU-Net v2 2D convergence",
       "nnU-Net v2 3D full-resolution convergence",
-      "nnU-Net v2 3D architecture-loss interaction",
       "all main-run repeated validation overhead",
       "best and terminal full-metric evaluation",
       "checkpoint I/O",
@@ -12,9 +11,9 @@
       "external confirmatory inference"
     ],
     "fixed_200_core_compute_matched_hours": 800.0,
-    "known_3_of_4_interaction_training_proxy_hours": 427.11384583829687,
-    "known_scheduled_work_proxy_hours": 3375.676725232961,
-    "known_scheduled_work_proxy_serial_days": 140.65319688470672,
+    "known_4_of_4_interaction_training_proxy_hours": 563.9284291697146,
+    "known_scheduled_work_proxy_hours": 3512.4913085643784,
+    "known_scheduled_work_proxy_serial_days": 146.35380452351578,
     "measured_10_model_convergence_training_proxy_hours": 2132.1635420261173,
     "reason": "The known subtotal already spans months on one serial MPS device and omits material mandatory work.",
     "status": "blocked_before_start"

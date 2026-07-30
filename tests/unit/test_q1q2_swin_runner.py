@@ -79,6 +79,13 @@ def test_swin_config_freezes_mps_and_prohibits_test_access() -> None:
     assert config["guards"]["allow_legacy_internal_test"] is False
     assert config["training"]["effective_batch_size"] == 2
     assert config["training"]["gradient_accumulation_steps"] == 2
+    assert config["training"][
+        "minimum_optimizer_steps_before_early_stopping"
+    ] == 10_000
+    assert config["training"]["budget_sensitivity_checkpoint_steps"] == [
+        2_000,
+        10_000,
+    ]
     assert config["repeat_tolerance"]["comparison"] == {
         "absolute_tolerance": 0.00001,
         "relative_tolerance": 0.00001,

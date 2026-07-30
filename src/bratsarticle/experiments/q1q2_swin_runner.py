@@ -766,6 +766,17 @@ def run_swin_development(
     validation_frequency = int(training["validation_frequency_optimizer_steps"])
     minimum_delta = float(training["early_stopping_minimum_delta"])
     patience = int(training["early_stopping_patience_validation_checks"])
+    minimum_steps_before_early_stopping = int(
+        training["minimum_optimizer_steps_before_early_stopping"]
+    )
+    milestone_steps = {
+        int(value)
+        for value in cast(
+            list[Any],
+            training["budget_sensitivity_checkpoint_steps"],
+        )
+    }
+    progress.setdefault("budget_sensitivity_checkpoints", {})
     stop = False
     try:
         while state.global_step < spec.maximum_optimizer_steps and not stop:
@@ -837,6 +848,40 @@ def run_swin_development(
                         state=state,
                         metadata=metadata,
                     )
+                if state.global_step in milestone_steps:
+                    milestone_path = (
+                        checkpoint_dir / f"budget_step_{state.global_step}.pt"
+                    )
+                    save_checkpoint(
+                        milestone_path,
+                        model=model,
+                        optimizer=optimizer,
+                        scaler=scaler,
+                        scheduler=scheduler,
+                        state=state,
+                        metadata=metadata,
+                    )
+                    milestone_metrics = (
+                        output_dir
+                        / (
+                            "validation_step_"
+                            f"{state.global_step}_per_patient.csv"
+                        )
+                    )
+                    atomic_write_csv(
+                        milestone_metrics,
+                        list(selection.patient_rows),
+                    )
+                    progress["budget_sensitivity_checkpoints"][
+                        str(state.global_step)
+                    ] = {
+                        "checkpoint": milestone_path.as_posix(),
+                        "checkpoint_sha256": file_digest(milestone_path),
+                        "patient_metrics": milestone_metrics.as_posix(),
+                        "patient_metrics_sha256": file_digest(
+                            milestone_metrics
+                        ),
+                    }
                 reference = progress["early_stopping_reference_metric"]
                 if (
                     reference is None
@@ -883,8 +928,15 @@ def run_swin_development(
                     metadata=metadata,
                 )
                 if (
-                    int(progress["validation_checks_without_minimum_improvement"])
-                    >= patience
+                    state.global_step >= minimum_steps_before_early_stopping
+                    and (
+                        int(
+                            progress[
+                                "validation_checks_without_minimum_improvement"
+                            ]
+                        )
+                        >= patience
+                    )
                 ):
                     progress["stop_reason"] = "early_stopping_patience"
                     stop = True
@@ -917,6 +969,10 @@ def run_swin_development(
             "validation_checks": int(progress["completed_validation_checks"]) > 0,
             "stop_reason": progress["stop_reason"]
             in {"early_stopping_patience", "maximum_optimizer_steps"},
+            "budget_sensitivity_checkpoints": set(
+                progress["budget_sensitivity_checkpoints"]
+            )
+            == {str(value) for value in milestone_steps},
         }
         progress["status"] = "completed" if all(acceptance.values()) else "invalid"
         progress["acceptance"] = acceptance

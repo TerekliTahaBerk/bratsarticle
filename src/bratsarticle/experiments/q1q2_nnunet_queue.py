@@ -204,7 +204,16 @@ def _validate_completed_output(
     metadata_path = official_output / "q1q2_run_metadata.json"
     best = official_output / "checkpoint_best.pth"
     final = official_output / "checkpoint_final.pth"
-    if not metadata_path.is_file() or not best.is_file() or not final.is_file():
+    milestones = {
+        step: official_output / f"checkpoint_q1q2_step_{step}.pth"
+        for step in (2_000, 10_000)
+    }
+    if (
+        not metadata_path.is_file()
+        or not best.is_file()
+        or not final.is_file()
+        or not all(path.is_file() for path in milestones.values())
+    ):
         raise RuntimeError("Completed nnU-Net run is missing required artifacts")
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     if metadata.get("status") != "completed":
@@ -223,12 +232,31 @@ def _validate_completed_output(
     for key, value in expected.items():
         if metadata.get(key) != value:
             raise RuntimeError(f"Official nnU-Net metadata mismatch: {key}")
+    official_defaults = cast(dict[str, Any], metadata["official_defaults"])
+    if (
+        int(metadata.get("completed_epochs", -1)) != 1_000
+        or int(official_defaults.get("epochs", -1)) != 1_000
+    ):
+        raise RuntimeError("Official nnU-Net run did not complete 1,000 epochs")
     best_hash = file_digest(best)
     final_hash = file_digest(final)
     if metadata.get("checkpoint_best_sha256") != best_hash:
         raise RuntimeError("Official nnU-Net best checkpoint hash differs")
     if metadata.get("checkpoint_final_sha256") != final_hash:
         raise RuntimeError("Official nnU-Net final checkpoint hash differs")
+    milestone_entries = cast(
+        dict[str, dict[str, Any]],
+        metadata.get("budget_sensitivity_checkpoints", {}),
+    )
+    milestone_hashes: dict[str, str] = {}
+    for step, path in milestones.items():
+        observed = file_digest(path)
+        entry = milestone_entries.get(str(step), {})
+        if entry.get("sha256") != observed:
+            raise RuntimeError(
+                f"Official nnU-Net milestone checkpoint hash differs: {step}"
+            )
+        milestone_hashes[str(step)] = observed
     return {
         "official_metadata_path": metadata_path.as_posix(),
         "official_metadata_sha256": file_digest(metadata_path),
@@ -236,6 +264,7 @@ def _validate_completed_output(
         "best_checkpoint_sha256": best_hash,
         "final_checkpoint_path": final.as_posix(),
         "final_checkpoint_sha256": final_hash,
+        "budget_sensitivity_checkpoint_sha256": milestone_hashes,
         "parameter_count": int(metadata["parameter_count"]),
         "completed_epochs": int(metadata["completed_epochs"]),
         "accelerator_hours": float(metadata["accelerator_hours"]),

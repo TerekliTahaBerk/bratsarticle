@@ -6,7 +6,9 @@ import pytest
 import yaml
 
 from bratsarticle.experiments.q1q2_native_runner import (
+    loss_interaction_specs,
     loss_screen_specs,
+    main_compute_matched_specs,
     main_convergence_specs,
     resolve_loss_screen_spec,
     resolve_main_convergence_spec,
@@ -96,6 +98,57 @@ def test_native_main_rejects_unfrozen_loss(tmp_path: Path) -> None:
 
     with pytest.raises(PermissionError, match="not frozen"):
         main_convergence_specs(RUNNER_CONFIG, selected)
+
+
+def test_native_compute_matched_expands_to_equal_seed_component_matrix(
+    tmp_path: Path,
+) -> None:
+    selected = _selected_loss(
+        tmp_path,
+        "frozen_from_complete_development_cv",
+    )
+
+    specs = main_compute_matched_specs(RUNNER_CONFIG, selected)
+
+    assert len(specs) == 200
+    assert len({spec.run_id for spec in specs}) == 200
+    assert len({spec.model_id for spec in specs}) == 8
+    assert {spec.fold for spec in specs} == {1, 2, 3, 4, 5}
+    assert {spec.seed for spec in specs} == {
+        20260730,
+        20260731,
+        20260732,
+        20260733,
+        20260734,
+    }
+    assert all(spec.maximum_optimizer_steps == 30_000 for spec in specs)
+    assert all(spec.stage == "main_compute_matched" for spec in specs)
+
+
+def test_loss_interaction_uses_deterministic_alternative_for_four_finalists(
+    tmp_path: Path,
+) -> None:
+    selected = _selected_loss(
+        tmp_path,
+        "frozen_from_complete_development_cv",
+    )
+
+    specs = loss_interaction_specs(RUNNER_CONFIG, selected)
+
+    assert len(specs) == 100
+    assert len({spec.run_id for spec in specs}) == 100
+    assert {spec.model_id for spec in specs} == {
+        "unet_parameter_matched_res",
+        "unet_compute_matched_res",
+        "unet_res",
+        "bunet",
+    }
+    assert {spec.loss_name for spec in specs} == {
+        "cross_entropy_plus_focal_tversky"
+    }
+    assert {spec.fold for spec in specs} == {1, 2, 3, 4, 5}
+    assert len({spec.seed for spec in specs}) == 5
+    assert all(spec.stage == "loss_interaction" for spec in specs)
 
 
 def test_native_main_resolver_rejects_unfrozen_model(tmp_path: Path) -> None:

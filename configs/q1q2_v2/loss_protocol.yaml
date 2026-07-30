@@ -20,12 +20,21 @@ final_architecture_attribution:
   output_interpretation: mutually_exclusive_four_class_softmax
   inference: argmax_classes_0_1_2_3_then_map_3_to_brats_label_4
 interaction_sensitivity:
+  preoutcome_revision:
+    result_data_seen: false
+    reason: official_nnunet_uses_overlapping_region_targets_incompatible_with_the_four_class_loss_catalog
+    action: restrict_interaction_estimand_to_four_class_component_attribution_models
   finalists:
     - unet_parameter_matched_res
+    - unet_compute_matched_res
     - unet_res
     - bunet
-    - nnunetv2_3d_fullres
   minimum_distinct_losses_per_finalist: 2
+  alternative_loss_rule:
+    choose_first_not_equal_to_selected:
+      - cross_entropy_plus_soft_dice
+      - cross_entropy_plus_focal_tversky
+      - binary_cross_entropy_plus_focal_tversky
   analysis: architecture_by_loss_interaction
 conduct:
   no_external_loss_selection: true

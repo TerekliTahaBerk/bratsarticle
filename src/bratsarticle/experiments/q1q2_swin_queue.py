@@ -75,6 +75,8 @@ def run_swin_main_queue(
     conflicting_locks = (
         "loss_screen.lock",
         "native_main.lock",
+        "native_compute_matched.lock",
+        "native_loss_interaction.lock",
         "nnunetv2_main.lock",
         "nnunetv2_preflight.lock",
     )
