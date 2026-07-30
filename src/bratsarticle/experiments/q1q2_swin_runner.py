@@ -48,7 +48,11 @@ from bratsarticle.utils.serialization import (
     atomic_write_csv,
     atomic_write_json,
 )
-from evaluation import CentralEvaluator, load_evaluation_config
+from evaluation import (
+    CentralEvaluator,
+    load_evaluation_config,
+    summarize_patient_metrics,
+)
 
 SWIN_MODEL_ID = "swin_unetr"
 
@@ -473,9 +477,7 @@ def validate_swin_full_volumes(
     weighted_loss = 0.0
     voxel_count = 0
     with torch.no_grad():
-        for patient_index, (_, manifest_row) in enumerate(
-            dataset.manifest.iterrows()
-        ):
+        for patient_index, (_, manifest_row) in enumerate(dataset.manifest.iterrows()):
             volume = dataset.subject_volume(patient_index)
             image = torch.from_numpy(
                 np.ascontiguousarray(volume.image[None], dtype=np.float32)
@@ -533,6 +535,57 @@ def validate_swin_full_volumes(
         ),
         validation_loss=weighted_loss / voxel_count,
     )
+
+
+def evaluate_swin_full_metrics(
+    model: nn.Module,
+    dataset: BraTSSliceDataset,
+    *,
+    device: torch.device,
+    evaluator: CentralEvaluator,
+    patch_size: tuple[int, int, int],
+    overlap: float,
+    mode: str,
+    sliding_window_batch_size: int,
+) -> list[dict[str, Any]]:
+    """Evaluate best-checkpoint Swin predictions with every central metric."""
+    was_training = model.training
+    model.eval()
+    rows: list[dict[str, Any]] = []
+    with torch.no_grad():
+        for patient_index, (_, manifest_row) in enumerate(dataset.manifest.iterrows()):
+            volume = dataset.subject_volume(patient_index)
+            image = torch.from_numpy(
+                np.ascontiguousarray(volume.image[None], dtype=np.float32)
+            )
+            logits = cast(
+                torch.Tensor,
+                sliding_window_inference(
+                    image,
+                    roi_size=patch_size,
+                    sw_batch_size=sliding_window_batch_size,
+                    predictor=model,
+                    overlap=overlap,
+                    mode=mode,
+                    sw_device=device,
+                    device=torch.device("cpu"),
+                ),
+            )
+            predicted = class_indices_to_labels(torch.argmax(logits, dim=1))
+            rows.extend(
+                evaluator.evaluate_batch(
+                    predicted.numpy(),
+                    volume.label[None],
+                    patient_ids=[str(manifest_row["subject_id"])],
+                    spacings_mm=[volume.spacing_mm],
+                )
+            )
+            del logits, predicted
+    if was_training:
+        model.train()
+    if not rows:
+        raise RuntimeError("Swin full-metric evaluation produced no patient rows")
+    return rows
 
 
 def _improved(
@@ -861,12 +914,8 @@ def run_swin_development(
                         state=state,
                         metadata=metadata,
                     )
-                    milestone_metrics = (
-                        output_dir
-                        / (
-                            "validation_step_"
-                            f"{state.global_step}_per_patient.csv"
-                        )
+                    milestone_metrics = output_dir / (
+                        f"validation_step_{state.global_step}_per_patient.csv"
                     )
                     atomic_write_csv(
                         milestone_metrics,
@@ -878,9 +927,7 @@ def run_swin_development(
                         "checkpoint": milestone_path.as_posix(),
                         "checkpoint_sha256": file_digest(milestone_path),
                         "patient_metrics": milestone_metrics.as_posix(),
-                        "patient_metrics_sha256": file_digest(
-                            milestone_metrics
-                        ),
+                        "patient_metrics_sha256": file_digest(milestone_metrics),
                     }
                 reference = progress["early_stopping_reference_metric"]
                 if (
@@ -927,16 +974,9 @@ def run_swin_development(
                     state=state,
                     metadata=metadata,
                 )
-                if (
-                    state.global_step >= minimum_steps_before_early_stopping
-                    and (
-                        int(
-                            progress[
-                                "validation_checks_without_minimum_improvement"
-                            ]
-                        )
-                        >= patience
-                    )
+                if state.global_step >= minimum_steps_before_early_stopping and (
+                    int(progress["validation_checks_without_minimum_improvement"])
+                    >= patience
                 ):
                     progress["stop_reason"] = "early_stopping_patience"
                     stop = True
@@ -963,6 +1003,61 @@ def run_swin_development(
             state=state,
             metadata=metadata,
         )
+        best_payload = cast(
+            dict[str, Any],
+            torch.load(
+                checkpoint_dir / "best.pt",
+                map_location=device,
+                weights_only=False,
+            ),
+        )
+        best_metadata = cast(dict[str, Any], best_payload["metadata"])
+        if best_metadata.get("run_spec_sha256") != spec.sha256:
+            raise ValueError("Best Swin checkpoint run-spec hash differs")
+        model.load_state_dict(best_payload["model"])
+        full_metric_rows = evaluate_swin_full_metrics(
+            model,
+            validation_volumes,
+            device=device,
+            evaluator=evaluator,
+            patch_size=patch_size,
+            overlap=float(validation["sliding_window_overlap"]),
+            mode=str(validation["sliding_window_mode"]),
+            sliding_window_batch_size=int(validation["sliding_window_batch_size"]),
+        )
+        full_metric_path = output_dir / "best_checkpoint_full_metrics.csv"
+        full_metric_summary_path = (
+            output_dir / "best_checkpoint_full_metric_summary.csv"
+        )
+        checkpoint_sha256 = file_digest(checkpoint_dir / "best.pt")
+        atomic_write_csv(
+            full_metric_path,
+            [
+                {
+                    "run_id": spec.run_id,
+                    "model_id": spec.model_id,
+                    "fold": spec.fold,
+                    "seed": spec.seed,
+                    "checkpoint_role": "best_development",
+                    "checkpoint_sha256": checkpoint_sha256,
+                    **row,
+                }
+                for row in full_metric_rows
+            ],
+        )
+        atomic_write_csv(
+            full_metric_summary_path,
+            summarize_patient_metrics(full_metric_rows),
+        )
+        progress["full_metric_evaluation"] = {
+            "checkpoint": (checkpoint_dir / "best.pt").as_posix(),
+            "checkpoint_sha256": checkpoint_sha256,
+            "patient_metrics": full_metric_path.as_posix(),
+            "patient_metrics_sha256": file_digest(full_metric_path),
+            "metric_summary": full_metric_summary_path.as_posix(),
+            "metric_summary_sha256": file_digest(full_metric_summary_path),
+            "patient_count": len(full_metric_rows),
+        }
         acceptance = {
             "best_checkpoint": (checkpoint_dir / "best.pt").is_file(),
             "terminal_checkpoint": (checkpoint_dir / "terminal.pt").is_file(),
@@ -973,6 +1068,9 @@ def run_swin_development(
                 progress["budget_sensitivity_checkpoints"]
             )
             == {str(value) for value in milestone_steps},
+            "full_metric_evaluation": (
+                full_metric_path.is_file() and full_metric_summary_path.is_file()
+            ),
         }
         progress["status"] = "completed" if all(acceptance.values()) else "invalid"
         progress["acceptance"] = acceptance
@@ -1009,6 +1107,7 @@ __all__ = [
     "SwinPatchDataset",
     "SwinRunSpec",
     "SwinValidationResult",
+    "evaluate_swin_full_metrics",
     "load_swin_runner_config",
     "resolve_swin_convergence_spec",
     "run_swin_development",

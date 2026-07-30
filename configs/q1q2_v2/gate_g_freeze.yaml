@@ -1,0 +1,51 @@
+schema_version: 1
+status: frozen_before_main_results
+external_inference_permitted: false
+folds: [1, 2, 3, 4, 5]
+seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+expected_runs:
+  native_main_convergence: 225
+  swin_main_convergence: 25
+  official_nnunet_main_convergence: 50
+  native_compute_matched: 200
+  native_loss_interaction: 100
+  total: 600
+convergence:
+  native_and_swin_main_required_stop_reason: early_stopping_patience
+  native_loss_interaction_required_stop_reason: early_stopping_patience
+  native_compute_matched_required_stop_reason: compute_budget_accelerator_hours
+  native_compute_matched_minimum_accelerator_hours: 4.0
+  nnunet_required_epochs: 1000
+  nnunet_final_lr_maximum_fraction_of_initial: 0.01
+checkpoint_requirements:
+  native_and_swin: [best, terminal]
+  official_nnunet: [best, final]
+  budget_sensitivity_steps: [2000, 10000]
+required_full_metric_evaluation: true
+required_analysis_inputs:
+  - configs/q1q2_v2/model_matrix.yaml
+  - configs/q1q2_v2/seeds.yaml
+  - configs/q1q2_v2/training_protocol.yaml
+  - configs/q1q2_v2/evaluation.yaml
+  - configs/q1q2_v2/evaluation_sensitivity.yaml
+  - configs/q1q2_v2/statistical_analysis_plan.yaml
+  - configs/q1q2_v2/robustness_protocol.yaml
+  - configs/q1q2_v2/resource_profile_protocol.yaml
+  - configs/q1q2_v2/qualitative_protocol.yaml
+  - configs/q1q2_v2/selected_loss.yaml
+  - configs/q1q2_v2/selected_nnunet_3d_plan.yaml
+  - splits/q1q2_v2/split_metadata.json
+  - splits/q1q2_v2/external_test.csv
+  - manifests/q1q2_v2/external_inventory.csv
+  - reports/q1q2_v2/external_gate_c_summary.json
+guards:
+  prohibit_external_model_inference_before_freeze: true
+  prohibit_legacy_internal_test_inference: true
+  require_clean_repository_at_every_run_start: true
+  allow_silent_failed_seed_replacement: false
+  require_exact_patient_identity_per_fold: true
+  require_all_prespecified_runs: true
+outputs:
+  audit: artifacts/q1q2_v2/gate_g_audit.json
+  checkpoint_manifest: artifacts/q1q2_v2/gate_g_checkpoint_manifest.json
+  analysis_freeze: artifacts/q1q2_v2/gate_g_analysis_freeze.json

@@ -38,7 +38,10 @@ from bratsarticle.training.reproducibility import (
     seed_everything,
 )
 from bratsarticle.training.schedule import build_warmup_cosine_scheduler
-from bratsarticle.training.validation import validate_selection_dice
+from bratsarticle.training.validation import (
+    validate_full_volumes,
+    validate_selection_dice,
+)
 from bratsarticle.utils.hashing import file_digest, text_digest
 from bratsarticle.utils.paths import assert_output_paths_safe
 from bratsarticle.utils.serialization import (
@@ -46,7 +49,11 @@ from bratsarticle.utils.serialization import (
     atomic_write_csv,
     atomic_write_json,
 )
-from evaluation import CentralEvaluator, load_evaluation_config
+from evaluation import (
+    CentralEvaluator,
+    load_evaluation_config,
+    summarize_patient_metrics,
+)
 
 NativeStage = Literal[
     "loss_screen",
@@ -206,9 +213,8 @@ def main_convergence_specs(
         selection_artifact = Path.cwd() / selection_artifact
     if not selection_artifact.is_file():
         raise PermissionError("Selected-loss evidence artifact is missing")
-    if (
-        file_digest(selection_artifact)
-        != str(selected.get("selection_artifact_sha256"))
+    if file_digest(selection_artifact) != str(
+        selected.get("selection_artifact_sha256")
     ):
         raise PermissionError("Selected-loss evidence hash does not match")
     selection_evidence = cast(
@@ -216,8 +222,7 @@ def main_convergence_specs(
         json.loads(selection_artifact.read_text(encoding="utf-8")),
     )
     if (
-        selection_evidence.get("status")
-        != "selected_from_complete_development_cv"
+        selection_evidence.get("status") != "selected_from_complete_development_cv"
         or str(selection_evidence.get("selected_loss")) != selected_loss
         or selection_evidence.get("external_data_accessed") is not False
         or selection_evidence.get("legacy_internal_test_accessed") is not False
@@ -266,11 +271,7 @@ def resolve_main_convergence_spec(
     matches = [
         spec
         for spec in main_convergence_specs(config_path, selected_loss_path)
-        if (
-            spec.model_id == model_id
-            and spec.fold == fold
-            and spec.seed == seed
-        )
+        if (spec.model_id == model_id and spec.fold == fold and spec.seed == seed)
     ]
     if len(matches) != 1:
         raise PermissionError("Requested run is outside the frozen native main matrix")
@@ -336,11 +337,7 @@ def resolve_main_compute_matched_spec(
     matches = [
         spec
         for spec in main_compute_matched_specs(config_path, selected_loss_path)
-        if (
-            spec.model_id == model_id
-            and spec.fold == fold
-            and spec.seed == seed
-        )
+        if (spec.model_id == model_id and spec.fold == fold and spec.seed == seed)
     ]
     if len(matches) != 1:
         raise PermissionError(
@@ -359,9 +356,7 @@ def loss_interaction_specs(
         selected_loss_path,
     )[0].loss_name
     config = _load_yaml(config_path)
-    loss_protocol_path = Path(
-        str(cast(dict[str, Any], config["losses"])["protocol"])
-    )
+    loss_protocol_path = Path(str(cast(dict[str, Any], config["losses"])["protocol"]))
     loss_protocol = _load_yaml(loss_protocol_path)
     interaction = cast(
         dict[str, Any],
@@ -417,8 +412,7 @@ def loss_interaction_specs(
         or len({spec.run_id for spec in specs}) != expected_count
     ):
         raise ValueError(
-            "Frozen loss-interaction matrix must contain "
-            f"{expected_count} unique runs"
+            f"Frozen loss-interaction matrix must contain {expected_count} unique runs"
         )
     return specs
 
@@ -435,11 +429,7 @@ def resolve_loss_interaction_spec(
     matches = [
         spec
         for spec in loss_interaction_specs(config_path, selected_loss_path)
-        if (
-            spec.model_id == model_id
-            and spec.fold == fold
-            and spec.seed == seed
-        )
+        if (spec.model_id == model_id and spec.fold == fold and spec.seed == seed)
     ]
     if len(matches) != 1:
         raise PermissionError(
@@ -525,9 +515,7 @@ def _metadata(
         "hardware": {
             "backend": "mps",
             "device": "Apple M1 Max",
-            "memory_terminology": (
-                "MPS framework-reported allocated unified memory"
-            ),
+            "memory_terminology": ("MPS framework-reported allocated unified memory"),
         },
         "hashes": {
             "runner_config": file_digest(runner_config_path),
@@ -590,8 +578,7 @@ def run_native_development(
     """Run or resume one frozen native development job."""
     if not allow_reportable_development_training:
         raise PermissionError(
-            "Development training requires "
-            "--allow-reportable-development-training"
+            "Development training requires --allow-reportable-development-training"
         )
     config = _load_yaml(runner_config_path)
     if str(config["status"]) != "frozen_before_first_reportable_development_run":
@@ -787,9 +774,7 @@ def run_native_development(
     evaluator = CentralEvaluator(load_evaluation_config(evaluation_path))
     tracker = ResourceTracker(device)
     cumulative_before_session = float(progress["cumulative_elapsed_seconds"])
-    validation_frequency = int(
-        training["validation_frequency_optimizer_steps"]
-    )
+    validation_frequency = int(training["validation_frequency_optimizer_steps"])
     minimum_delta = float(training["early_stopping_minimum_delta"])
     patience = int(training["early_stopping_patience_validation_checks"])
     stage_config = cast(
@@ -825,10 +810,7 @@ def run_native_development(
                 engine.state.batches_consumed_in_epoch = batch_index + 1
                 if (
                     maximum_accelerator_hours is not None
-                    and (
-                        cumulative_before_session + tracker.elapsed_seconds()
-                    )
-                    / 3600.0
+                    and (cumulative_before_session + tracker.elapsed_seconds()) / 3600.0
                     >= maximum_accelerator_hours
                 ):
                     progress["stop_reason"] = "compute_budget_accelerator_hours"
@@ -879,8 +861,7 @@ def run_native_development(
                     )
                 if engine.state.global_step in milestone_steps:
                     milestone_path = (
-                        checkpoint_dir
-                        / f"budget_step_{engine.state.global_step}.pt"
+                        checkpoint_dir / f"budget_step_{engine.state.global_step}.pt"
                     )
                     save_checkpoint(
                         milestone_path,
@@ -891,12 +872,8 @@ def run_native_development(
                         state=engine.state,
                         metadata=metadata,
                     )
-                    milestone_metrics = (
-                        output_dir
-                        / (
-                            "validation_step_"
-                            f"{engine.state.global_step}_per_patient.csv"
-                        )
+                    milestone_metrics = output_dir / (
+                        f"validation_step_{engine.state.global_step}_per_patient.csv"
                     )
                     atomic_write_csv(
                         milestone_metrics,
@@ -908,25 +885,15 @@ def run_native_development(
                         "checkpoint": milestone_path.as_posix(),
                         "checkpoint_sha256": file_digest(milestone_path),
                         "patient_metrics": milestone_metrics.as_posix(),
-                        "patient_metrics_sha256": file_digest(
-                            milestone_metrics
-                        ),
+                        "patient_metrics_sha256": file_digest(milestone_metrics),
                     }
                 reference = progress["early_stopping_reference_metric"]
                 if reference is None or metric > float(reference) + minimum_delta:
                     progress["early_stopping_reference_metric"] = metric
-                    progress[
-                        "validation_checks_without_minimum_improvement"
-                    ] = 0
+                    progress["validation_checks_without_minimum_improvement"] = 0
                 else:
-                    progress[
-                        "validation_checks_without_minimum_improvement"
-                    ] = (
-                        int(
-                            progress[
-                                "validation_checks_without_minimum_improvement"
-                            ]
-                        )
+                    progress["validation_checks_without_minimum_improvement"] = (
+                        int(progress["validation_checks_without_minimum_improvement"])
                         + 1
                     )
                 progress["completed_validation_checks"] = (
@@ -962,14 +929,9 @@ def run_native_development(
                 )
                 if (
                     spec.stage != "main_compute_matched"
-                    and engine.state.global_step
-                    >= minimum_steps_before_early_stopping
+                    and engine.state.global_step >= minimum_steps_before_early_stopping
                     and (
-                        int(
-                            progress[
-                                "validation_checks_without_minimum_improvement"
-                            ]
-                        )
+                        int(progress["validation_checks_without_minimum_improvement"])
                         >= patience
                     )
                 ):
@@ -996,6 +958,56 @@ def run_native_development(
             state=engine.state,
             metadata=metadata,
         )
+        full_metric_path = output_dir / "best_checkpoint_full_metrics.csv"
+        full_metric_summary_path = (
+            output_dir / "best_checkpoint_full_metric_summary.csv"
+        )
+        if spec.full_metric_evaluation:
+            best_payload = cast(
+                dict[str, Any],
+                torch.load(
+                    checkpoint_dir / "best.pt",
+                    map_location=device,
+                    weights_only=False,
+                ),
+            )
+            best_metadata = cast(dict[str, Any], best_payload["metadata"])
+            if best_metadata.get("run_spec_sha256") != spec.sha256:
+                raise ValueError("Best checkpoint run-spec hash differs")
+            engine.model.load_state_dict(best_payload["model"])
+            full_metric_rows = validate_full_volumes(
+                engine.model,
+                validation_loader,
+                device=device,
+                evaluator=evaluator,
+            )
+            checkpoint_sha256 = file_digest(checkpoint_dir / "best.pt")
+            identified_rows = [
+                {
+                    "run_id": spec.run_id,
+                    "model_id": spec.model_id,
+                    "fold": spec.fold,
+                    "seed": spec.seed,
+                    "checkpoint_role": "best_development",
+                    "checkpoint_sha256": checkpoint_sha256,
+                    **row,
+                }
+                for row in full_metric_rows
+            ]
+            atomic_write_csv(full_metric_path, identified_rows)
+            atomic_write_csv(
+                full_metric_summary_path,
+                summarize_patient_metrics(full_metric_rows),
+            )
+            progress["full_metric_evaluation"] = {
+                "checkpoint": (checkpoint_dir / "best.pt").as_posix(),
+                "checkpoint_sha256": checkpoint_sha256,
+                "patient_metrics": full_metric_path.as_posix(),
+                "patient_metrics_sha256": file_digest(full_metric_path),
+                "metric_summary": full_metric_summary_path.as_posix(),
+                "metric_summary_sha256": file_digest(full_metric_summary_path),
+                "patient_count": len(full_metric_rows),
+            }
         acceptance = {
             "best_checkpoint": (checkpoint_dir / "best.pt").is_file(),
             "terminal_checkpoint": (checkpoint_dir / "terminal.pt").is_file(),
@@ -1012,10 +1024,13 @@ def run_native_development(
                 if spec.stage == "main_convergence"
                 else True
             ),
+            "full_metric_evaluation": (
+                full_metric_path.is_file() and full_metric_summary_path.is_file()
+                if spec.full_metric_evaluation
+                else True
+            ),
         }
-        progress["status"] = (
-            "completed" if all(acceptance.values()) else "invalid"
-        )
+        progress["status"] = "completed" if all(acceptance.values()) else "invalid"
         progress["acceptance"] = acceptance
         metadata["status"] = progress["status"]
     except Exception:

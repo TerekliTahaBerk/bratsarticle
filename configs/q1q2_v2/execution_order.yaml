@@ -37,10 +37,10 @@ ordered_stages:
     status: 100_job_queue_prepared_blocked_by_loss_freeze_and_serial_m1_runtime
   - id: analysis_freeze
     class: irreversible_gate
-    status: pending_loss_and_checkpoints
+    status: audit_implemented_pending_loss_and_600_verified_runs
   - id: external_confirmatory_evaluation
     class: one_time_external
-    status: prohibited_before_analysis_freeze
+    status: guarded_queue_implemented_prohibited_before_analysis_freeze
   - id: robustness
     class: postfreeze_analysis
     status: pending

@@ -12,6 +12,9 @@ from typing import Any, cast
 
 import yaml
 
+from bratsarticle.experiments.q1q2_nnunet_evaluation import (
+    evaluate_nnunet_best_validation,
+)
 from bratsarticle.utils.hashing import file_digest, text_digest
 from bratsarticle.utils.paths import assert_output_paths_safe
 from bratsarticle.utils.serialization import atomic_write_json
@@ -72,26 +75,21 @@ def load_nnunet_jobs(
     if not isinstance(selected, dict):
         raise ValueError("Selected nnU-Net plan must be a mapping")
     if (
-        selected.get("status")
-        != "frozen_from_outcome_blind_hardware_feasibility"
+        selected.get("status") != "frozen_from_outcome_blind_hardware_feasibility"
         or selected.get("performance_outcomes_used") is not False
         or selected.get("external_data_accessed") is not False
     ):
         raise PermissionError("Selected nnU-Net 3D plan is not eligible")
     expected_selected_hash = matrix.get("selected_3d_plan_sha256")
-    if (
-        expected_selected_hash is not None
-        and expected_selected_hash != file_digest(selected_path)
+    if expected_selected_hash is not None and expected_selected_hash != file_digest(
+        selected_path
     ):
         raise PermissionError("nnU-Net runner selected-plan hash changed")
     queue_path = Path(str(matrix["queue"]))
     queue = json.loads(queue_path.read_text(encoding="utf-8"))
     if queue.get("status") != "frozen_not_started":
         raise PermissionError("nnU-Net queue is not frozen")
-    if (
-        queue.get("selected_3d_plan_config_sha256")
-        != file_digest(selected_path)
-    ):
+    if queue.get("selected_3d_plan_config_sha256") != file_digest(selected_path):
         raise PermissionError("nnU-Net selected-plan hash changed")
     expected_queue_hash = matrix.get("queue_sha256")
     if expected_queue_hash is not None and expected_queue_hash != file_digest(
@@ -153,9 +151,7 @@ def official_output_directory(
 
 
 def _job_sha256(job: Mapping[str, Any]) -> str:
-    return text_digest(
-        json.dumps(dict(job), sort_keys=True, separators=(",", ":"))
-    )
+    return text_digest(json.dumps(dict(job), sort_keys=True, separators=(",", ":")))
 
 
 def _runtime_status(runtime_dir: Path) -> str:
@@ -188,9 +184,7 @@ def nnunet_queue_snapshot(
         "running_or_resumable_count": sum(
             row["status"] in {"running", "unknown"} for row in entries
         ),
-        "not_started_count": sum(
-            row["status"] == "not_started" for row in entries
-        ),
+        "not_started_count": sum(row["status"] == "not_started" for row in entries),
         "jobs": entries,
     }
 
@@ -282,8 +276,11 @@ def _run_one_job(
     job: dict[str, Any],
     artifact_root: Path,
     results_root: Path,
+    raw_root: Path,
     dataset_name: str,
     repository_commit: str,
+    fold_pattern: str,
+    evaluation_config_path: Path,
 ) -> None:
     runtime_dir = artifact_root / str(job["run_id"])
     runtime_dir.mkdir(parents=True, exist_ok=True)
@@ -301,6 +298,20 @@ def _run_one_job(
             job,
             expected_git_commit=repository_commit,
         )
+        completed_runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+        central = cast(dict[str, Any], completed_runtime.get("central_evaluation", {}))
+        for path_key, hash_key in (
+            ("patient_metrics", "patient_metrics_sha256"),
+            ("metric_summary", "metric_summary_sha256"),
+            ("report_path", "report_sha256"),
+        ):
+            path = Path(str(central.get(path_key, "")))
+            if not path.is_file() or file_digest(path) != str(
+                central.get(hash_key, "")
+            ):
+                raise RuntimeError(
+                    f"Completed nnU-Net central evaluation differs: {path_key}"
+                )
         return
     if status == "failed":
         raise RuntimeError(
@@ -319,9 +330,7 @@ def _run_one_job(
         prior_metadata_path = official_output / "q1q2_run_metadata.json"
         if not prior_metadata_path.is_file():
             raise RuntimeError("Resumable nnU-Net output lacks provenance metadata")
-        prior_metadata = json.loads(
-            prior_metadata_path.read_text(encoding="utf-8")
-        )
+        prior_metadata = json.loads(prior_metadata_path.read_text(encoding="utf-8"))
         if prior_metadata.get("git_commit") != repository_commit:
             raise RuntimeError("nnU-Net continuation across commits is prohibited")
     command = [str(value) for value in cast(list[Any], job["command"])]
@@ -372,12 +381,51 @@ def _run_one_job(
         raise RuntimeError(
             f"Official nnU-Net job failed without seed replacement: {job['run_id']}"
         )
-    report.update(
-        _validate_completed_output(
-            official_output,
-            job,
-            expected_git_commit=repository_commit,
+    completed_output = _validate_completed_output(
+        official_output,
+        job,
+        expected_git_commit=repository_commit,
+    )
+    report.update(completed_output)
+    best_validation_command = [
+        str(value) for value in cast(list[Any], job["command"])
+    ] + ["--val", "--val_best"]
+    report["best_validation_command"] = best_validation_command
+    with (
+        (runtime_dir / "best_validation_stdout.log").open(
+            "a", encoding="utf-8"
+        ) as stdout,
+        (runtime_dir / "best_validation_stderr.log").open(
+            "a", encoding="utf-8"
+        ) as stderr,
+    ):
+        best_validation = subprocess.run(
+            best_validation_command,
+            env=environment,
+            stdout=stdout,
+            stderr=stderr,
+            check=False,
         )
+    report["best_validation_return_code"] = int(best_validation.returncode)
+    if best_validation.returncode != 0:
+        report["status"] = "failed"
+        atomic_write_json(runtime_path, report)
+        raise RuntimeError(
+            "Official nnU-Net best-checkpoint validation failed without retry: "
+            f"{job['run_id']}"
+        )
+    fold = int(job["fold_one_indexed"])
+    report["central_evaluation"] = evaluate_nnunet_best_validation(
+        prediction_directory=official_output / "validation",
+        label_directory=raw_root / dataset_name / "labelsTr",
+        fold_path=Path(fold_pattern.format(fold=fold)),
+        evaluation_config_path=evaluation_config_path,
+        output_directory=runtime_dir,
+        run_id=str(job["run_id"]),
+        model_id=str(job["model_id"]),
+        fold=fold,
+        seed=int(job["seed"]),
+        best_checkpoint_path=Path(str(completed_output["best_checkpoint_path"])),
     )
     report["status"] = "completed"
     atomic_write_json(runtime_path, report)
@@ -405,10 +453,10 @@ def run_nnunet_main_queue(
     preprocessed_root = _required_environment_path(
         str(data["nnunet_preprocessed_environment"])
     )
-    results_root = _required_environment_path(
-        str(data["nnunet_results_environment"])
-    )
+    results_root = _required_environment_path(str(data["nnunet_results_environment"]))
     dataset_name = str(data["dataset_name"])
+    fold_pattern = str(data["fold_pattern"])
+    evaluation_config_path = Path(str(data["evaluation"]))
     required_preprocessed = preprocessed_root / dataset_name
     if not (required_preprocessed / "splits_final.json").is_file():
         raise FileNotFoundError("nnU-Net frozen splits are missing")
@@ -424,8 +472,7 @@ def run_nnunet_main_queue(
     ]
     if conflicts:
         raise RuntimeError(
-            "nnU-Net queue conflicts with active MPS work: "
-            + ", ".join(conflicts)
+            "nnU-Net queue conflicts with active MPS work: " + ", ".join(conflicts)
         )
     lock_path = runtime_root / "nnunetv2_main.lock"
     try:
@@ -452,8 +499,11 @@ def run_nnunet_main_queue(
                 job=job,
                 artifact_root=artifact_root,
                 results_root=results_root,
+                raw_root=raw_root,
                 dataset_name=dataset_name,
                 repository_commit=commit,
+                fold_pattern=fold_pattern,
+                evaluation_config_path=evaluation_config_path,
             )
             snapshot = nnunet_queue_snapshot(jobs, artifact_root)
             atomic_write_json(state_path, snapshot)

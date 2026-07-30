@@ -10,6 +10,7 @@ data:
   dataset_name: Dataset501_BraTS2020Q1Q2
   canonical_manifest: manifests/canonical/brats2020_canonical_manifest.csv
   fold_pattern: splits/q1q2_v2/cv_fold_{fold}.csv
+  evaluation: configs/q1q2_v2/evaluation.yaml
   expected_patients: 369
   nnunet_raw_environment: nnUNet_raw
   nnunet_preprocessed_environment: nnUNet_preprocessed

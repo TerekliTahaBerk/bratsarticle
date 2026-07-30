@@ -230,3 +230,12 @@ best/final checkpoint hashes, and completion of the full 1,000 epochs.
 Additional exact checkpoints at 2,000 and 10,000 optimizer steps support the
 same predeclared short/medium/full ranking-sensitivity analysis used for the
 other main models.
+
+After the official 1,000-epoch run and its default final-checkpoint validation,
+the queue executes the official validation-only command with `--val_best`.
+Only those best-checkpoint fold predictions enter the common repository
+evaluator. Exported labels are mapped back to BraTS `0/1/2/4`, prediction
+identity and geometry are checked against the exact fold, and all regional,
+surface, volume, and lesion metrics are written beside the guarded runtime
+record. Gate G independently re-hashes the official best/final/milestone
+checkpoints and these common metric tables.

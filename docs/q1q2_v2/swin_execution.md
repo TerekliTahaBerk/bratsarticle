@@ -49,3 +49,9 @@ The queue is restart-safe and refuses to overlap the loss-screen, native,
 nnU-Net, or nnU-Net preflight MPS locks. Best, recovery, and terminal
 checkpoints are kept separately. External and legacy internal-test access are
 prohibited.
+
+After training stops, the exact best checkpoint is reloaded and a second
+full-volume sliding-window pass produces every common regional, surface, and
+lesion metric. This reportable table is hash-linked to the checkpoint and to
+the exact fold, model, and seed. Gate G rejects a selection-only Dice table as
+insufficient evidence.

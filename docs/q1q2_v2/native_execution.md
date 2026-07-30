@@ -43,6 +43,11 @@ Both queues are sequential and restart-safe. They refuse concurrent loss,
 native, Swin, or nnU-Net MPS work. A failed seed is never replaced. Best,
 milestone, recovery, and terminal checkpoints have distinct paths and hashes.
 External data and the legacy internal 74-patient subset are not accessible.
+At completion, the runner reloads the exact best checkpoint and routes every
+validation patient through the common evaluator. The resulting patient table
+contains regional overlap, surface, volume, and lesion metrics plus the
+model/fold/seed and checkpoint hash. The terminal model is never substituted
+for the selected best model.
 
 The loss-interaction sensitivity uses the primary selected-loss runs plus one
 deterministic alternative-loss run for four component-attribution finalists
