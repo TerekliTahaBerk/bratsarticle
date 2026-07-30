@@ -20,10 +20,14 @@ ordered_stages:
     status: loss_screen_queue_frozen_ready
   - id: parameter_compute_search_validation
     class: static_and_runtime_validation
-    status: native_runtime_completed_nnunet_plans_pending
+    status: native_runtime_and_nnunet_planning_completed_hardware_preflights_pending
   - id: five_fold_equal_seed_main
     class: reportable_development
-    status: blocked_by_compute_allocation
+    status: queues_prepared_blocked_by_loss_freeze_and_serial_m1_runtime
+    required_queues:
+      native_configurable_unet: 225
+      monai_swin_unetr: 25
+      official_nnunetv2: 50
   - id: convergence_sensitivity
     class: reportable_development
     status: blocked_by_compute_allocation

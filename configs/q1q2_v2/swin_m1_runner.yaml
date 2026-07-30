@@ -1,0 +1,63 @@
+schema_version: 1
+status: frozen_before_first_reportable_development_run
+hardware:
+  backend: mps
+  device: Apple M1 Max
+  require_clean_git: true
+  deterministic_algorithms: warn_only_with_repeat_tolerance_audit
+data:
+  canonical_manifest: manifests/canonical/brats2020_canonical_manifest.csv
+  fold_pattern: splits/q1q2_v2/cv_fold_{fold}.csv
+  preprocessing: configs/data/preprocessing_pilot_cached.yaml
+  evaluation: configs/q1q2_v2/evaluation.yaml
+  training_workers: 0
+  validation_workers: 0
+  patches_per_patient_per_epoch: 2
+  tumor_patch_probability: 0.67
+model:
+  id: swin_unetr
+  matrix: configs/q1q2_v2/model_matrix.yaml
+  config: configs/q1q2_v2/models/swin_unetr_monai.yaml
+loss:
+  catalog: configs/losses/catalog.yaml
+  selected_config: configs/q1q2_v2/selected_loss.yaml
+training:
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  microbatch_size: 1
+  gradient_accumulation_steps: 2
+  effective_batch_size: 2
+  maximum_optimizer_steps: 50000
+  warmup_optimizer_steps: 1000
+  minimum_learning_rate_fraction: 0.01
+  validation_frequency_optimizer_steps: 500
+  early_stopping_minimum_delta: 0.001
+  early_stopping_patience_validation_checks: 12
+  mixed_precision: false
+validation:
+  sliding_window_overlap: 0.5
+  sliding_window_mode: gaussian
+  sliding_window_batch_size: 1
+  output_device: cpu
+  validation_loss: full_volume_logits_on_cpu
+repeat_tolerance:
+  fold: 1
+  seed: 20260730
+  optimizer_steps: 1
+  comparison:
+    absolute_tolerance: 0.00001
+    relative_tolerance: 0.00001
+    loss_absolute_tolerance: 0.000001
+matrix:
+  folds: [1, 2, 3, 4, 5]
+  seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+artifacts:
+  root: artifacts/q1q2_v2/swin_runs
+guards:
+  allow_external_data: false
+  allow_legacy_internal_test: false
+  allow_silent_seed_replacement: false
+  require_best_checkpoint: true
+  require_terminal_checkpoint: true
+  require_loss_screen_complete_and_frozen: true
+  require_mps_repeat_tolerance_audit_before_main: true
