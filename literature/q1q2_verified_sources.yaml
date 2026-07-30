@@ -33,6 +33,19 @@ sources:
     source_type: primary_journal_paper
     verified_fields: [benchmark_design, human_interrater_range, wt_tc_active_regions]
 
+  - id: resnet_2016
+    title: "Deep Residual Learning for Image Recognition"
+    year: 2016
+    venue: CVPR
+    doi: "10.1109/CVPR.2016.90"
+    url: "https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html"
+    source_type: primary_conference_paper
+    note: "Source for conventional residual blocks; not evidence that the present ResBlock-U-Net is a novel architecture."
+    verified_fields:
+      - residual_learning_formulation
+      - identity_shortcuts
+      - optimization_motivation
+
   - id: myronenko_2018
     title: "3D MRI Brain Tumor Segmentation Using Autoencoder Regularization"
     year: 2018
@@ -56,6 +69,18 @@ sources:
       - residual_extended_skip
       - wide_context
       - component_attribution_to_rehman_et_al
+
+  - id: focal_tversky_2019
+    title: "A Novel Focal Tversky Loss Function With Improved Attention U-Net for Lesion Segmentation"
+    year: 2019
+    venue: IEEE International Symposium on Biomedical Imaging
+    doi: "10.1109/ISBI.2019.8759329"
+    url: "https://ieeexplore.ieee.org/document/8759329"
+    source_type: primary_conference_paper
+    verified_fields:
+      - focal_tversky_loss_provenance
+      - class_imbalance_motivation
+    implementation_note: "The executable q1q2 loss definition is frozen independently and does not copy external implementation code."
 
   - id: seed_variability_2020
     title: "Variability and Reproducibility in Deep Learning for Medical Image Segmentation"

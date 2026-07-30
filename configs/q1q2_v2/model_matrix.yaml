@@ -72,7 +72,7 @@ main_models:
     dimensionality: 2D
     adapter: native_configurable_unet
     config: configs/models/resunet.yaml
-    primary_source: 10.1109/TMI.2016.2610582
+    primary_source: 10.1109/CVPR.2016.90
     implementation_license: Apache-2.0
     seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
   - id: resblock_unet_wc
@@ -82,6 +82,8 @@ main_models:
     adapter: native_configurable_unet
     config: configs/models/resunet_wc.yaml
     primary_source: 10.3390/electronics9122203
+    residual_block_source: 10.1109/CVPR.2016.90
+    wc_component_source: 10.3390/electronics9122203
     implementation_license: Apache-2.0
     seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
   - id: nnunetv2_2d

@@ -10,7 +10,7 @@
     20260733,
     20260734
   ],
-  "matrix_sha256": "be27dfe4cdf406342a0ae65d3ac9a49d84c8e145a3abbceae162a88848a4cfa3",
+  "matrix_sha256": "d3bc0df9357311961ef992ffa11d91c1a081a076e6d56b7b43d28fe29fd05faf",
   "model_count": 12,
   "model_ids": [
     "unet_small",
