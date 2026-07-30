@@ -66,7 +66,10 @@ def _row(config: LossConfig) -> dict[str, Any]:
             if "dice" in config.name or "tversky" in config.name
             else None
         ),
-        "reduction_axes": "batch,height,width per class for overlap terms",
+        "reduction_axes": (
+            "batch and every spatial axis per class "
+            "(batch,height,width in 2D; batch,depth,height,width in 3D)"
+        ),
         "batch_aggregation": "joint numerator and denominator across batch",
         "class_aggregation": config.reduction,
         "alpha": config.alpha,
@@ -138,8 +141,8 @@ def write_loss_methods(
         [
             "",
             (
-                "Overlap sums use axes (batch, height, width), producing one "
-                "value per selected class before the declared mean reduction. "
+                "Overlap sums use the batch and every spatial axis, producing "
+                "one value per selected class before the declared mean reduction. "
                 "CE uses PyTorch mean reduction over batch and spatial elements. "
                 "BCE uses elementwise logits loss, optional foreground channel "
                 "selection, then the declared global mean."

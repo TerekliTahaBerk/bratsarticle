@@ -20,7 +20,7 @@
       "name": "cross_entropy_plus_soft_dice",
       "overlap_background_included": false,
       "overlap_probability_transform": "softmax",
-      "reduction_axes": "batch,height,width per class for overlap terms",
+      "reduction_axes": "batch and every spatial axis per class (batch,height,width in 2D; batch,depth,height,width in 3D)",
       "smoothing": 1e-05
     },
     {
@@ -41,7 +41,7 @@
       "name": "binary_cross_entropy_plus_focal_tversky",
       "overlap_background_included": false,
       "overlap_probability_transform": "softmax",
-      "reduction_axes": "batch,height,width per class for overlap terms",
+      "reduction_axes": "batch and every spatial axis per class (batch,height,width in 2D; batch,depth,height,width in 3D)",
       "smoothing": 1e-05
     },
     {
@@ -62,7 +62,7 @@
       "name": "cross_entropy_plus_focal_tversky",
       "overlap_background_included": false,
       "overlap_probability_transform": "softmax",
-      "reduction_axes": "batch,height,width per class for overlap terms",
+      "reduction_axes": "batch and every spatial axis per class (batch,height,width in 2D; batch,depth,height,width in 3D)",
       "smoothing": 1e-05
     }
   ],

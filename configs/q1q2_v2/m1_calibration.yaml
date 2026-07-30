@@ -1,0 +1,37 @@
+schema_version: 1
+status: frozen_nonreportable_hardware_calibration
+scientific_use: prohibited
+hardware:
+  backend: mps
+  device: Apple M1 Max
+  gpu_cores: 32
+  unified_memory_gb: 32
+benchmark:
+  seed: 20260730
+  deterministic_algorithms:
+    enabled: true
+    warn_only_for_missing_mps_kernel: true
+    rationale: MPS lacks a deterministic index_put_with_accumulate backward kernel used by Swin UNETR
+  warmup_optimizer_steps: 2
+  measured_optimizer_steps: 5
+  native_2d:
+    input_height: 240
+    input_width: 240
+    microbatch_size: 16
+    gradient_accumulation_steps: 1
+  native_2p5d:
+    input_height: 240
+    input_width: 240
+    microbatch_size: 8
+    gradient_accumulation_steps: 1
+  swin_unetr:
+    patch_size: [96, 96, 96]
+    microbatch_size: 1
+    gradient_accumulation_steps: 2
+  loss: cross_entropy_plus_soft_dice
+guards:
+  access_raw_data: false
+  access_external_data: false
+  access_legacy_internal_test: false
+  write_reportable_metrics: false
+  tune_hyperparameters: false

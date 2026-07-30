@@ -1,0 +1,50 @@
+schema_version: 1
+status: frozen_nonreportable_training_diagnostics
+scientific_use: prohibited
+hardware:
+  backend: mps
+  device: Apple M1 Max
+data:
+  canonical_manifest: manifests/canonical/brats2020_canonical_manifest.csv
+  fold: 1
+  fold_manifest: splits/q1q2_v2/cv_fold_1.csv
+  preprocessing: configs/data/preprocessing_pilot_cached.yaml
+  evaluation: configs/q1q2_v2/evaluation.yaml
+  training_workers: 0
+  validation_workers: 0
+model:
+  id: unet_small
+  config: configs/models/unet.yaml
+loss:
+  catalog: configs/losses/catalog.yaml
+  name: cross_entropy_plus_soft_dice
+optimization:
+  seed: 20260730
+  learning_rate: 0.003
+  weight_decay: 0.00001
+  mixed_precision: false
+synthetic_overfit:
+  steps: 150
+  batch_size: 4
+  image_size: 64
+  acceptance:
+    maximum_final_to_initial_loss_ratio: 0.20
+    minimum_mean_regional_dice: 0.95
+one_patient_overfit:
+  steps: 300
+  acceptance:
+    maximum_final_to_initial_loss_ratio: 0.30
+    minimum_mean_regional_dice: 0.90
+single_fold_smoke:
+  optimizer_steps: 20
+  training_batch_size: 16
+  validation_batch_size: 16
+  acceptance:
+    require_finite_training_loss: true
+    require_all_validation_patients: true
+    require_best_and_terminal_checkpoint: true
+guards:
+  access_external_data: false
+  access_legacy_internal_test: false
+  use_for_model_selection: false
+  use_for_manuscript_results: false

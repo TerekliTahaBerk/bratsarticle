@@ -1,6 +1,6 @@
 schema_version: 1
 report_date: 2026-07-30
-overall: NOT_READY_COMPUTE_BLOCKER
+overall: NOT_READY_M1_DEVELOPMENT_IN_PROGRESS
 q1q2_ready: false
 external_inference_permitted: false
 gates:
@@ -14,8 +14,8 @@ gates:
     status: pass
     evidence: reports/q1q2_v2/external_gate_c_summary.json
   D:
-    status: static_design_pass_runtime_profiling_pending
-    evidence: reports/q1q2_v2/model_matching_summary.json
+    status: pass_native_capacity_and_compute_controls
+    evidence: reports/q1q2_v2/m1_calibration.json
   E:
     status: design_pass_execution_pending
     evidence: reports/q1q2_v2/model_matrix_validation.json
@@ -38,11 +38,7 @@ gates:
     status: blocked
     evidence: submission/AUTHOR_CONFIRMATION_REQUIRED.md
 required_user_action:
-  provide:
-    - scheduler_and_launch_command
-    - exact_gpu_model_and_count
-    - per_job_wall_time
-    - total_gpu_hours
-    - storage_and_checkpoint_limits
-  alternative: explicitly_authorize_a_prespecified_protocol_revision_before_results
+  selected_host: Apple M1 Max 32-core GPU with 32-GB unified memory
+  immediate: none_for_bounded_15_job_loss_screen
+  before_full_matrix: explicitly_authorize_the_measured_multi_month_schedule_or_a_prespecified_protocol_revision
   invariant: five_folds_and_five_common_seeds_cannot_be_silently_reduced

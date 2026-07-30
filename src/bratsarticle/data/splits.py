@@ -30,6 +30,7 @@ import matplotlib.pyplot as plt
 
 SplitName = Literal["train", "validation", "test"]
 DevelopmentSplitName = Literal["train", "validation"]
+CrossValidationRole = Literal["train", "validation"]
 
 _SPLIT_ORDER: tuple[SplitName, ...] = ("train", "validation", "test")
 _IMAGE_HASH_COLUMNS = tuple(f"{role}_sha256" for role in ("t1", "t1ce", "t2", "flair"))
@@ -609,6 +610,72 @@ def load_development_manifest(
     if split not in {"train", "validation"}:
         raise ValueError(f"Development split must be train/validation, got {split}")
     return pd.read_csv(split_dir / f"{split}.csv")
+
+
+def load_cv_fold_manifest(
+    fold_path: Path,
+    canonical_manifest_path: Path,
+    role: CrossValidationRole,
+) -> pd.DataFrame:
+    """Join a frozen v2 fold to the canonical raw-file manifest safely."""
+    if role not in {"train", "validation"}:
+        raise ValueError(f"Cross-validation role must be train/validation, got {role}")
+    fold = pd.read_csv(fold_path)
+    required = {
+        "subject_id",
+        "fold",
+        "role",
+        "canonical_manifest_sha256",
+    }
+    missing = required - set(fold.columns)
+    if missing:
+        raise SplitIntegrityError(
+            f"Frozen fold is missing required fields: {sorted(missing)}"
+        )
+    if fold.empty or not fold["subject_id"].astype(str).is_unique:
+        raise SplitIntegrityError("Frozen fold subject IDs must be nonempty and unique")
+    fold_numbers = set(int(value) for value in fold["fold"])
+    if len(fold_numbers) != 1:
+        raise SplitIntegrityError("Frozen fold file must contain exactly one fold ID")
+    roles = set(fold["role"].astype(str))
+    if not roles.issubset({"train", "validation"}) or roles != {
+        "train",
+        "validation",
+    }:
+        raise SplitIntegrityError(
+            "Frozen fold must contain only train and validation roles, both present"
+        )
+    recorded_hashes = set(fold["canonical_manifest_sha256"].astype(str))
+    actual_hash = file_digest(canonical_manifest_path)
+    if recorded_hashes != {actual_hash}:
+        raise SplitIntegrityError(
+            "Frozen fold canonical-manifest hash does not match the selected manifest"
+        )
+    canonical = pd.read_csv(canonical_manifest_path)
+    if canonical.empty or not canonical["subject_id"].astype(str).is_unique:
+        raise SplitIntegrityError(
+            "Canonical manifest subject IDs must be nonempty and unique"
+        )
+    fold_subjects = set(fold["subject_id"].astype(str))
+    canonical_subjects = set(canonical["subject_id"].astype(str))
+    if fold_subjects != canonical_subjects:
+        raise SplitIntegrityError(
+            "Frozen fold does not cover the canonical cohort exactly"
+        )
+    selected_ids = set(
+        fold.loc[fold["role"].astype(str) == role, "subject_id"].astype(str)
+    )
+    if not selected_ids:
+        raise SplitIntegrityError(f"Frozen fold has no {role} subjects")
+    selected = canonical.loc[
+        canonical["subject_id"].astype(str).isin(selected_ids)
+    ].copy()
+    selected.insert(0, "cv_role", role)
+    selected.insert(1, "cv_fold", next(iter(fold_numbers)))
+    selected = selected.sort_values("subject_id").reset_index(drop=True)
+    if len(selected) != len(selected_ids):
+        raise SplitIntegrityError("Fold-to-canonical join lost or duplicated subjects")
+    return selected
 
 
 def _git_commit() -> str:

@@ -1,0 +1,49 @@
+{
+  "decision": "LOSS_SCREEN_FEASIBLE_FULL_MATRIX_BLOCKED",
+  "full_matrix": {
+    "explicit_exclusions": [
+      "nnU-Net v2 2D convergence",
+      "nnU-Net v2 3D full-resolution convergence",
+      "nnU-Net v2 3D architecture-loss interaction",
+      "all main-run repeated validation overhead",
+      "best and terminal full-metric evaluation",
+      "checkpoint I/O",
+      "reproduction reruns",
+      "external confirmatory inference"
+    ],
+    "fixed_200_core_compute_matched_hours": 800.0,
+    "known_3_of_4_interaction_training_proxy_hours": 427.11384583829687,
+    "known_scheduled_work_proxy_hours": 3375.676725232961,
+    "known_scheduled_work_proxy_serial_days": 140.65319688470672,
+    "measured_10_model_convergence_training_proxy_hours": 2132.1635420261173,
+    "reason": "The known subtotal already spans months on one serial MPS device and omits material mandatory work.",
+    "status": "blocked_before_start"
+  },
+  "invariants": {
+    "common_main_seeds": 5,
+    "external_inference_permitted": false,
+    "folds": 5,
+    "legacy_internal_test_accessed": false,
+    "silent_reduction": false
+  },
+  "loss_screen": {
+    "estimated_serial_hours_at_step_ceiling": 16.399337368546792,
+    "estimated_serial_hours_if_earliest_patience_stop": 9.839602421128074,
+    "job_count": 15,
+    "maximum_optimizer_steps_per_job": 10000,
+    "queue_artifact": "artifacts/q1q2_v2/queues/loss_screen.json",
+    "status": "frozen_ready_to_start"
+  },
+  "measured_validation": {
+    "fast_selection_seconds": 98.55050691700308,
+    "fold": 1,
+    "full_evaluator_seconds": 189.60276454201085,
+    "metric_parity": true,
+    "metric_value": 0.23454420181899566,
+    "patient_count": 74,
+    "scientific_use": "prohibited_pipeline_diagnostic"
+  },
+  "next_decision_point": "After all 15 loss-screen jobs complete, freeze the selected loss, benchmark official nnU-Net plans, and use observed learning curves to request or freeze an explicit full-matrix protocol decision.",
+  "schema_version": 1,
+  "selected_host": "Apple M1 Max 32-core GPU 32-GB unified memory"
+}

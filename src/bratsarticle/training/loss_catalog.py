@@ -77,9 +77,15 @@ def _one_hot(
     logits: torch.Tensor,
     labels: torch.Tensor,
 ) -> tuple[torch.Tensor, torch.Tensor]:
+    if logits.ndim < 4 or labels.ndim != logits.ndim - 1:
+        raise ValueError(
+            "Expected logits [B,C,*spatial] and labels [B,*spatial]"
+        )
+    if logits.shape[0] != labels.shape[0] or logits.shape[2:] != labels.shape[1:]:
+        raise ValueError("Logit and label batch/spatial shapes must match")
     indices = labels_to_class_indices(labels)
     targets = functional.one_hot(indices, num_classes=logits.shape[1])
-    targets = targets.permute(0, 3, 1, 2).to(dtype=logits.dtype)
+    targets = targets.movedim(-1, 1).to(dtype=logits.dtype)
     return indices, targets
 
 
@@ -155,7 +161,11 @@ class ConfiguredSegmentationLoss(nn.Module):
         )
         weights = self._weights(logits)
         if weights is not None:
-            losses = losses * weights.view(1, -1, 1, 1)
+            losses = losses * weights.view(
+                1,
+                -1,
+                *(1 for _ in range(logits.ndim - 2)),
+            )
         losses = _select_channels(losses, self._bce_include_background)
         return _reduce(losses, self.config.reduction)
 
@@ -173,7 +183,7 @@ class ConfiguredSegmentationLoss(nn.Module):
             targets.float(),
             self._overlap_include_background,
         )
-        axes = (0, 2, 3)
+        axes = (0, *range(2, probabilities.ndim))
         intersection = torch.sum(probabilities * selected_targets, dim=axes)
         denominator = torch.sum(probabilities + selected_targets, dim=axes)
         dice = (2.0 * intersection + self.config.smoothing) / (
@@ -194,7 +204,7 @@ class ConfiguredSegmentationLoss(nn.Module):
             targets.float(),
             self._overlap_include_background,
         )
-        axes = (0, 2, 3)
+        axes = (0, *range(2, probabilities.ndim))
         true_positive = torch.sum(probabilities * selected_targets, dim=axes)
         false_positive = torch.sum(
             probabilities * (1.0 - selected_targets),

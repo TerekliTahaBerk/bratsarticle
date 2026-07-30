@@ -1,0 +1,143 @@
+{
+  "config": "configs/q1q2_v2/diagnostics.yaml",
+  "config_sha256": "dc68d322a3b6b3ace940cf2955827d01772d03bc5b4e71bd5c5534fe1aa65ac7",
+  "dataset_root_recorded": false,
+  "external_data_accessed": false,
+  "legacy_internal_test_accessed": false,
+  "raw_data_access": "authorized fold-training and fold-validation only",
+  "schema_version": 1,
+  "scientific_use": "prohibited",
+  "stages": {
+    "one_patient_overfit": {
+      "acceptance": {
+        "loss_ratio": true,
+        "mean_regional_dice": true
+      },
+      "final_loss": 0.046640545129776,
+      "final_metrics": {
+        "et_dice": 0.9543103448275863,
+        "mean_regional_dice": 0.9727275579561798,
+        "tc_dice": 0.9899244332493703,
+        "wt_dice": 0.9739478957915831
+      },
+      "final_to_initial_loss_ratio": 0.04258743230218032,
+      "initial_loss": 1.095171570777893,
+      "loss_every_10_steps": [
+        0.8283398151397705,
+        0.6710535287857056,
+        0.5421602129936218,
+        0.45005881786346436,
+        0.37376463413238525,
+        0.29831698536872864,
+        0.2950671911239624,
+        0.19537140429019928,
+        0.18244612216949463,
+        0.14498430490493774,
+        0.14566263556480408,
+        0.10897713899612427,
+        0.1000911071896553,
+        0.09275136888027191,
+        0.10824611037969589,
+        0.07893019914627075,
+        0.07475584000349045,
+        0.07594921439886093,
+        0.06404457241296768,
+        0.06103254109621048,
+        0.06257244199514389,
+        0.05657041817903519,
+        0.05569085478782654,
+        0.054258860647678375,
+        0.05050133913755417,
+        0.06193231791257858,
+        0.05010271072387695,
+        0.046168725937604904,
+        0.04608667641878128,
+        0.052900493144989014
+      ],
+      "slice_index": 55,
+      "status": "pass",
+      "steps": 300,
+      "subject_id": "BraTS20_Training_001"
+    },
+    "single_fold_smoke": {
+      "acceptance": {
+        "all_validation_patients": true,
+        "best_checkpoint": true,
+        "finite_training_loss": true,
+        "selection_metric_parity": true,
+        "terminal_checkpoint": true
+      },
+      "fast_selection_patient_mean_regional_dice": 0.23454420181899566,
+      "fast_selection_seconds": 98.55050691700308,
+      "full_evaluator_seconds": 189.60276454201085,
+      "metadata": {
+        "canonical_manifest_sha256": "b9ab5bdf598521df5b3e26348ef4561f6ace631187385e180841e1712938e78b",
+        "external_data_accessed": false,
+        "fold": 1,
+        "fold_manifest_sha256": "f532c85a3d6e5ee2a429a5b16ae38769eb799ce15b4a82209b24d19f37bb06a3",
+        "git_commit": "1571829f47da5e75aee17fae1717d69fcf71b6a6",
+        "legacy_internal_test_accessed": false,
+        "loss_catalog_sha256": "51adbae394337f7c2b8c1cebffbe28b1fb4bdd1ccead28966559555f581948c2",
+        "model": "unet_small",
+        "model_config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+        "run_kind": "q1q2_v2_nonreportable_single_fold_smoke",
+        "scientific_use": "prohibited",
+        "seed": 20260730
+      },
+      "optimizer_steps": 20,
+      "parameter_count": 1942772,
+      "resource_profile": {
+        "accelerator_backend": "mps",
+        "accelerator_hours": 0.08795896598388936,
+        "device": "mps",
+        "elapsed_seconds": 316.6522775420017,
+        "gpu_hours": 0.08795896598388936,
+        "memory_semantics": "MPS framework-reported allocated unified memory and driver-allocated memory",
+        "peak_allocated_vram_bytes": 40377600,
+        "peak_memory_allocated_bytes": 40377600,
+        "peak_memory_reserved_or_driver_bytes": 2353004544,
+        "peak_reserved_vram_bytes": 2353004544
+      },
+      "status": "pass",
+      "training_loss_first": 1.1469839811325073,
+      "training_loss_last": 0.8075222373008728,
+      "validation_patient_count": 74,
+      "validation_patient_mean_regional_dice": 0.23454420181899566
+    },
+    "synthetic_overfit": {
+      "acceptance": {
+        "loss_ratio": true,
+        "mean_regional_dice": true
+      },
+      "final_loss": 0.02154487743973732,
+      "final_metrics": {
+        "et_dice": 1.0,
+        "mean_regional_dice": 1.0,
+        "tc_dice": 1.0,
+        "wt_dice": 1.0
+      },
+      "final_to_initial_loss_ratio": 0.01805763078557672,
+      "initial_loss": 1.193117618560791,
+      "loss_every_10_steps": [
+        0.6784891486167908,
+        0.5799840688705444,
+        0.4620622396469116,
+        0.39698928594589233,
+        0.31502196192741394,
+        0.25361311435699463,
+        0.1804359257221222,
+        0.13407081365585327,
+        0.12045300006866455,
+        0.07688802480697632,
+        0.05603697523474693,
+        0.04424211382865906,
+        0.03758765012025833,
+        0.026666000485420227,
+        0.03270827233791351
+      ],
+      "status": "pass",
+      "steps": 150
+    }
+  },
+  "status": "pass"
+}

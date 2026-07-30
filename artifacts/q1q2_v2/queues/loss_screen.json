@@ -1,0 +1,172 @@
+{
+  "jobs": [
+    {
+      "fold": 1,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_soft_dice",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f1__s20260730__cross_entropy_plus_soft_dice",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 1,
+      "full_metric_evaluation": false,
+      "loss_name": "binary_cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f1__s20260730__binary_cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 1,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f1__s20260730__cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 2,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_soft_dice",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f2__s20260730__cross_entropy_plus_soft_dice",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 2,
+      "full_metric_evaluation": false,
+      "loss_name": "binary_cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f2__s20260730__binary_cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 2,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f2__s20260730__cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 3,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_soft_dice",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f3__s20260730__cross_entropy_plus_soft_dice",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 3,
+      "full_metric_evaluation": false,
+      "loss_name": "binary_cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f3__s20260730__binary_cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 3,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f3__s20260730__cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 4,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_soft_dice",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f4__s20260730__cross_entropy_plus_soft_dice",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 4,
+      "full_metric_evaluation": false,
+      "loss_name": "binary_cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f4__s20260730__binary_cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 4,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f4__s20260730__cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 5,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_soft_dice",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f5__s20260730__cross_entropy_plus_soft_dice",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 5,
+      "full_metric_evaluation": false,
+      "loss_name": "binary_cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f5__s20260730__binary_cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    },
+    {
+      "fold": 5,
+      "full_metric_evaluation": false,
+      "loss_name": "cross_entropy_plus_focal_tversky",
+      "maximum_optimizer_steps": 10000,
+      "model_id": "unet_small",
+      "run_id": "loss_screen__unet_small__f5__s20260730__cross_entropy_plus_focal_tversky",
+      "seed": 20260730,
+      "stage": "loss_screen",
+      "warmup_optimizer_steps": 1000
+    }
+  ],
+  "runner_config": "configs/q1q2_v2/m1_native_runner.yaml",
+  "schema_version": 1,
+  "status": "frozen_not_started"
+}

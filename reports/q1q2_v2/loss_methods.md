@@ -10,6 +10,6 @@ All losses consume the same four raw logits. Multiclass CE and overlap terms use
 | binary_cross_entropy_plus_focal_tversky | not_applicable | independent sigmoid | softmax | False | False |
 | cross_entropy_plus_focal_tversky | softmax | not_applicable | softmax | None | False |
 
-Overlap sums use axes (batch, height, width), producing one value per selected class before the declared mean reduction. CE uses PyTorch mean reduction over batch and spatial elements. BCE uses elementwise logits loss, optional foreground channel selection, then the declared global mean.
+Overlap sums use the batch and every spatial axis, producing one value per selected class before the declared mean reduction. CE uses PyTorch mean reduction over batch and spatial elements. BCE uses elementwise logits loss, optional foreground channel selection, then the declared global mean.
 
 The architecture-attribution loss remains pending until the three mandatory candidates complete development-only five-fold selection. Neither the legacy 74-patient subset nor external labels may influence this selection.

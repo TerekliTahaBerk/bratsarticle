@@ -1,0 +1,374 @@
+{
+  "config": "configs/q1q2_v2/m1_calibration.yaml",
+  "config_sha256": "a8a2a08cb6c58843b7cfe6be1e7edd4c5acd066c5d01fa7472323d49a8a94a93",
+  "deterministic_algorithms": {
+    "enabled": true,
+    "rationale": "MPS lacks a deterministic index_put_with_accumulate backward kernel used by Swin UNETR",
+    "warn_only_for_missing_mps_kernel": true
+  },
+  "external_data_accessed": false,
+  "hardware": {
+    "backend": "mps",
+    "chip": "Apple M1 Max",
+    "gpu_cores": 32,
+    "unified_memory_gb": 32
+  },
+  "legacy_internal_test_accessed": false,
+  "model_matrix": "configs/q1q2_v2/model_matrix.yaml",
+  "model_matrix_sha256": "a0e51e5482a05c61f16f5df97441ff13de7ed6b2e0e69b90f372cc93447063f5",
+  "models": [
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/models/unet.yaml",
+      "config_sha256": "6dfedaae0b795e7aed5700f9db042daffb2635782f97943058412d7042e5728a",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.19882250000955537,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 108467968,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 2330329088,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.19648308301111683,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.19099145800282713,
+      "model_id": "unet_small",
+      "optimizer_step_seconds": [
+        0.19666912499815226,
+        0.19882250000955537,
+        0.19570466699951794,
+        0.19648308301111683,
+        0.19099145800282713
+      ],
+      "parameter_count": 1942772,
+      "status": "pass",
+      "terminal_loss": 1.096973180770874
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/q1q2_v2/models/unet_parameter_matched_res.yaml",
+      "config_sha256": "8e6dae517db9faf7da61a0d786b55fb3973256df51868a83275f019b79d36fba",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.3012257920054253,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 273584896,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 3494248448,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.298490834000404,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.2942975410114741,
+      "model_id": "unet_parameter_matched_res",
+      "optimizer_step_seconds": [
+        0.2942975410114741,
+        0.2946174999960931,
+        0.3012257920054253,
+        0.298490834000404,
+        0.29856479199952446
+      ],
+      "parameter_count": 4368364,
+      "status": "pass",
+      "terminal_loss": 1.1056925058364868
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/q1q2_v2/models/unet_compute_matched_res.yaml",
+      "config_sha256": "40563be9b684e5f7c05ce7c27715311aa1ddf3e582fe2fe1c0f332ee09c01559",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.40891425000154413,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 296841472,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 3714449408,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.39402599999448285,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.39129829200101085,
+      "model_id": "unet_compute_matched_res",
+      "optimizer_step_seconds": [
+        0.39129829200101085,
+        0.3942874159984058,
+        0.40891425000154413,
+        0.3938449999986915,
+        0.39402599999448285
+      ],
+      "parameter_count": 6823774,
+      "status": "pass",
+      "terminal_loss": 1.101757287979126
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/models/unet_res.yaml",
+      "config_sha256": "7f937669dec6592d43ec19d019f166fa5bef7b433997de0dc740fa7068073f84",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.45874995800841134,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 148517632,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 4766302208,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.45249629201134667,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.43922770899371244,
+      "model_id": "unet_res",
+      "optimizer_step_seconds": [
+        0.4586115420097485,
+        0.43922770899371244,
+        0.4428982909885235,
+        0.45874995800841134,
+        0.45249629201134667
+      ],
+      "parameter_count": 4450452,
+      "status": "pass",
+      "terminal_loss": 1.1014249324798584
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/models/unet_wc.yaml",
+      "config_sha256": "a076bb6afcf2c731870dd7467e4b010541e84ee4932d53d8f451834aa856addd",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.223988207988441,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 231144192,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 2296840192,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.22315008300938644,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.21976554099819623,
+      "model_id": "unet_wc",
+      "optimizer_step_seconds": [
+        0.223988207988441,
+        0.22315008300938644,
+        0.21976554099819623,
+        0.2232820829958655,
+        0.22301783299189992
+      ],
+      "parameter_count": 5876980,
+      "status": "pass",
+      "terminal_loss": 1.1102689504623413
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/models/bunet.yaml",
+      "config_sha256": "1882c2a5f4884703fa13e276c75f784d4066b5239f3ab7b2ab5711ce922af9af",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.48481991699372884,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 267507456,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 5561188352,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.4791007500025444,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.4733434590016259,
+      "model_id": "bunet",
+      "optimizer_step_seconds": [
+        0.48481991699372884,
+        0.4842064999975264,
+        0.4791007500025444,
+        0.4733434590016259,
+        0.4767435419926187
+      ],
+      "parameter_count": 8384660,
+      "status": "pass",
+      "terminal_loss": 1.0886125564575195
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/models/resunet.yaml",
+      "config_sha256": "691c7f3308597b44386d87529aa414e27709db41a3e80ee576bf1402c9c256d0",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.23113900001044385,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 110564864,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 2330607616,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.22896158300864045,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.22220758300682064,
+      "model_id": "resblock_unet",
+      "optimizer_step_seconds": [
+        0.22874112499994226,
+        0.23113900001044385,
+        0.22896158300864045,
+        0.22926012499374337,
+        0.22220758300682064
+      ],
+      "parameter_count": 2030612,
+      "status": "pass",
+      "terminal_loss": 1.0921366214752197
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/models/resunet_wc.yaml",
+      "config_sha256": "50c0df30c1d01e14e57fae9062ea221b552d0c3d324028168180a40f289b56e2",
+      "effective_batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        16,
+        4,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.251439040992409,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 233241088,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 3370860544,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.24832933400466572,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 16,
+      "minimum_optimizer_step_seconds": 0.2472670410061255,
+      "model_id": "resblock_unet_wc",
+      "optimizer_step_seconds": [
+        0.251439040992409,
+        0.24832933400466572,
+        0.24798929199459963,
+        0.2500812080106698,
+        0.2472670410061255
+      ],
+      "parameter_count": 5964820,
+      "status": "pass",
+      "terminal_loss": 1.0892175436019897
+    },
+    {
+      "adapter": "native_configurable_unet",
+      "config": "configs/q1q2_v2/models/unet_2p5d_k5.yaml",
+      "config_sha256": "6f7b5d53ddd6dd6a54eed4aa00f2ca95814f3ea02d164a4a2ad44722b62a078e",
+      "effective_batch_size": 8,
+      "gradient_accumulation_steps": 1,
+      "input_shape": [
+        8,
+        20,
+        240,
+        240
+      ],
+      "maximum_optimizer_step_seconds": 0.10597812500782311,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 93412096,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 1233518592,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 0.10474812499887776,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 8,
+      "minimum_optimizer_step_seconds": 0.10414083300565835,
+      "model_id": "unet_2p5d_k5",
+      "optimizer_step_seconds": [
+        0.10422774999460671,
+        0.10414083300565835,
+        0.10597812500782311,
+        0.10474812499887776,
+        0.10580437499447726
+      ],
+      "parameter_count": 1945076,
+      "status": "pass",
+      "terminal_loss": 1.0815343856811523
+    },
+    {
+      "adapter": "monai_swinunetr",
+      "config": "configs/q1q2_v2/models/swin_unetr_monai.yaml",
+      "config_sha256": "c6cf38881f0ace71eb4746c7e9681e6b42552ba6655a89b0d4b0357a4192dc10",
+      "effective_batch_size": 2,
+      "gradient_accumulation_steps": 2,
+      "input_shape": [
+        1,
+        4,
+        96,
+        96,
+        96
+      ],
+      "maximum_optimizer_step_seconds": 3.5244867500005057,
+      "maximum_sampled_mps_allocated_unified_memory_bytes": 470490624,
+      "maximum_sampled_mps_driver_allocated_unified_memory_bytes": 6025445376,
+      "measured_optimizer_steps": 5,
+      "median_optimizer_step_seconds": 3.514844916993752,
+      "memory_caution": "Samples are synchronized post-backward observations, not an allocator-reported exact peak.",
+      "microbatch_size": 1,
+      "minimum_optimizer_step_seconds": 3.491440165991662,
+      "model_id": "swin_unetr",
+      "optimizer_step_seconds": [
+        3.5244867500005057,
+        3.514844916993752,
+        3.513604584004497,
+        3.523754875001032,
+        3.491440165991662
+      ],
+      "parameter_count": 15705646,
+      "status": "pass",
+      "terminal_loss": 1.0995619297027588
+    }
+  ],
+  "raw_data_accessed": false,
+  "schema_version": 1,
+  "scientific_use": "prohibited",
+  "serial_budget_proxy": {
+    "assumption": "constant measured synthetic optimizer-step time through the 50,000-step ceiling; excludes validation, checkpoint I/O, preprocessing, nnU-Net, compute-matched repeats, and reproduction",
+    "maximum_optimizer_steps": 50000,
+    "measured_model_count": 10,
+    "model_upper_proxy_hours_per_run": {
+      "bunet": 6.654177083368672,
+      "resblock_unet": 3.180021986231117,
+      "resblock_unet_wc": 3.4490185278425796,
+      "swin_unetr": 48.817290513802114,
+      "unet_2p5d_k5": 1.4548350694288577,
+      "unet_compute_matched_res": 5.472583333256706,
+      "unet_parameter_matched_res": 4.145706027783389,
+      "unet_res": 6.284670722379815,
+      "unet_small": 2.7289317084877336,
+      "unet_wc": 3.0993067084637005
+    },
+    "runs_per_model": 25,
+    "serial_upper_proxy_days_for_measured_models": 88.84014758442156,
+    "serial_upper_proxy_hours_for_measured_models": 2132.1635420261173
+  },
+  "software": {
+    "python": "3.11.14",
+    "torch": "2.13.0"
+  },
+  "status": "pass",
+  "unbenchmarked_models": [
+    "nnunetv2_2d",
+    "nnunetv2_3d_fullres"
+  ]
+}

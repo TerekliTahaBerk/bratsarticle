@@ -1,5 +1,5 @@
 schema_version: 1
-status: blocked_before_training
+status: bounded_m1_loss_screen_ready
 external_inference_permitted: false
 legacy_internal_test_inference_permitted: false
 ordered_stages:
@@ -8,19 +8,19 @@ ordered_stages:
     status: completed
   - id: synthetic_overfit
     class: training_diagnostic
-    status: blocked_by_compute_allocation
+    status: completed_m1
   - id: one_patient_overfit
     class: training_diagnostic
-    status: blocked_by_compute_allocation
+    status: completed_m1
   - id: single_fold_smoke
     class: training_diagnostic
-    status: blocked_by_compute_allocation
+    status: completed_m1
   - id: single_seed_pilot
     class: reportable_development
-    status: blocked_by_compute_allocation
+    status: loss_screen_queue_frozen_ready
   - id: parameter_compute_search_validation
     class: static_and_runtime_validation
-    status: static_completed_runtime_blocked
+    status: native_runtime_completed_nnunet_plans_pending
   - id: five_fold_equal_seed_main
     class: reportable_development
     status: blocked_by_compute_allocation

@@ -55,3 +55,24 @@ def test_loss_catalog_rejects_invalid_labels() -> None:
 
     with pytest.raises(ValueError, match="Unexpected BraTS labels"):
         build_loss(config)(logits, labels)
+
+
+@pytest.mark.parametrize(
+    "config",
+    load_loss_catalog(Path("configs/losses/catalog.yaml")),
+    ids=lambda config: f"{config.name}_3d",
+)
+def test_every_configured_loss_supports_3d_logits(config: LossConfig) -> None:
+    logits = torch.randn((2, 4, 8, 8, 8), requires_grad=True)
+    labels = torch.zeros((2, 8, 8, 8), dtype=torch.long)
+    labels[:, 1:7, 1:7, 1:7] = 2
+    labels[:, 2:6, 2:6, 2:6] = 1
+    labels[:, 3:5, 3:5, 3:5] = 4
+
+    loss = build_loss(config)(logits, labels)
+    loss.backward()
+
+    assert loss.ndim == 0
+    assert torch.isfinite(loss)
+    assert logits.grad is not None
+    assert torch.isfinite(logits.grad).all()

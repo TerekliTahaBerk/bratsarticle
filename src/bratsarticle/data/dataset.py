@@ -31,7 +31,9 @@ from bratsarticle.data.preprocessing import (
     select_training_slice,
 )
 from bratsarticle.data.splits import (
+    CrossValidationRole,
     DevelopmentSplitName,
+    load_cv_fold_manifest,
     load_development_manifest,
     load_internal_test_manifest,
 )
@@ -500,6 +502,33 @@ def build_development_dataset(
         resolved_root,
         config,
         split=split,
+        seed=seed,
+        context_offsets=context_offsets,
+    )
+
+
+def build_cv_fold_dataset(
+    fold_path: Path,
+    canonical_manifest_path: Path,
+    role: CrossValidationRole,
+    dataset_root: Path,
+    config: PreprocessingConfig,
+    *,
+    seed: int,
+    context_offsets: tuple[int, ...] = (0,),
+) -> BraTSSliceDataset:
+    """Build one frozen v2 fold without exposing any test manifest."""
+    manifest = load_cv_fold_manifest(
+        fold_path,
+        canonical_manifest_path,
+        role,
+    )
+    resolved_root = resolve_brats2020_training_root(dataset_root)
+    return BraTSSliceDataset(
+        manifest,
+        resolved_root,
+        config,
+        split=role,
         seed=seed,
         context_offsets=context_offsets,
     )

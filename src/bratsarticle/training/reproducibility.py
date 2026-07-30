@@ -19,7 +19,12 @@ import torch
 from bratsarticle.utils.hashing import file_digest
 
 
-def seed_everything(seed: int, *, deterministic: bool = True) -> None:
+def seed_everything(
+    seed: int,
+    *,
+    deterministic: bool = True,
+    deterministic_warn_only: bool = False,
+) -> None:
     """Seed Python, NumPy, and PyTorch and configure deterministic kernels."""
     random.seed(seed)
     np.random.seed(seed)
@@ -28,7 +33,10 @@ def seed_everything(seed: int, *, deterministic: bool = True) -> None:
         torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = deterministic
-    torch.use_deterministic_algorithms(deterministic)
+    torch.use_deterministic_algorithms(
+        deterministic,
+        warn_only=deterministic_warn_only,
+    )
 
 
 def seed_dataloader_worker(worker_id: int) -> None:

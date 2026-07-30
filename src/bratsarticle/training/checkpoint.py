@@ -22,6 +22,7 @@ class TrainingState:
 
     epoch: int = 0
     global_step: int = 0
+    batches_consumed_in_epoch: int = 0
 
 
 def _rng_state() -> dict[str, Any]:
