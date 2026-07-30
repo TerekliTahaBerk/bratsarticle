@@ -28,14 +28,22 @@ Gate J prevents manual transcription of result values:
 
 ```bash
 .venv/bin/python scripts/build_q1q2_claim_package.py \
-  --template manuscript/q1q2_v2_manuscript.template.md
+  --template manuscript/q1q2_v2_manuscript.template.md \
+  --reviewer-response-template \
+    manuscript/q1q2_v2_response_to_reviewer.template.md
 .venv/bin/python scripts/build_q1q2_claim_package.py --audit-only
 ```
 
 The registry contains scalar cells from the confirmatory contrasts, model
 metric summaries, measured resource/Pareto table, exploratory subgroup table,
-and deterministic qualitative selections. Each value retains its source
+and deterministic qualitative selections. The manuscript and reviewer
+response are rendered from that same registry. Each value retains its source
 file hash, row selector, column, and inferential role.
+
+The reviewer-response audit also requires every frozen concern identifier
+exactly once, all seven response fields for every concern, and an existing
+repository evidence path for each mapped action. Page and line references are
+layout placeholders until the final proof exists.
 
 Within:
 

@@ -1,11 +1,11 @@
 # Q1/Q2 v2 completion report
 
 Report date: 2026-07-30
-Decision: **NOT READY — COMPUTE BLOCKER REMAINS**
+Decision: **NOT READY — M1 DEVELOPMENT IN PROGRESS**
 
 This is the required hard-blocker completion report. It records completed
-design/audit work and explicitly does not claim that the experimental study or
-submission package is complete.
+design, implementation, and reporting-template work and explicitly does not
+claim that the experimental study or submission package is complete.
 
 ## 1. Repository identity
 
@@ -26,14 +26,14 @@ submission package is complete.
 | A — Legacy snapshot | PASS | Immutable tag and legacy pointers |
 | B — Gap audit | PASS | Repository, code–Methods and claim corrections |
 | C — External data | PASS | 146 complete patients; zero overlap |
-| D — Capacity matching | PARTIAL | Controls selected within 2%; training/resource realization pending |
+| D — Capacity matching | DESIGN PASS | Parameter and compute controls selected within 2%; final realization pending |
 | E — Equal-seed design | DESIGN PASS / EXECUTION PENDING | Twelve models share five seeds and five folds |
-| F — Convergence | BLOCKED | Full allocation unavailable |
+| F — Convergence | IN PROGRESS | Bounded development loss screen is active; main matrix follows loss freeze |
 | G — Statistical freeze | PRESPECIFIED / NOT FROZEN | Loss and checkpoints do not exist |
 | H — External test | NOT STARTED | No external model inference or metrics |
-| I — Reproducibility | PARTIAL | Code/tests/license present; full rerun absent |
-| J — Claim audit | PASS FOR CURRENT BLOCKER PACKAGE | Ten supported and two explicit unsupported claims |
-| K — Submission | BLOCKED | Scientific results and author declarations absent |
+| I — Reproducibility | CONTRACT PASS / EXECUTION PENDING | Clean-clone and artifact regeneration contract implemented |
+| J — Claim audit | CONTRACT PASS / FINAL RENDER PENDING | Manuscript and reviewer response share one provenance registry |
+| K — Submission | TEMPLATE PARTIAL | Scientific results, layout references and author declarations absent |
 
 ## 3. Cohorts
 
@@ -79,9 +79,12 @@ accelerator-hours remain pending, so Gate D is not fully passed.
 
 ## 7. Convergence
 
-Not evaluated. The frozen rule allows up to 50,000 optimizer steps, validation
-every 500 steps, minimum delta 0.001 and patience 12 checks. Best and terminal
-checkpoints are both required. Legacy 2,000-step runs remain pilot evidence.
+The authorized 15-job development-only loss screen is active on the companion
+experiment branch at one immutable training commit. Its frozen rule allows up
+to 10,000 optimizer steps per job and validation every 500 steps. The main
+convergence rule allows up to 50,000 optimizer steps, minimum delta 0.001 and
+patience 12 checks. Best and terminal checkpoints are both required. Legacy
+2,000-step runs remain pilot evidence.
 
 ## 8. Primary external result
 
@@ -113,7 +116,8 @@ Dice/HD95 and false-positive lesion count. Sensitivities cover 1/10 voxels,
 - Terminology: MPS framework-reported allocated unified memory.
 - Swin UNETR 64³ forward/backward smoke: PASS; 15,705,646 parameters.
 - Free disk at preflight: approximately 395 GiB.
-- Mandatory runs before reproduction: 615.
+- Mandatory development runs before external inference: 615, including the
+  15-job loss screen and 600-run frozen development matrix.
 - Known proxy excluding nnU-Net: approximately 4,032 accelerator-hours or 168
   serial days.
 - Unbenchmarked: 25 nnU-Net 2D and 50 nnU-Net 3D/interaction runs.
@@ -145,10 +149,10 @@ superseded/unrealized legacy A100 boundary are also documented.
 Executed on the updated environment:
 
 - Ruff: PASS.
-- Strict mypy: PASS for 55 source/script files.
-- Pytest: **129 passed, 1 skipped**.
-- The only skip is the pre-existing CUDA-specific metric-invariance test
-  because CUDA is unavailable.
+- Strict mypy: PASS for 75 source files.
+- Pytest: **209 passed, 2 skipped**.
+- The skips are the CUDA-only metric-invariance test and the integration check
+  requiring final Gate G checkpoints.
 - Real MPS matrix and Swin UNETR forward/backward smokes: PASS.
 
 These results cover code/invariants, not segmentation accuracy or convergence.
@@ -174,18 +178,21 @@ limits, APC and live policies require recheck after results.
 
 ## 17. Manuscript and supplement
 
-No v2 results manuscript or supplement is written. Producing Results,
-Discussion, figures, tables or an abstract effect estimate without the 615-run
-matrix and external inference would violate the prompt. Legacy manuscript files
-remain legacy evidence.
+A complete v2 manuscript template is present at
+`manuscript/q1q2_v2_manuscript.template.md`. It contains no fabricated v2
+result and binds all numerical Results text to the Gate J registry. Final
+Results, figures, tables, abstract effect estimates and the journal-formatted
+document remain unavailable until the 615 development runs and external
+inference complete. Legacy manuscript files remain legacy evidence.
 
 ## 18. Reviewer response
 
-No final v2 response letter is produced. The audit records the required
-corrections: capacity/compute matching, equal seeds, convergence, loss parity,
-case-selection language, MPS memory terminology, license and external
-validation. Result/page/line references cannot be supplied before a real
-revised manuscript exists.
+A 19-concern v2 response template is present at
+`manuscript/q1q2_v2_response_to_reviewer.template.md`. The audit requires each
+concern exactly once, all response fields, existing repository evidence, and
+the same Gate J result registry used by the manuscript. A final response is not
+claimed: result substitutions and page/line references remain blocked until
+the external result and final layout exist.
 
 ## 19. Missing author declarations
 
@@ -196,11 +203,11 @@ confirmation. They were not invented.
 
 ## 20. Final decision
 
-**NOT READY — COMPUTE BLOCKER REMAINS**
+**NOT READY — M1 DEVELOPMENT IN PROGRESS**
 
-Required action: provide a declared CUDA scheduler/cluster allocation with
-device class, GPU count, job wall-time, total GPU-hours, storage and launch
-command. A protocol revision is possible only if explicitly authorized before
-results; five patient folds and five common seeds cannot be silently reduced.
-Until then, Gates F–H, the external result, final manuscript, figures/tables,
-reviewer response and submission package remain prohibited.
+The user has authorized execution on the selected Apple M1 Max. No immediate
+user action is required for the active bounded loss screen. The frozen full
+matrix remains a multi-month serial MPS workload; five patient folds and five
+common seeds cannot be silently reduced. Gates F–H, the external result, final
+manuscript, figures/tables, rendered reviewer response and submission package
+remain incomplete until real artifacts exist.

@@ -1,0 +1,149 @@
+schema_version: 1
+status: frozen_before_main_results
+template: manuscript/q1q2_v2_response_to_reviewer.template.md
+policy:
+  every_concern_exactly_once: true
+  result_numbers_from_claim_registry_only: true
+  final_page_and_line_references_after_layout_only: true
+  unresolved_limitations_must_remain_visible: true
+  legacy_results_cannot_support_v2_responses: true
+required_fields:
+  - Concern
+  - Direct response
+  - Exact action
+  - New evidence
+  - Manuscript location
+  - Repository evidence
+  - Remaining limitation
+concerns:
+  - id: R01
+    topic: BU-Net attribution and novelty
+    status: resolved_in_design_and_template
+    evidence:
+      - literature/q1q2_verified_sources.yaml
+      - configs/q1q2_v2/model_matrix.yaml
+      - manuscript/q1q2_v2_manuscript.template.md
+  - id: R02
+    topic: BraTS edition overlap and canonical cohort
+    status: resolved_by_audit
+    evidence:
+      - reports/data_audit_summary.json
+      - manifests/audit/duplicate_mapping.csv
+      - manifests/canonical/brats2020_canonical_manifest.csv
+  - id: R03
+    topic: Patient-level partitions and legacy-test isolation
+    status: resolved_in_design
+    evidence:
+      - splits/q1q2_v2/split_metadata.json
+      - configs/q1q2_v2/gate_g_freeze.yaml
+      - artifacts/test_access_log.jsonl
+  - id: R04
+    topic: Common and fair experimental protocol
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/training_protocol.yaml
+      - configs/q1q2_v2/model_matrix.yaml
+      - configs/q1q2_v2/seeds.yaml
+  - id: R05
+    topic: Convergence and prior undertraining
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/training_protocol.yaml
+      - configs/protocols/convergence_matched_mps.yaml
+      - configs/q1q2_v2/gate_g_freeze.yaml
+  - id: R06
+    topic: Strong experimental baselines
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/model_matrix.yaml
+      - reports/q1q2_v2/model_matrix_validation.json
+      - reports/q1q2_v2/nnunet_planning_summary.json
+  - id: R07
+    topic: Component ablation and capacity attribution
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/model_matrix.yaml
+      - reports/q1q2_v2/model_matching_summary.json
+      - configs/q1q2_v2/statistical_analysis_plan.yaml
+  - id: R08
+    topic: Loss definition, output semantics, and loss ablation
+    status: implemented_selection_pending
+    evidence:
+      - configs/losses/catalog.yaml
+      - configs/q1q2_v2/loss_protocol.yaml
+      - reports/q1q2_v2/loss_methods.json
+  - id: R09
+    topic: Complete central evaluation and empty-mask behavior
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/evaluation.yaml
+      - configs/q1q2_v2/evaluation_sensitivity.yaml
+      - src/evaluation
+  - id: R10
+    topic: Equal seeds and patient-level statistical inference
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/seeds.yaml
+      - configs/q1q2_v2/statistical_analysis_plan.yaml
+      - configs/q1q2_v2/statistical_execution.yaml
+  - id: R11
+    topic: Measured resource and efficiency evidence
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/resource_profile_protocol.yaml
+      - configs/q1q2_v2/resource_execution.yaml
+      - reports/q1q2_v2/m1_calibration.json
+  - id: R12
+    topic: Controlled dimensionality and transformer context
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/model_matrix.yaml
+      - reports/q1q2_v2/m1_execution_decision.json
+      - reports/q1q2_v2/nnunet_planning_summary.json
+  - id: R13
+    topic: Independent external testing and domain shift
+    status: cohort_resolved_inference_pending
+    evidence:
+      - reports/q1q2_v2/external_gate_c_summary.json
+      - configs/q1q2_v2/gate_h_external.yaml
+      - splits/q1q2_v2/external_test.csv
+  - id: R14
+    topic: Qualitative success and failure analysis
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/qualitative_protocol.yaml
+      - configs/q1q2_v2/qualitative_execution.yaml
+  - id: R15
+    topic: Artifact-derived figures and tables
+    status: implemented_execution_pending
+    evidence:
+      - configs/q1q2_v2/figure_execution.yaml
+      - src/bratsarticle/analysis/q1q2_figures.py
+  - id: R16
+    topic: Primary literature coverage
+    status: resolved_and_ongoing
+    evidence:
+      - literature/q1q2_verified_sources.yaml
+      - reports/q1q2_v2/novelty_matrix.csv
+      - reports/q1q2_v2/novelty_assessment.md
+  - id: R17
+    topic: Reproducibility, code, environment, and license
+    status: implemented_final_execution_pending
+    evidence:
+      - REPRODUCIBILITY.md
+      - configs/q1q2_v2/reproducibility_execution.yaml
+      - LICENSE
+  - id: R18
+    topic: Writing, organization, and bounded claims
+    status: resolved_in_template_final_results_pending
+    evidence:
+      - manuscript/q1q2_v2_manuscript.template.md
+      - configs/q1q2_v2/claim_execution.yaml
+      - claims/q1q2_v2_claim_ledger.csv
+  - id: R19
+    topic: Submission declarations and exact response parity
+    status: author_confirmation_and_final_layout_pending
+    evidence:
+      - submission/AUTHOR_CONFIRMATION_REQUIRED.md
+      - configs/q1q2_v2/claim_execution.yaml
+      - manuscript/q1q2_v2_response_to_reviewer.template.md

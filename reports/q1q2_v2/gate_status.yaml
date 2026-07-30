@@ -35,10 +35,11 @@ gates:
     status: blocker_audit_pass_final_registry_execution_pending_results
     evidence: configs/q1q2_v2/claim_execution.yaml
   K:
-    status: blocked
-    evidence: submission/AUTHOR_CONFIRMATION_REQUIRED.md
+    status: response_and_manuscript_templates_complete_results_layout_and_author_confirmations_pending
+    evidence: configs/q1q2_v2/reviewer_response_execution.yaml
 required_user_action:
   selected_host: Apple M1 Max 32-core GPU with 32-GB unified memory
   immediate: none_for_bounded_15_job_loss_screen
-  before_full_matrix: explicitly_authorize_the_measured_multi_month_schedule_or_a_prespecified_protocol_revision
+  before_full_matrix: none_execution_authorization_recorded_in_user_thread
+  scheduling_note: full_frozen_matrix_remains_a_multi_month_serial_mps_workload
   invariant: five_folds_and_five_common_seeds_cannot_be_silently_reduced

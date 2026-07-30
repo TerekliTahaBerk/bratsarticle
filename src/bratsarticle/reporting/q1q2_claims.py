@@ -426,6 +426,71 @@ def audit_claim_template(
     }
 
 
+def audit_reviewer_response_template(
+    template_path: Path,
+    *,
+    response_config_path: Path = Path(
+        "configs/q1q2_v2/reviewer_response_execution.yaml"
+    ),
+    claim_config_path: Path = Path("configs/q1q2_v2/claim_execution.yaml"),
+) -> dict[str, Any]:
+    """Require complete one-to-one reviewer-concern coverage and claim binding."""
+    config = _load_yaml(response_config_path)
+    if config.get("status") != "frozen_before_main_results":
+        raise PermissionError("Reviewer-response execution contract is not frozen")
+    source = template_path.read_text(encoding="utf-8")
+    concern_entries = cast(list[dict[str, Any]], config["concerns"])
+    expected_ids = [str(entry["id"]) for entry in concern_entries]
+    if len(expected_ids) != len(set(expected_ids)):
+        raise RuntimeError("Reviewer-response concern identifiers are duplicated")
+    observed_ids = re.findall(r"^## (R\d{2})\s+—", source, flags=re.MULTILINE)
+    missing = sorted(set(expected_ids).difference(observed_ids))
+    unexpected = sorted(set(observed_ids).difference(expected_ids))
+    duplicates = sorted(
+        concern_id
+        for concern_id in set(observed_ids)
+        if observed_ids.count(concern_id) != 1
+    )
+    if missing or unexpected or duplicates:
+        raise RuntimeError(
+            "Reviewer-response concern coverage differs: "
+            f"missing={missing}, unexpected={unexpected}, duplicates={duplicates}"
+        )
+    required_fields = [
+        str(value) for value in cast(list[str], config["required_fields"])
+    ]
+    sections = re.split(r"^## R\d{2}\s+—.*$", source, flags=re.MULTILINE)[1:]
+    for concern_id, section in zip(observed_ids, sections, strict=True):
+        absent_fields = [
+            field for field in required_fields if f"**{field}.**" not in section
+        ]
+        if absent_fields:
+            raise RuntimeError(
+                f"Reviewer response {concern_id} lacks fields: {absent_fields}"
+            )
+    missing_evidence: list[str] = []
+    for entry in concern_entries:
+        for raw_path in cast(list[str], entry["evidence"]):
+            if not Path(raw_path).exists():
+                missing_evidence.append(raw_path)
+    if missing_evidence:
+        raise RuntimeError(
+            "Reviewer-response evidence paths do not exist: "
+            f"{sorted(set(missing_evidence))}"
+        )
+    claim_audit = audit_claim_template(
+        template_path,
+        config_path=claim_config_path,
+    )
+    return {
+        "valid": True,
+        "concern_count": len(expected_ids),
+        "required_field_count": len(required_fields),
+        "all_evidence_paths_exist": True,
+        "claim_template_audit": claim_audit,
+    }
+
+
 def _format_claim(claim: dict[str, Any], format_name: str) -> str:
     if claim["value_status"] != "available":
         raise RuntimeError(f"Cannot render nonfinite claim: {claim['claim_id']}")
@@ -622,12 +687,27 @@ def complete_gate_j(
         rendered_path=outputs["rendered_manuscript"],
         trace_path=outputs["render_trace"],
     )
+    response_artifact_audit = audit_claim_package(
+        registry_path=outputs["registry"],
+        rendered_path=outputs["rendered_reviewer_response"],
+        trace_path=outputs["reviewer_response_trace"],
+    )
     trace = _load_json(outputs["render_trace"])
     wording_audit = _audit_inferential_language(
         outputs["rendered_manuscript"].read_text(encoding="utf-8"),
         trace,
     )
-    passed = artifact_audit["valid"] and wording_audit["valid"]
+    response_trace = _load_json(outputs["reviewer_response_trace"])
+    response_wording_audit = _audit_inferential_language(
+        outputs["rendered_reviewer_response"].read_text(encoding="utf-8"),
+        response_trace,
+    )
+    passed = (
+        artifact_audit["valid"]
+        and response_artifact_audit["valid"]
+        and wording_audit["valid"]
+        and response_wording_audit["valid"]
+    )
     completion = {
         "schema_version": 1,
         "status": "pass" if passed else "fail",
@@ -639,8 +719,20 @@ def complete_gate_j(
         "rendered_manuscript_sha256": file_digest(outputs["rendered_manuscript"]),
         "render_trace": outputs["render_trace"].as_posix(),
         "render_trace_sha256": file_digest(outputs["render_trace"]),
+        "rendered_reviewer_response": outputs[
+            "rendered_reviewer_response"
+        ].as_posix(),
+        "rendered_reviewer_response_sha256": file_digest(
+            outputs["rendered_reviewer_response"]
+        ),
+        "reviewer_response_trace": outputs["reviewer_response_trace"].as_posix(),
+        "reviewer_response_trace_sha256": file_digest(
+            outputs["reviewer_response_trace"]
+        ),
         "artifact_audit": artifact_audit,
+        "response_artifact_audit": response_artifact_audit,
         "inferential_wording_audit": wording_audit,
+        "response_inferential_wording_audit": response_wording_audit,
     }
     atomic_write_json(outputs["completion"], completion)
     if not passed:
@@ -652,6 +744,7 @@ __all__ = [
     "ClaimRegistry",
     "audit_claim_package",
     "audit_claim_template",
+    "audit_reviewer_response_template",
     "build_claim_registry",
     "complete_gate_j",
     "render_claim_template",

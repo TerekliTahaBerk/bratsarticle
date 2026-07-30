@@ -10,6 +10,7 @@ from bratsarticle.reporting.q1q2_claims import (
     ClaimRegistry,
     audit_claim_package,
     audit_claim_template,
+    audit_reviewer_response_template,
     render_claim_template,
 )
 from bratsarticle.utils.hashing import file_digest
@@ -143,3 +144,14 @@ def test_repository_manuscript_template_has_only_bound_result_tokens() -> None:
     assert report["valid"] is True
     assert report["artifact_bound_section_count"] == 2
     assert report["claim_token_count"] > 20
+
+
+def test_repository_reviewer_response_covers_every_concern() -> None:
+    report = audit_reviewer_response_template(
+        Path("manuscript/q1q2_v2_response_to_reviewer.template.md")
+    )
+
+    assert report["valid"] is True
+    assert report["concern_count"] == 19
+    assert report["required_field_count"] == 7
+    assert report["claim_template_audit"]["claim_token_count"] > 10
