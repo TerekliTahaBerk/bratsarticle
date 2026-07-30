@@ -83,7 +83,7 @@ def run_gate_i_clean_clone_audit(
     )
     for key in removed_keys:
         environment.pop(key, None)
-    python = Path(sys.executable).resolve()
+    python = Path(sys.executable).absolute()
     executable_root = python.parent
     results: list[dict[str, Any]] = []
     final_clean = False
