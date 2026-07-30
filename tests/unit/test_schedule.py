@@ -1,8 +1,12 @@
+import random
+
+import numpy as np
 import pytest
 import torch
 
 from bratsarticle.training.checkpoint import (
     TrainingState,
+    _restore_rng_state,
     load_checkpoint,
     save_checkpoint,
 )
@@ -78,3 +82,23 @@ def test_checkpoint_roundtrip_restores_scheduler(tmp_path) -> None:
     assert restored_optimizer.param_groups[0]["lr"] == pytest.approx(
         optimizer.param_groups[0]["lr"]
     )
+
+
+def test_rng_restore_normalizes_torch_state_to_cpu(monkeypatch) -> None:
+    state = {
+        "python": random.getstate(),
+        "numpy": np.random.get_state(),
+        "torch_cpu": torch.get_rng_state(),
+        "torch_cuda": [],
+    }
+    observed: list[torch.device] = []
+    original = torch.set_rng_state
+
+    def record_device(value: torch.Tensor) -> None:
+        observed.append(value.device)
+        original(value)
+
+    monkeypatch.setattr(torch, "set_rng_state", record_device)
+    _restore_rng_state(state)
+
+    assert observed == [torch.device("cpu")]

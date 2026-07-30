@@ -39,7 +39,10 @@ def _rng_state() -> dict[str, Any]:
 def _restore_rng_state(state: dict[str, Any]) -> None:
     random.setstate(state["python"])
     np.random.set_state(state["numpy"])
-    torch.set_rng_state(state["torch_cpu"])
+    # ``torch.load(..., map_location=device)`` relocates every tensor in the
+    # payload, including the CPU generator state.  ``torch.set_rng_state``
+    # requires a CPU ByteTensor even when model tensors are restored to MPS.
+    torch.set_rng_state(state["torch_cpu"].cpu())
     if torch.cuda.is_available() and state["torch_cuda"]:
         torch.cuda.set_rng_state_all(state["torch_cuda"])
 
