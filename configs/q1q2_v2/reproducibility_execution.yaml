@@ -1,0 +1,53 @@
+schema_version: 1
+status: frozen_before_main_results
+gate: I
+scope:
+  source_clean_clone: code_quality_tests_and_artifact_verification
+  artifact_reproduction: numerical_downstream_analyses_and_result_figures
+  qualitative_reproduction: existing_panels_hash_verified_rerender_requires_derived_image_cache
+  full_retraining: separate_authorized_data_and_compute_rerun
+  external_reinference: prohibited_during_artifact_only_reproduction
+requirements:
+  require_clean_tracked_source: true
+  require_single_training_commit: true
+  require_all_600_development_runs: true
+  require_all_300_external_checkpoint_evaluations: true
+  require_all_12_model_prediction_manifests: true
+frozen_inputs:
+  - configs/q1q2_v2/gate_g_freeze.yaml
+  - configs/q1q2_v2/gate_h_external.yaml
+  - configs/q1q2_v2/statistical_analysis_plan.yaml
+  - configs/q1q2_v2/statistical_execution.yaml
+  - configs/q1q2_v2/subgroup_execution.yaml
+  - configs/q1q2_v2/resource_execution.yaml
+  - configs/q1q2_v2/figure_execution.yaml
+  - configs/q1q2_v2/qualitative_execution.yaml
+  - configs/q1q2_v2/reproducibility_execution.yaml
+  - configs/q1q2_v2/claim_execution.yaml
+  - configs/q1q2_v2/model_matrix.yaml
+  - configs/q1q2_v2/seeds.yaml
+  - environment/q1q2_v2-environment.json
+  - environment/q1q2_v2-requirements-lock.txt
+  - reports/q1q2_v2/hardware_preflight.json
+prerequisites:
+  gate_g_analysis_freeze: artifacts/q1q2_v2/gate_g_analysis_freeze.json
+  gate_g_checkpoint_manifest: artifacts/q1q2_v2/gate_g_checkpoint_manifest.json
+  gate_h_completion: artifacts/q1q2_v2/gate_h_completion.json
+  statistics_completion: artifacts/q1q2_v2/statistics/completion.json
+  subgroup_completion: artifacts/q1q2_v2/subgroups/completion.json
+  resource_completion: artifacts/q1q2_v2/resources/completion.json
+  figure_completion: artifacts/q1q2_v2/figures/completion.json
+  qualitative_completion: artifacts/q1q2_v2/qualitative/completion.json
+artifact_only_reproduction_commands:
+  - .venv/bin/python scripts/analyze_q1q2_statistics.py
+  - .venv/bin/python scripts/analyze_q1q2_external_subgroups.py
+  - .venv/bin/python scripts/analyze_q1q2_resources.py
+  - .venv/bin/python scripts/generate_q1q2_figures.py
+clean_clone_checks:
+  - .venv/bin/ruff check src tests scripts
+  - .venv/bin/mypy
+  - .venv/bin/python -m pytest -q
+outputs:
+  manifest: artifacts/q1q2_v2/reproducibility/artifact_manifest.json
+  clean_clone_audit: artifacts/q1q2_v2/reproducibility/clean_clone_audit.json
+  completion: artifacts/q1q2_v2/reproducibility/completion.json

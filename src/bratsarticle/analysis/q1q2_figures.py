@@ -19,6 +19,8 @@ from matplotlib.patches import FancyBboxPatch
 from bratsarticle.utils.hashing import file_digest
 from bratsarticle.utils.serialization import atomic_write_json
 
+matplotlib.rcParams["svg.hashsalt"] = "bratsarticle-q1q2-v2"
+
 
 def _load_json(path: Path) -> dict[str, Any]:
     loaded = json.loads(path.read_text(encoding="utf-8"))
@@ -53,13 +55,21 @@ def _save_figure(
         "png": stem.with_suffix(".png"),
         "svg": stem.with_suffix(".svg"),
     }
-    figure.savefig(outputs["png"], dpi=dpi, bbox_inches="tight", facecolor="white")
-    figure.savefig(outputs["svg"], bbox_inches="tight", facecolor="white")
+    figure.savefig(
+        outputs["png"],
+        dpi=dpi,
+        bbox_inches="tight",
+        facecolor="white",
+        metadata={"Software": "bratsarticle"},
+    )
+    figure.savefig(
+        outputs["svg"],
+        bbox_inches="tight",
+        facecolor="white",
+        metadata={"Creator": "bratsarticle", "Date": None},
+    )
     plt.close(figure)
-    return {
-        path.as_posix(): file_digest(path)
-        for path in outputs.values()
-    }
+    return {path.as_posix(): file_digest(path) for path in outputs.values()}
 
 
 def build_study_design_figure(
@@ -168,9 +178,10 @@ def _confirmatory_performance(
         summary["cohort"].eq("external_confirmatory")
         & summary["endpoint"].eq("mean_regional_dice")
     ].copy()
-    if len(data) != len(names) or not np.isfinite(
-        data[["mean_finite", "q1_finite", "q3_finite"]]
-    ).all().all():
+    if (
+        len(data) != len(names)
+        or not np.isfinite(data[["mean_finite", "q1_finite", "q3_finite"]]).all().all()
+    ):
         raise RuntimeError("Confirmatory performance summary is incomplete")
     data = data.sort_values("mean_finite")
     y = np.arange(len(data))
@@ -237,12 +248,8 @@ def _accuracy_cost(pareto: pd.DataFrame, names: dict[str, str]) -> Figure:
     if required.difference(pareto.columns) or len(pareto) != len(names):
         raise RuntimeError("Accuracy-cost Pareto artifact is incomplete")
     figure, axis = plt.subplots(figsize=(8, 6))
-    front = pareto[
-        "pareto_accuracy_vs_inference_end_to_end_p50_seconds"
-    ].astype(bool)
-    sizes = 35 + 115 * (
-        pareto["parameter_count"] / pareto["parameter_count"].max()
-    )
+    front = pareto["pareto_accuracy_vs_inference_end_to_end_p50_seconds"].astype(bool)
+    sizes = 35 + 115 * (pareto["parameter_count"] / pareto["parameter_count"].max())
     axis.scatter(
         pareto["inference_end_to_end_p50_seconds"],
         pareto["external_confirmatory_patient_mean_regional_dice"],
@@ -259,9 +266,7 @@ def _accuracy_cost(pareto: pd.DataFrame, names: dict[str, str]) -> Figure:
                 float(
                     cast(
                         float,
-                        row[
-                            "external_confirmatory_patient_mean_regional_dice"
-                        ],
+                        row["external_confirmatory_patient_mean_regional_dice"],
                     )
                 ),
             ),

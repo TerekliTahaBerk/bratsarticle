@@ -1,5 +1,5 @@
 schema_version: 1
-status: bounded_m1_loss_screen_ready
+status: bounded_m1_loss_screen_running
 external_inference_permitted: false
 legacy_internal_test_inference_permitted: false
 ordered_stages:
@@ -46,10 +46,28 @@ ordered_stages:
     status: external_subgroup_pipeline_implemented_development_perturbations_pending
   - id: resource_profiling
     class: postfreeze_analysis
-    status: pending
+    status: measured_pipeline_implemented_blocked_by_gate_h
   - id: statistical_analysis
     class: postfreeze_analysis
     status: artifact_only_pipeline_implemented_blocked_by_gate_h
+  - id: subgroup_analysis
+    class: postfreeze_analysis
+    status: prespecified_pipeline_implemented_blocked_by_statistical_completion
+  - id: qualitative_analysis
+    class: postfreeze_analysis
+    status: deterministic_selection_and_rendering_implemented_blocked_by_gate_h
+  - id: result_figures
+    class: postfreeze_reporting
+    status: artifact_only_pipeline_implemented_blocked_by_analysis_completion
+  - id: reproducibility
+    class: gate_i
+    status: exhaustive_manifest_and_clean_clone_contract_implemented_pending_results
+  - id: claim_to_artifact_audit
+    class: gate_j
+    status: registry_renderer_and_trace_audit_implemented_pending_results
+  - id: manuscript
+    class: gate_k
+    status: blocked_by_measured_results_and_author_declarations
 invalid_run_policy:
   block_automatically:
     - external_or_legacy_internal_access_before_analysis_freeze

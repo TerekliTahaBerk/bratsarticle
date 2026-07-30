@@ -22,6 +22,8 @@ from bratsarticle.utils.serialization import (
     atomic_write_json,
 )
 
+matplotlib.rcParams["svg.hashsalt"] = "bratsarticle-q1q2-v2"
+
 REGIONS = ("wt", "tc", "et")
 SELECTION_RULES = (
     "highest_patient_mean_regional_dice",
@@ -84,8 +86,7 @@ def pairwise_model_disagreement(
             model_count - positive_count.astype(np.int64)
         )
         regional.append(
-            float(disagreeing_pairs[union_wt].sum())
-            / float(pair_count * domain_voxels)
+            float(disagreeing_pairs[union_wt].sum()) / float(pair_count * domain_voxels)
         )
     return float(np.mean(regional))
 
@@ -98,10 +99,7 @@ def _prediction_index(gate_h: dict[str, Any]) -> dict[str, dict[str, Any]]:
     output: dict[str, dict[str, Any]] = {}
     for model_id, entry in stored.items():
         manifest_path = Path(entry["path"])
-        if (
-            not manifest_path.is_file()
-            or file_digest(manifest_path) != entry["sha256"]
-        ):
+        if not manifest_path.is_file() or file_digest(manifest_path) != entry["sha256"]:
             raise RuntimeError(f"Model prediction manifest differs: {model_id}")
         manifest = _load_json(manifest_path)
         if manifest.get("model_id") != model_id or manifest.get("status") != "complete":
@@ -165,9 +163,9 @@ def _patient_summary(metrics: pd.DataFrame) -> pd.DataFrame:
     for patient_id, group in metrics.groupby("patient_id", sort=True):
         et_values = group["et_lesion_wise_dice"].to_numpy(dtype=np.float64)
         finite_et = et_values[np.isfinite(et_values)]
-        hd95 = group[
-            ["wt_hd95_mm", "tc_hd95_mm", "et_hd95_mm"]
-        ].to_numpy(dtype=np.float64)
+        hd95 = group[["wt_hd95_mm", "tc_hd95_mm", "et_hd95_mm"]].to_numpy(
+            dtype=np.float64
+        )
         voxel_volume = float(
             group.iloc[0]["spacing_axis0_mm"]
             * group.iloc[0]["spacing_axis1_mm"]
@@ -176,9 +174,7 @@ def _patient_summary(metrics: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "patient_id": str(patient_id),
-                "patient_mean_regional_dice": float(
-                    group["mean_regional_dice"].mean()
-                ),
+                "patient_mean_regional_dice": float(group["mean_regional_dice"].mean()),
                 "patient_mean_finite_et_lesion_wise_dice": (
                     float(finite_et.mean()) if len(finite_et) else float("nan")
                 ),
@@ -225,9 +221,7 @@ def select_qualitative_cases(
     """Apply all frozen rules and tie-breakers to patient-level summaries."""
     median = float(summary["patient_mean_regional_dice"].median())
     median_frame = summary.assign(
-        distance_to_cohort_median=(
-            summary["patient_mean_regional_dice"] - median
-        ).abs()
+        distance_to_cohort_median=(summary["patient_mean_regional_dice"] - median).abs()
     )
     return {
         "highest_patient_mean_regional_dice": _choose(
@@ -360,8 +354,19 @@ def _render_case(
     destination.mkdir(parents=True, exist_ok=True)
     png = destination / f"{rule}.png"
     svg = destination / f"{rule}.svg"
-    figure.savefig(png, dpi=dpi, bbox_inches="tight", facecolor="white")
-    figure.savefig(svg, bbox_inches="tight", facecolor="white")
+    figure.savefig(
+        png,
+        dpi=dpi,
+        bbox_inches="tight",
+        facecolor="white",
+        metadata={"Software": "bratsarticle"},
+    )
+    figure.savefig(
+        svg,
+        bbox_inches="tight",
+        facecolor="white",
+        metadata={"Creator": "bratsarticle", "Date": None},
+    )
     plt.close(figure)
     return {
         "patient_id": patient_id,
@@ -397,9 +402,7 @@ def analyze_q1q2_qualitative(
     if file_digest(metrics_path) != gate_h["model_patient_metrics_sha256"]:
         raise RuntimeError("Gate H model-patient metric hash differs")
     metrics = pd.read_csv(metrics_path)
-    metrics = metrics.loc[
-        metrics["cohort_role"].eq(str(config["cohort_role"]))
-    ].copy()
+    metrics = metrics.loc[metrics["cohort_role"].eq(str(config["cohort_role"]))].copy()
     expected = cast(dict[str, Any], config["expected"])
     if (
         len(metrics) != int(expected["model_patient_rows"])

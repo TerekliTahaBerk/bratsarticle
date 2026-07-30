@@ -29,11 +29,11 @@ gates:
     status: not_started
     evidence: artifacts/q1q2_v2/external_access_log.jsonl
   I:
-    status: partial
-    evidence: environment/q1q2_v2-environment.json
+    status: contract_implemented_execution_pending_results
+    evidence: configs/q1q2_v2/reproducibility_execution.yaml
   J:
-    status: pass_for_blocker_package
-    evidence: reports/q1q2_v2/claim_audit.json
+    status: blocker_audit_pass_final_registry_execution_pending_results
+    evidence: configs/q1q2_v2/claim_execution.yaml
   K:
     status: blocked
     evidence: submission/AUTHOR_CONFIRMATION_REQUIRED.md

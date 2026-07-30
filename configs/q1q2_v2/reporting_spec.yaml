@@ -32,3 +32,9 @@ build_preconditions:
   - gate_f_convergence_pass
   - gate_g_analysis_frozen
   - gate_h_external_evaluation_complete
+  - gate_i_artifact_manifest_pass
+  - gate_j_claim_registry_and_render_trace_pass
+result_value_policy:
+  source: artifacts/q1q2_v2/claims/claim_registry.json
+  template_substitution_trace: artifacts/q1q2_v2/claims/render_trace.json
+  manual_numeric_result_entry: prohibited

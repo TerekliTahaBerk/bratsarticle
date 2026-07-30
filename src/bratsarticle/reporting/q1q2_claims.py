@@ -1,0 +1,530 @@
+"""Gate J artifact-bound claim registry and manuscript token renderer."""
+
+from __future__ import annotations
+
+import json
+import math
+import re
+from pathlib import Path
+from typing import Any, cast
+
+import pandas as pd
+import yaml
+
+from bratsarticle.utils.hashing import file_digest
+from bratsarticle.utils.serialization import atomic_write_json, atomic_write_text
+
+TOKEN_PATTERN = re.compile(
+    r"\{\{claim:([A-Z0-9_.-]+)\|(raw|integer|2f|3f|4f|percent1|percent2|pvalue)\}\}"
+)
+UNRESOLVED_PATTERN = re.compile(r"\{\{[^{}]+\}\}")
+STANDALONE_NUMBER_PATTERN = re.compile(
+    r"(?<![\w])[-+]?(?:\d+(?:\.\d+)?|\.\d+)%?(?![\w])"
+)
+NEGATION_PATTERN = re.compile(
+    r"\b(no|not|cannot|without|unknown|pending|prohibited|does not|"
+    r"did not|is not|are not)\b",
+    re.IGNORECASE,
+)
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    loaded = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise ValueError(f"Expected JSON mapping: {path}")
+    return cast(dict[str, Any], loaded)
+
+
+def _load_yaml(path: Path) -> dict[str, Any]:
+    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise ValueError(f"Expected YAML mapping: {path}")
+    return cast(dict[str, Any], loaded)
+
+
+def _identifier(value: Any) -> str:
+    normalized = re.sub(r"[^A-Z0-9]+", "_", str(value).upper()).strip("_")
+    return normalized or "EMPTY"
+
+
+def _native(value: Any) -> Any:
+    if pd.isna(value):
+        return None
+    if hasattr(value, "item"):
+        return value.item()
+    return value
+
+
+def _require_output(
+    completion: dict[str, Any],
+    *,
+    key: str,
+    path: Path,
+) -> None:
+    entry = cast(dict[str, str], cast(dict[str, Any], completion["outputs"])[key])
+    if (
+        entry.get("path") != path.as_posix()
+        or not path.is_file()
+        or entry.get("sha256") != file_digest(path)
+    ):
+        raise RuntimeError(f"Gate J source differs from completion: {path}")
+
+
+def _require_resource(
+    completion: dict[str, Any],
+    *,
+    path: Path,
+) -> None:
+    artifacts = cast(dict[str, str], completion["artifacts"])
+    if not path.is_file() or artifacts.get(path.as_posix()) != file_digest(path):
+        raise RuntimeError(f"Gate J resource source differs: {path}")
+
+
+class ClaimRegistry:
+    """Accumulate unique scalar claims with exact source-cell provenance."""
+
+    def __init__(self) -> None:
+        self._claims: dict[str, dict[str, Any]] = {}
+
+    def add(
+        self,
+        claim_id: str,
+        value: Any,
+        *,
+        source_path: Path,
+        selector: dict[str, Any],
+        column: str,
+        inferential_role: str,
+    ) -> None:
+        if claim_id in self._claims:
+            raise RuntimeError(f"Duplicate Gate J claim identifier: {claim_id}")
+        native = _native(value)
+        value_status = "available"
+        if native is None or (isinstance(native, float) and not math.isfinite(native)):
+            value_status = "nonfinite_or_missing"
+            native = None
+        self._claims[claim_id] = {
+            "claim_id": claim_id,
+            "value": native,
+            "value_status": value_status,
+            "source": {
+                "path": source_path.as_posix(),
+                "sha256": file_digest(source_path),
+                "selector": selector,
+                "column": column,
+            },
+            "inferential_role": inferential_role,
+        }
+
+    def claims(self) -> list[dict[str, Any]]:
+        return [self._claims[key] for key in sorted(self._claims)]
+
+
+def _add_frame(
+    registry: ClaimRegistry,
+    frame: pd.DataFrame,
+    *,
+    path: Path,
+    prefix: str,
+    identity_columns: tuple[str, ...],
+    inferential_role: str,
+) -> None:
+    missing = set(identity_columns).difference(frame.columns)
+    if missing:
+        raise RuntimeError(f"Claim source lacks identities: {path}: {sorted(missing)}")
+    if frame.duplicated(list(identity_columns)).any():
+        raise RuntimeError(f"Claim source has duplicate identities: {path}")
+    ordered = frame.sort_values(list(identity_columns)).reset_index(drop=True)
+    for _, row in ordered.iterrows():
+        selector = {column: _native(row[column]) for column in identity_columns}
+        identity = ".".join(
+            _identifier(selector[column]) for column in identity_columns
+        )
+        for column in ordered.columns:
+            if column in identity_columns:
+                continue
+            registry.add(
+                f"{prefix}.{identity}.{_identifier(column)}",
+                row[column],
+                source_path=path,
+                selector=selector,
+                column=column,
+                inferential_role=inferential_role,
+            )
+
+
+def build_claim_registry(
+    config_path: Path = Path("configs/q1q2_v2/claim_execution.yaml"),
+) -> dict[str, Any]:
+    """Build all reportable scalar values from hash-verified result artifacts."""
+    config = _load_yaml(config_path)
+    if config.get("status") != "frozen_before_main_results":
+        raise PermissionError("Gate J execution contract is not frozen")
+    sources = {
+        key: Path(str(value))
+        for key, value in cast(dict[str, str], config["sources"]).items()
+    }
+    statistics = _load_json(sources["statistical_completion"])
+    subgroups = _load_json(sources["subgroup_completion"])
+    resources = _load_json(sources["resource_completion"])
+    qualitative = _load_json(sources["qualitative_completion"])
+    if any(
+        completion.get("status") != "complete"
+        for completion in (statistics, subgroups, resources, qualitative)
+    ):
+        raise PermissionError("All Gate J result analyses must be complete")
+    _require_output(
+        statistics,
+        key="primary_contrasts",
+        path=sources["primary_contrasts"],
+    )
+    _require_output(
+        statistics,
+        key="model_metric_summary",
+        path=sources["model_metric_summary"],
+    )
+    _require_output(
+        subgroups,
+        key="contrast_subgroup_summary",
+        path=sources["contrast_subgroup_summary"],
+    )
+    _require_resource(resources, path=sources["accuracy_cost_pareto"])
+    selected_cases_hash = str(qualitative["selected_cases_sha256"])
+    if (
+        not sources["qualitative_selected_cases"].is_file()
+        or file_digest(sources["qualitative_selected_cases"]) != selected_cases_hash
+    ):
+        raise RuntimeError("Gate J qualitative selection source differs")
+
+    registry = ClaimRegistry()
+    figure_execution = _load_yaml(sources["figure_execution"])
+    design = cast(dict[str, Any], figure_execution["design"])
+    for field, value in sorted(design.items()):
+        registry.add(
+            f"DESIGN.{_identifier(field)}",
+            value,
+            source_path=sources["figure_execution"],
+            selector={"section": "design"},
+            column=field,
+            inferential_role="design_fact",
+        )
+    _add_frame(
+        registry,
+        pd.read_csv(sources["primary_contrasts"]),
+        path=sources["primary_contrasts"],
+        prefix="CONTRAST",
+        identity_columns=("contrast_id",),
+        inferential_role="confirmatory_prespecified_contrast",
+    )
+    _add_frame(
+        registry,
+        pd.read_csv(sources["model_metric_summary"]),
+        path=sources["model_metric_summary"],
+        prefix="METRIC",
+        identity_columns=("cohort", "model_id", "endpoint"),
+        inferential_role="cohort_model_estimate",
+    )
+    _add_frame(
+        registry,
+        pd.read_csv(sources["accuracy_cost_pareto"]),
+        path=sources["accuracy_cost_pareto"],
+        prefix="RESOURCE",
+        identity_columns=("model_id",),
+        inferential_role="measured_accuracy_resource_tradeoff",
+    )
+    _add_frame(
+        registry,
+        pd.read_csv(sources["contrast_subgroup_summary"]),
+        path=sources["contrast_subgroup_summary"],
+        prefix="SUBGROUP",
+        identity_columns=("dimension", "category", "contrast_id"),
+        inferential_role="exploratory_estimation_only",
+    )
+    selected = _load_json(sources["qualitative_selected_cases"])
+    for rule, entry in sorted(
+        cast(dict[str, dict[str, Any]], selected["rules"]).items()
+    ):
+        for column, value in sorted(entry.items()):
+            registry.add(
+                f"QUALITATIVE.{_identifier(rule)}.{_identifier(column)}",
+                value,
+                source_path=sources["qualitative_selected_cases"],
+                selector={"rule": rule},
+                column=column,
+                inferential_role="prespecified_post_evaluation_case_selection",
+            )
+    claims = registry.claims()
+    source_hashes = {
+        path.as_posix(): file_digest(path)
+        for path in sorted(set(sources.values()), key=lambda item: item.as_posix())
+        if path.is_file()
+    }
+    payload = {
+        "schema_version": 1,
+        "status": "complete",
+        "gate": "J",
+        "manual_result_entry": False,
+        "claim_count": len(claims),
+        "claims": claims,
+        "source_hashes": source_hashes,
+    }
+    outputs = cast(dict[str, str], config["outputs"])
+    output_path = Path(outputs["registry"])
+    atomic_write_json(output_path, payload)
+    return payload
+
+
+def _artifact_bound_sections(source: str, *, start: str, end: str) -> list[str]:
+    sections: list[str] = []
+    cursor = 0
+    while True:
+        begin = source.find(start, cursor)
+        if begin < 0:
+            break
+        finish = source.find(end, begin + len(start))
+        if finish < 0:
+            raise RuntimeError("Artifact-bound result block is not closed")
+        sections.append(source[begin + len(start) : finish])
+        cursor = finish + len(end)
+    return sections
+
+
+def _format_claim(claim: dict[str, Any], format_name: str) -> str:
+    if claim["value_status"] != "available":
+        raise RuntimeError(f"Cannot render nonfinite claim: {claim['claim_id']}")
+    value = claim["value"]
+    if format_name == "raw":
+        if isinstance(value, bool):
+            return str(value).lower()
+        return str(value)
+    if format_name == "integer":
+        return str(int(cast(float, value)))
+    numeric = float(value)
+    if not math.isfinite(numeric):
+        raise RuntimeError(f"Cannot render nonfinite claim: {claim['claim_id']}")
+    if format_name in {"2f", "3f", "4f"}:
+        return f"{numeric:.{int(format_name[0])}f}"
+    if format_name in {"percent1", "percent2"}:
+        digits = int(format_name[-1])
+        return f"{100.0 * numeric:.{digits}f}%"
+    if format_name == "pvalue":
+        return "<0.0001" if numeric < 0.0001 else f"{numeric:.4f}"
+    raise ValueError(f"Unknown Gate J claim format: {format_name}")
+
+
+def render_claim_template(
+    *,
+    template_path: Path,
+    registry_path: Path,
+    output_path: Path,
+    trace_path: Path,
+    config_path: Path = Path("configs/q1q2_v2/claim_execution.yaml"),
+) -> dict[str, Any]:
+    """Resolve only registered values and record every template substitution."""
+    config = _load_yaml(config_path)
+    contract = cast(dict[str, Any], config["template_contract"])
+    source = template_path.read_text(encoding="utf-8")
+    sections = _artifact_bound_sections(
+        source,
+        start=str(contract["artifact_bound_start"]),
+        end=str(contract["artifact_bound_end"]),
+    )
+    if not sections:
+        raise RuntimeError("Manuscript template has no artifact-bound result block")
+    for section in sections:
+        without_tokens = TOKEN_PATTERN.sub("", section)
+        manual_numbers = STANDALONE_NUMBER_PATTERN.findall(without_tokens)
+        if manual_numbers:
+            raise RuntimeError(
+                "Manual numeric literals occur in artifact-bound results: "
+                f"{manual_numbers[:5]}"
+            )
+    registry = _load_json(registry_path)
+    if registry.get("status") != "complete":
+        raise PermissionError("Complete Gate J claim registry is required")
+    by_id = {
+        str(entry["claim_id"]): entry
+        for entry in cast(list[dict[str, Any]], registry["claims"])
+    }
+    trace: list[dict[str, Any]] = []
+
+    def replacement(match: re.Match[str]) -> str:
+        claim_id, format_name = match.groups()
+        if claim_id not in by_id:
+            raise RuntimeError(f"Unknown Gate J claim token: {claim_id}")
+        rendered = _format_claim(by_id[claim_id], format_name)
+        trace.append(
+            {
+                "claim_id": claim_id,
+                "format": format_name,
+                "rendered": rendered,
+                "source": by_id[claim_id]["source"],
+            }
+        )
+        return rendered
+
+    rendered = TOKEN_PATTERN.sub(replacement, source)
+    unresolved = UNRESOLVED_PATTERN.findall(rendered)
+    if unresolved:
+        raise RuntimeError(f"Unresolved manuscript tokens: {unresolved[:5]}")
+    if not trace:
+        raise RuntimeError("Manuscript template did not use any registered claim")
+    atomic_write_text(output_path, rendered)
+    trace_payload = {
+        "schema_version": 1,
+        "status": "complete",
+        "template": template_path.as_posix(),
+        "template_sha256": file_digest(template_path),
+        "registry": registry_path.as_posix(),
+        "registry_sha256": file_digest(registry_path),
+        "rendered": output_path.as_posix(),
+        "rendered_sha256": file_digest(output_path),
+        "resolved_token_count": len(trace),
+        "unique_claim_count": len({entry["claim_id"] for entry in trace}),
+        "manual_result_entry": False,
+        "substitutions": trace,
+    }
+    atomic_write_json(trace_path, trace_payload)
+    return trace_payload
+
+
+def audit_claim_package(
+    *,
+    registry_path: Path,
+    rendered_path: Path,
+    trace_path: Path,
+) -> dict[str, Any]:
+    """Verify claim sources and the exact rendered manuscript hash."""
+    registry = _load_json(registry_path)
+    trace = _load_json(trace_path)
+    mismatches: list[str] = []
+    for raw_path, digest in cast(
+        dict[str, str],
+        registry.get("source_hashes", {}),
+    ).items():
+        path = Path(raw_path)
+        if not path.is_file() or file_digest(path) != digest:
+            mismatches.append(raw_path)
+    valid = (
+        registry.get("status") == "complete"
+        and trace.get("status") == "complete"
+        and trace.get("registry_sha256") == file_digest(registry_path)
+        and rendered_path.is_file()
+        and trace.get("rendered_sha256") == file_digest(rendered_path)
+        and int(trace.get("resolved_token_count", 0)) > 0
+        and not UNRESOLVED_PATTERN.search(rendered_path.read_text(encoding="utf-8"))
+        and not mismatches
+    )
+    return {
+        "valid": valid,
+        "claim_count": int(registry.get("claim_count", 0)),
+        "resolved_token_count": int(trace.get("resolved_token_count", 0)),
+        "source_hash_mismatches": mismatches,
+        "manual_result_entry": False,
+    }
+
+
+def _audit_inferential_language(
+    rendered_text: str,
+    trace: dict[str, Any],
+) -> dict[str, Any]:
+    lowered = rendered_text.lower()
+    substitutions = cast(
+        list[dict[str, Any]],
+        trace.get("substitutions", []),
+    )
+    used = {
+        str(entry["claim_id"]): str(entry["rendered"]).lower()
+        for entry in substitutions
+    }
+    holm_positive = any(
+        claim_id.endswith(".HOLM_REJECT_AT_ALPHA") and value == "true"
+        for claim_id, value in used.items()
+    )
+    practical_positive = any(
+        claim_id.endswith(".MEAN_REACHES_PRACTICAL_THRESHOLD") and value == "true"
+        for claim_id, value in used.items()
+    )
+    positive_interpretation = any(
+        claim_id.endswith(".CLAIM_INTERPRETATION")
+        and value == "positive_and_practically_relevant"
+        for claim_id, value in used.items()
+    )
+    problems: list[str] = []
+    if ("superior" in lowered or "superiority" in lowered) and not (
+        holm_positive and practical_positive and positive_interpretation
+    ):
+        problems.append(
+            "Superiority wording lacks rendered Holm, practical-threshold, "
+            "and positive-interpretation bindings"
+        )
+    if "significant" in lowered and not holm_positive:
+        problems.append("Significance wording lacks a rendered positive Holm binding")
+    prohibited_affirmative = (
+        "state of the art",
+        "clinically robust",
+        "clinically validated",
+        "clinical utility",
+        "generalizable",
+        "q1/q2-ready",
+    )
+    for phrase in prohibited_affirmative:
+        for line in rendered_text.splitlines():
+            if phrase in line.lower() and not NEGATION_PATTERN.search(line):
+                problems.append(f"Unsupported affirmative wording: {phrase}")
+    return {
+        "valid": not problems,
+        "problems": problems,
+        "holm_positive_binding_used": holm_positive,
+        "practical_positive_binding_used": practical_positive,
+        "positive_interpretation_binding_used": positive_interpretation,
+    }
+
+
+def complete_gate_j(
+    config_path: Path = Path("configs/q1q2_v2/claim_execution.yaml"),
+) -> dict[str, Any]:
+    """Close Gate J only when provenance and inferential wording both pass."""
+    config = _load_yaml(config_path)
+    outputs = {
+        key: Path(str(value))
+        for key, value in cast(dict[str, str], config["outputs"]).items()
+    }
+    artifact_audit = audit_claim_package(
+        registry_path=outputs["registry"],
+        rendered_path=outputs["rendered_manuscript"],
+        trace_path=outputs["render_trace"],
+    )
+    trace = _load_json(outputs["render_trace"])
+    wording_audit = _audit_inferential_language(
+        outputs["rendered_manuscript"].read_text(encoding="utf-8"),
+        trace,
+    )
+    passed = artifact_audit["valid"] and wording_audit["valid"]
+    completion = {
+        "schema_version": 1,
+        "status": "pass" if passed else "fail",
+        "gate": "J",
+        "manual_result_entry": False,
+        "registry": outputs["registry"].as_posix(),
+        "registry_sha256": file_digest(outputs["registry"]),
+        "rendered_manuscript": outputs["rendered_manuscript"].as_posix(),
+        "rendered_manuscript_sha256": file_digest(outputs["rendered_manuscript"]),
+        "render_trace": outputs["render_trace"].as_posix(),
+        "render_trace_sha256": file_digest(outputs["render_trace"]),
+        "artifact_audit": artifact_audit,
+        "inferential_wording_audit": wording_audit,
+    }
+    atomic_write_json(outputs["completion"], completion)
+    if not passed:
+        raise RuntimeError("Gate J claim provenance or wording audit failed")
+    return completion
+
+
+__all__ = [
+    "ClaimRegistry",
+    "audit_claim_package",
+    "build_claim_registry",
+    "complete_gate_j",
+    "render_claim_template",
+]

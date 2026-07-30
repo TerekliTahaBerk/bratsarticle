@@ -38,6 +38,8 @@ required_analysis_inputs:
   - configs/q1q2_v2/figure_execution.yaml
   - configs/q1q2_v2/qualitative_protocol.yaml
   - configs/q1q2_v2/qualitative_execution.yaml
+  - configs/q1q2_v2/reproducibility_execution.yaml
+  - configs/q1q2_v2/claim_execution.yaml
   - environment/q1q2_v2-environment.json
   - environment/q1q2_v2-requirements-lock.txt
   - reports/q1q2_v2/hardware_preflight.json

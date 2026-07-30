@@ -74,3 +74,21 @@ scientific inputs and generated text outputs. The final completion report
 hashes every delivered document and verifies figure/table/reference counts,
 the DOCX package, PDF structure, absence of unresolved template tokens,
 one-time test-access preservation, and the originality audit status.
+
+The Q1/Q2 v2 study uses separate Gate I and Gate J contracts so the legacy
+74-patient internal evaluation cannot be mistaken for new evidence. Gate I
+hash-verifies all 600 development runs, 300 frozen external-checkpoint
+evaluations, 12 retained model-level prediction sets, downstream statistical
+tables, resource measurements, subgroup outputs, figures, and deterministic
+qualitative panels. Its data-free verification mode rehashes the bundle and
+does not reopen raw images or rerun external inference. Full training
+reproduction remains a separately authorized data-and-compute operation and is
+never implied by an artifact-only clean-clone check.
+
+Gate J builds a scalar claim registry directly from the hash-bound statistics,
+resources, subgroups, and qualitative selections. Numeric values inside marked
+Results blocks are prohibited in the manuscript template; they must enter
+through a registered claim token. Rendering records every substitution,
+format, source row/column, source hash, registry hash, and rendered-document
+hash. This is a scientific provenance and manual-transcription control, not an
+AI-authorship detector.

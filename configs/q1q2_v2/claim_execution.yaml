@@ -1,0 +1,29 @@
+schema_version: 1
+status: frozen_before_main_results
+gate: J
+policy:
+  manual_result_entry: prohibited
+  unsupported_superiority_language: prohibited
+  result_numbers_in_template: prohibited_inside_artifact_bound_blocks
+  external_confirmatory_claims_require_holm_and_effect_interpretation: true
+sources:
+  figure_execution: configs/q1q2_v2/figure_execution.yaml
+  statistical_completion: artifacts/q1q2_v2/statistics/completion.json
+  subgroup_completion: artifacts/q1q2_v2/subgroups/completion.json
+  resource_completion: artifacts/q1q2_v2/resources/completion.json
+  qualitative_completion: artifacts/q1q2_v2/qualitative/completion.json
+  qualitative_selected_cases: artifacts/q1q2_v2/qualitative/selected_cases.json
+  primary_contrasts: artifacts/q1q2_v2/statistics/primary_contrasts.csv
+  model_metric_summary: artifacts/q1q2_v2/statistics/model_metric_summary.csv
+  accuracy_cost_pareto: artifacts/q1q2_v2/resources/accuracy_cost_pareto.csv
+  contrast_subgroup_summary: artifacts/q1q2_v2/subgroups/contrast_subgroup_summary.csv
+outputs:
+  registry: artifacts/q1q2_v2/claims/claim_registry.json
+  rendered_manuscript: artifacts/q1q2_v2/claims/rendered_manuscript.md
+  render_trace: artifacts/q1q2_v2/claims/render_trace.json
+  completion: artifacts/q1q2_v2/claims/completion.json
+template_contract:
+  token: "{{claim:CLAIM_ID|FORMAT}}"
+  formats: [raw, integer, 2f, 3f, 4f, percent1, percent2, pvalue]
+  artifact_bound_start: "<!-- BEGIN_ARTIFACT_BOUND_RESULTS -->"
+  artifact_bound_end: "<!-- END_ARTIFACT_BOUND_RESULTS -->"

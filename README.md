@@ -5,20 +5,19 @@ U-Net-family models on multimodal BraTS glioma segmentation data.
 
 ## Current status
 
-Gates 0-14 are complete. The repository now contains the audited data and
-patient split, tested U-Net-family implementations, matched development runs,
-multi-seed confirmation, a frozen analysis plan, one guarded internal
-held-out test evaluation, artifact-derived figures and tables, a clean-clone
-reproduction audit, and the rebuilt manuscript package.
+The completed bounded internal study is preserved at the immutable
+`v1-bounded-2d-component-study` tag. Its Gates 0–14, manuscript, figures, and
+74-patient internal evaluation are legacy evidence only.
 
-The primary internal result is deliberately narrow: under the bounded 2D
-protocol, both BU-Net and U-Net+RES improved patient-level mean regional Dice
-over standard U-Net, while U-Net+RES slightly exceeded the full BU-Net and
-used fewer measured resources. The study does not establish clinical utility,
-external generalization, state of the art, or superiority over untested 3D,
-transformer, or self-configuring systems.
+The active Q1/Q2 v2 study is not yet a completed paper. Development-only loss
+screening is running on the frozen Apple M1 Max configuration. The v2 design
+requires 600 development runs, 300 frozen main checkpoints in the single
+external session, all 12 models, five patient folds, and the same five seeds.
+No v2 performance, external-generalization, clinical-utility, or superiority
+claim exists until the corresponding artifacts pass Gates G–J. New inference
+on the legacy 74-patient subset is prohibited.
 
-Final submission artifacts:
+Legacy v1 submission artifacts:
 
 - [`manuscript/final_manuscript.docx`](manuscript/final_manuscript.docx)
 - [`manuscript/final_manuscript.pdf`](manuscript/final_manuscript.pdf)
@@ -51,13 +50,22 @@ The complete gate history is recorded under [`reports/`](reports/), and the
 verified primary literature sources used by the rebuilt manuscript are in
 [`literature/verified_sources.yaml`](literature/verified_sources.yaml).
 
+The v2 gate state is
+[`reports/q1q2_v2/gate_status.yaml`](reports/q1q2_v2/gate_status.yaml), its
+verified literature ledger is
+[`literature/q1q2_verified_sources.yaml`](literature/q1q2_verified_sources.yaml),
+and Gate I/J provenance controls are documented in
+[`docs/q1q2_v2/gates_i_j.md`](docs/q1q2_v2/gates_i_j.md).
+
 ## Scientific scope
 
 The core study will:
 
 - treat BraTS 2020 training subjects as the canonical labeled cohort;
 - use BraTS 2019 only for identity and duplicate auditing;
-- enforce patient-level train, validation, and internal held-out test splits;
+- use patient-level five-fold development without a new internal held-out
+  claim;
+- reserve BraTS-Africa for one frozen external session after Gate G;
 - evaluate RES and WC as previously published BU-Net components, not as novel
   modules;
 - generate metrics, tables, and figures from machine-readable experiment
@@ -119,11 +127,9 @@ BRATS2020_ROOT=/authorized/path/to/brats2020 \
   --smoke-steps 1
 ```
 
-Full training requires both a suitable CUDA host and the explicit
-`--allow-full-training` flag.
-
-Full training and internal held-out test evaluation remain separately guarded
-by the protocol and test-access audit.
+Reportable v2 training requires an eligible frozen host and its explicit
+runner authorization. External inference remains separately guarded until
+Gate G; legacy internal held-out inference is prohibited for v2.
 
 Regenerate the manuscript Markdown and audit its exact long-phrase overlap
 against the user-supplied source materials:
