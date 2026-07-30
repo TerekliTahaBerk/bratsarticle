@@ -176,3 +176,54 @@ Training may enter the main queue only after all of the following are true:
 7. The selected architecture-attribution loss is frozen from development CV.
 
 No external prediction or metric computation is authorized by this protocol.
+
+## Outcome-blind plan freeze and guarded queue
+
+Write the feasibility result outside the repository so a fallback preflight,
+if required, can still begin from a clean commit:
+
+```bash
+PYTHONHASHSEED=20260730 nnUNet_n_proc_DA=0 nnUNet_compile=false \
+nnUNet_extTrainer=nnunet_ext \
+PYTHONPATH=src .venv/bin/python \
+  scripts/run_q1q2_nnunetv2_mps_preflight.py \
+  --configuration 3d_fullres \
+  --plans-identifier nnUNetResEncUNetLPlans \
+  --fold 0 \
+  --output /private/tmp/nnunet_resenc_l_preflight.json \
+  --assert-no-active-mps-lock \
+    artifacts/q1q2_v2/queue_runtime/loss_screen.lock
+```
+
+If ResEnc-L fails, repeat only with `nnUNetResEncUNetMPlans`. Freeze the
+passing choice and bind it to the job queue:
+
+```bash
+PYTHONPATH=src .venv/bin/python \
+  scripts/freeze_q1q2_nnunetv2_3d_plan.py \
+  --primary-preflight /private/tmp/nnunet_resenc_l_preflight.json
+```
+
+Add
+`--fallback-preflight /private/tmp/nnunet_resenc_m_preflight.json` only after
+a failed primary preflight. The freeze copies the evidence into the tracked
+report tree, records its hashes, regenerates the 50-job matrix with the
+selected predeclared plan, and changes the runner from blocked to frozen.
+Commit that state before reportable training.
+
+Run or resume the official queue with:
+
+```bash
+nnUNet_raw="$PWD/work/q1q2_v2/nnunet/raw" \
+nnUNet_preprocessed="$PWD/work/q1q2_v2/nnunet/preprocessed" \
+nnUNet_results="$PWD/work/q1q2_v2/nnunet/results" \
+PYTHONPATH=src .venv/bin/python \
+  scripts/run_q1q2_m1_nnunetv2_queue.py \
+  --allow-reportable-development-training
+```
+
+The queue refuses concurrent MPS work, dirty repositories, cross-commit
+continuation, partial outputs without an official continuation checkpoint,
+and silent seed replacement. The official trainer records cumulative
+accelerator-hours, MPS framework- and driver-allocated unified-memory peaks,
+best/final checkpoint hashes, and completion of the full 1,000 epochs.

@@ -13,6 +13,7 @@ import json
 import os
 import random
 import subprocess
+import time
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +62,15 @@ def _file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _atomic_json(path: Path, payload: dict[str, Any]) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
 class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
     """Preserve official training defaults while enforcing a declared seed."""
 
@@ -93,9 +103,13 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
                 f"resolved commit={git_commit}"
             )
         self.q1q2_git_commit = git_commit
-        self.q1q2_continuation_requested = bool(
-            plans.get("continue_training", False)
+        self.q1q2_continuation_requested = (
+            os.environ.get("Q1Q2_CONTINUATION_REQUESTED") == "1"
         )
+        self.q1q2_started_at = 0.0
+        self.q1q2_elapsed_before_session = 0.0
+        self.q1q2_framework_peak_bytes = 0
+        self.q1q2_driver_peak_bytes = 0
         self._seed_all(device)
         super().__init__(plans, configuration, fold, dataset_json, device)
         self.logger.update_config(
@@ -127,9 +141,56 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
             warn_only=device.type == "mps",
         )
 
+    def _sample_mps_memory(self) -> None:
+        if self.device.type != "mps":
+            return
+        self.q1q2_framework_peak_bytes = max(
+            self.q1q2_framework_peak_bytes,
+            int(torch.mps.current_allocated_memory()),
+        )
+        driver = getattr(torch.mps, "driver_allocated_memory", None)
+        if driver is not None:
+            self.q1q2_driver_peak_bytes = max(
+                self.q1q2_driver_peak_bytes,
+                int(driver()),
+            )
+
+    def _metadata_path(self) -> Path:
+        return Path(self.output_folder) / "q1q2_run_metadata.json"
+
+    def _update_metadata(self, **updates: Any) -> None:
+        path = self._metadata_path()
+        payload = (
+            json.loads(path.read_text(encoding="utf-8"))
+            if path.is_file()
+            else {"schema_version": 1}
+        )
+        payload.update(updates)
+        _atomic_json(path, payload)
+
     def on_train_start(self) -> None:
         self._seed_all(self.device)
         super().on_train_start()
+        existing_path = self._metadata_path()
+        if self.q1q2_continuation_requested and existing_path.is_file():
+            existing = json.loads(existing_path.read_text(encoding="utf-8"))
+            self.q1q2_elapsed_before_session = float(
+                existing.get("cumulative_elapsed_seconds", 0.0)
+            )
+            self.q1q2_framework_peak_bytes = int(
+                existing.get(
+                    "framework_peak_allocated_unified_memory_bytes",
+                    0,
+                )
+            )
+            self.q1q2_driver_peak_bytes = int(
+                existing.get(
+                    "driver_peak_allocated_unified_memory_bytes",
+                    0,
+                )
+            )
+        self.q1q2_started_at = time.perf_counter()
+        self._sample_mps_memory()
         split_path = Path(self.preprocessed_dataset_folder_base) / (
             "splits_final.json"
         )
@@ -154,6 +215,14 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
             "deterministic_algorithms": True,
             "deterministic_warn_only": self.device.type == "mps",
             "continuation_requested": self.q1q2_continuation_requested,
+            "cumulative_elapsed_seconds_before_session": (
+                self.q1q2_elapsed_before_session
+            ),
+            "parameter_count": sum(
+                parameter.numel()
+                for parameter in self.network.parameters()
+                if parameter.requires_grad
+            ),
             "official_defaults": {
                 "initial_lr": self.initial_lr,
                 "weight_decay": self.weight_decay,
@@ -172,14 +241,69 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
                 "not claimed bitwise-identical because upstream nnU-Net "
                 "checkpoints do not serialize every augmentation RNG state."
             ),
+            "status": "running",
         }
-        destination = Path(self.output_folder) / "q1q2_run_metadata.json"
-        temporary = destination.with_suffix(".json.tmp")
-        temporary.write_text(
-            json.dumps(payload, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
+        _atomic_json(self._metadata_path(), payload)
+
+    def train_step(self, batch: dict[str, torch.Tensor]) -> dict[str, Any]:
+        result = super().train_step(batch)
+        self._sample_mps_memory()
+        return result
+
+    def validation_step(self, batch: dict[str, torch.Tensor]) -> dict[str, Any]:
+        result = super().validation_step(batch)
+        self._sample_mps_memory()
+        return result
+
+    def on_epoch_end(self) -> None:
+        super().on_epoch_end()
+        self._sample_mps_memory()
+        cumulative = self.q1q2_elapsed_before_session + (
+            time.perf_counter() - self.q1q2_started_at
         )
-        temporary.replace(destination)
+        self._update_metadata(
+            last_completed_epoch=int(self.current_epoch),
+            cumulative_elapsed_seconds=cumulative,
+            framework_peak_allocated_unified_memory_bytes=(
+                self.q1q2_framework_peak_bytes
+            ),
+            driver_peak_allocated_unified_memory_bytes=(
+                self.q1q2_driver_peak_bytes
+            ),
+        )
+
+    def on_train_end(self) -> None:
+        super().on_train_end()
+        self._sample_mps_memory()
+        checkpoint_best = Path(self.output_folder) / "checkpoint_best.pth"
+        checkpoint_final = Path(self.output_folder) / "checkpoint_final.pth"
+        session_elapsed_seconds = time.perf_counter() - self.q1q2_started_at
+        cumulative_elapsed_seconds = (
+            self.q1q2_elapsed_before_session + session_elapsed_seconds
+        )
+        self._update_metadata(
+            status="completed",
+            completed_epochs=int(self.current_epoch),
+            elapsed_seconds_this_session=session_elapsed_seconds,
+            cumulative_elapsed_seconds=cumulative_elapsed_seconds,
+            accelerator_hours=cumulative_elapsed_seconds / 3600.0,
+            framework_peak_allocated_unified_memory_bytes=(
+                self.q1q2_framework_peak_bytes
+            ),
+            driver_peak_allocated_unified_memory_bytes=(
+                self.q1q2_driver_peak_bytes
+            ),
+            checkpoint_best_sha256=(
+                _file_sha256(checkpoint_best)
+                if checkpoint_best.is_file()
+                else "missing"
+            ),
+            checkpoint_final_sha256=(
+                _file_sha256(checkpoint_final)
+                if checkpoint_final.is_file()
+                else "missing"
+            ),
+        )
 
 
 class nnUNetTrainerSeed20260730(Q1Q2SeededNNUNetTrainer):

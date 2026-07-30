@@ -1,0 +1,43 @@
+schema_version: 1
+status: blocked_until_hardware_plan_freeze
+hardware:
+  backend: mps
+  device: Apple M1 Max
+  require_clean_git: true
+  deterministic_algorithms: warn_only_on_mps
+data:
+  dataset_id: 501
+  dataset_name: Dataset501_BraTS2020Q1Q2
+  canonical_manifest: manifests/canonical/brats2020_canonical_manifest.csv
+  fold_pattern: splits/q1q2_v2/cv_fold_{fold}.csv
+  expected_patients: 369
+  nnunet_raw_environment: nnUNet_raw
+  nnunet_preprocessed_environment: nnUNet_preprocessed
+  nnunet_results_environment: nnUNet_results
+matrix:
+  queue: artifacts/q1q2_v2/queues/nnunetv2_main.json
+  selected_3d_plan: configs/q1q2_v2/selected_nnunet_3d_plan.yaml
+  expected_jobs: 50
+  expected_jobs_per_model: 25
+  expected_folds: [1, 2, 3, 4, 5]
+  expected_seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
+training:
+  implementation: official_nnunetv2
+  preserve_official_architecture_loss_optimizer_schedule_and_1000_epochs: true
+  allow_continuation_after_interruption: true
+  continuation_bitwise_reproducibility_claimed: false
+  require_best_checkpoint: true
+  require_final_checkpoint: true
+artifacts:
+  root: artifacts/q1q2_v2/nnunet_runs
+  runtime_root: artifacts/q1q2_v2/queue_runtime
+guards:
+  allow_external_data: false
+  allow_legacy_internal_test: false
+  allow_silent_seed_replacement: false
+  require_loss_screen_lock_absent: true
+  mutually_exclusive_mps_queues:
+    - loss_screen.lock
+    - native_main.lock
+    - swin_main.lock
+    - nnunetv2_preflight.lock
