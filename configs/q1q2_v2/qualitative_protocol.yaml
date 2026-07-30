@@ -9,6 +9,16 @@ selection_rules:
   - largest_false_positive_lesion_burden
   - largest_regional_hd95
   - largest_pairwise_model_disagreement
+rule_definitions:
+  patient_aggregation: arithmetic_mean_across_12_frozen_model_ensemble_rows
+  highest_patient_mean_regional_dice: descending patient mean of model-level mean_regional_dice
+  median_patient_mean_regional_dice: minimum absolute distance to the cohort median patient mean
+  lowest_et_lesion_wise_dice: ascending finite patient mean of et_lesion_wise_dice; patients with no finite value are ineligible
+  largest_false_positive_lesion_burden: descending patient mean of the sum of WT, TC, and ET false-positive lesion counts
+  largest_regional_hd95: descending patient maximum across models and WT, TC, and ET regional HD95; positive infinity is retained
+  largest_pairwise_model_disagreement: descending mean WT, TC, and ET pairwise binary disagreement within the union of reference and all model WT masks
+model_prediction_definition: nested-region strict-majority vote across the 25 frozen fold-seed checkpoints
+slice_selection: axial slice with largest reference WT area; lowest slice index breaks ties
 tie_breakers:
   - largest_whole_tumor_volume
   - lexicographic_anonymized_patient_id

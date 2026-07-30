@@ -1,0 +1,21 @@
+schema_version: 1
+status: frozen_before_external_results
+gate_h_completion: artifacts/q1q2_v2/gate_h_completion.json
+qualitative_protocol: configs/q1q2_v2/qualitative_protocol.yaml
+model_matrix: configs/q1q2_v2/model_matrix.yaml
+cohort_role: external_confirmatory
+expected:
+  models: 12
+  patients: 95
+  model_patient_rows: 1140
+  rules: 6
+outputs:
+  directory: artifacts/q1q2_v2/qualitative
+  selected_cases: artifacts/q1q2_v2/qualitative/selected_cases.json
+  patient_disagreement: artifacts/q1q2_v2/qualitative/patient_disagreement.csv
+  panel_manifest: artifacts/q1q2_v2/qualitative/panel_manifest.json
+  completion: artifacts/q1q2_v2/qualitative/completion.json
+render:
+  dpi: 250
+  raster_format: png
+  vector_format: svg
