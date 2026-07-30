@@ -23,6 +23,8 @@ from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import (  # type: ignore[impo
     nnUNetTrainer,
 )
 
+from bratsarticle.models.resource_profile import profile_torch_module
+
 DEFAULT_DEVICE = torch.device("cuda")
 Q1Q2_BUDGET_SENSITIVITY_STEPS = frozenset({2_000, 10_000})
 
@@ -247,6 +249,21 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):  # type: ignore[misc]
         self.q1q2_started_at = time.perf_counter()
         self._sample_mps_memory()
         split_path = Path(self.preprocessed_dataset_folder_base) / ("splits_final.json")
+        patch_size = tuple(
+            int(value) for value in self.configuration_manager.patch_size
+        )
+        static_profile = profile_torch_module(
+            self.network,
+            input_shape=(1, int(self.num_input_channels), *patch_size),
+        )
+        static_profile.update(
+            {
+                "receptive_field_proxy_definition": (
+                    "full_declared_nnunet_patch_for_self_configuring_encoder_decoder"
+                ),
+                "receptive_field_proxy_voxels_per_axis": list(patch_size),
+            }
+        )
         payload = {
             "schema_version": 1,
             "trainer": self.__class__.__name__,
@@ -257,6 +274,18 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):  # type: ignore[misc]
             "git_commit": self.q1q2_git_commit,
             "repository_dirty_at_start": False,
             "trainer_source_sha256": _file_sha256(Path(__file__).resolve()),
+            "environment_lock_sha256": os.environ.get(
+                "Q1Q2_ENVIRONMENT_LOCK_SHA256",
+                "missing",
+            ),
+            "requirements_lock_sha256": os.environ.get(
+                "Q1Q2_REQUIREMENTS_LOCK_SHA256",
+                "missing",
+            ),
+            "hardware_preflight_sha256": os.environ.get(
+                "Q1Q2_HARDWARE_PREFLIGHT_SHA256",
+                "missing",
+            ),
             "nnunetv2_version": importlib.metadata.version("nnunetv2"),
             "plans_sha256": _canonical_sha256(self.plans_manager.plans),
             "dataset_json_sha256": _canonical_sha256(self.dataset_json),
@@ -276,6 +305,7 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):  # type: ignore[misc]
                 for parameter in self.network.parameters()
                 if parameter.requires_grad
             ),
+            "static_profile": static_profile,
             "official_defaults": {
                 "initial_lr": self.initial_lr,
                 "weight_decay": self.weight_decay,

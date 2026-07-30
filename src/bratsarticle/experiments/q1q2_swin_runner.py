@@ -26,6 +26,7 @@ from bratsarticle.data.preprocessing import (
 )
 from bratsarticle.experiments.pilot_runner import PatientGroupedSampler
 from bratsarticle.experiments.registry import ResourceTracker
+from bratsarticle.models.resource_profile import profile_torch_module
 from bratsarticle.training.checkpoint import (
     TrainingState,
     load_checkpoint,
@@ -731,6 +732,15 @@ def run_swin_development(
             "evaluation": file_digest(evaluation_path),
             "resource_profile_protocol": file_digest(resource_profile_path),
             "repeat_tolerance_audit": file_digest(repeat_tolerance_path),
+            "environment_lock": file_digest(
+                Path("environment/q1q2_v2-environment.json")
+            ),
+            "requirements_lock": file_digest(
+                Path("environment/q1q2_v2-requirements-lock.txt")
+            ),
+            "hardware_preflight": file_digest(
+                Path("reports/q1q2_v2/hardware_preflight.json")
+            ),
         },
         "external_data_accessed": False,
         "legacy_internal_test_accessed": False,
@@ -775,9 +785,22 @@ def run_swin_development(
         seed=spec.seed,
     )
     model, patch_size = _model(model_config_path)
-    metadata["parameter_count"] = sum(
-        parameter.numel() for parameter in model.parameters() if parameter.requires_grad
+    static_profile = profile_torch_module(
+        model,
+        input_shape=(1, 4, *patch_size),
     )
+    static_profile.update(
+        {
+            "receptive_field_proxy_definition": (
+                "full_declared_input_patch_via_hierarchical_shifted_windows"
+            ),
+            "receptive_field_proxy_voxels_per_axis": list(patch_size),
+        }
+    )
+    metadata["parameter_count"] = int(
+        cast(int, static_profile["parameter_count"])
+    )
+    metadata["static_profile"] = static_profile
     atomic_write_json(metadata_path, metadata)
     train_dataset = SwinPatchDataset(
         train_volumes,

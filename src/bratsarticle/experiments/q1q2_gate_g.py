@@ -196,6 +196,13 @@ def _native_hash_inputs(
         "evaluation": Path("configs/q1q2_v2/evaluation.yaml"),
         "loss_catalog": Path("configs/losses/catalog.yaml"),
         "resource_profile_protocol": resource_profile_path,
+        "environment_lock": Path("environment/q1q2_v2-environment.json"),
+        "requirements_lock": Path(
+            "environment/q1q2_v2-requirements-lock.txt"
+        ),
+        "hardware_preflight": Path(
+            "reports/q1q2_v2/hardware_preflight.json"
+        ),
     }
     if spec.stage != "loss_screen":
         current["selected_loss_config"] = Path("configs/q1q2_v2/selected_loss.yaml")
@@ -388,8 +395,21 @@ def _audit_native_run(
         or int(static_profile.get("flops_per_slice", 0)) <= 0
     ):
         problems.append(f"{spec.run_id}: native static profile is incomplete")
-    if adapter == "monai_swinunetr" and int(metadata.get("parameter_count", 0)) <= 0:
-        problems.append(f"{spec.run_id}: Swin parameter count is incomplete")
+    if adapter == "monai_swinunetr" and (
+        int(static_profile.get("parameter_count", 0)) <= 0
+        or int(static_profile.get("flops_per_input", 0)) <= 0
+        or int(static_profile.get("mac_equivalents_per_input", 0)) <= 0
+        or len(
+            cast(
+                list[Any],
+                static_profile.get("receptive_field_proxy_voxels_per_axis", []),
+            )
+        )
+        != 3
+        or int(metadata.get("parameter_count", 0))
+        != int(static_profile.get("parameter_count", -1))
+    ):
+        problems.append(f"{spec.run_id}: Swin static profile is incomplete")
     if problems:
         return None, problems
     return (
@@ -509,6 +529,12 @@ def _audit_nnunet_run(
         metadata.get("resource_profile_protocol") != resource_profile_path.as_posix()
         or metadata.get("resource_profile_protocol_sha256")
         != file_digest(resource_profile_path)
+        or metadata.get("environment_lock_sha256")
+        != file_digest(Path("environment/q1q2_v2-environment.json"))
+        or metadata.get("requirements_lock_sha256")
+        != file_digest(Path("environment/q1q2_v2-requirements-lock.txt"))
+        or metadata.get("hardware_preflight_sha256")
+        != file_digest(Path("reports/q1q2_v2/hardware_preflight.json"))
         or int(metadata.get("training_step_timing_target_count", -1))
         != required_timing_count
         or int(metadata.get("synchronized_training_step_measurement_count", -1))
@@ -516,6 +542,23 @@ def _audit_nnunet_run(
         or len(timing_samples) != required_timing_count
     ):
         problems.append(f"{run_id}: official synchronized step timing is incomplete")
+    static_profile = cast(dict[str, Any], metadata.get("static_profile", {}))
+    patch_dimensions = 2 if str(job["configuration"]) == "2d" else 3
+    if (
+        int(static_profile.get("parameter_count", 0)) <= 0
+        or int(static_profile.get("flops_per_input", 0)) <= 0
+        or int(static_profile.get("mac_equivalents_per_input", 0)) <= 0
+        or len(
+            cast(
+                list[Any],
+                static_profile.get("receptive_field_proxy_voxels_per_axis", []),
+            )
+        )
+        != patch_dimensions
+        or int(metadata.get("parameter_count", 0))
+        != int(static_profile.get("parameter_count", -1))
+    ):
+        problems.append(f"{run_id}: official nnU-Net static profile is incomplete")
     defaults = cast(dict[str, Any], metadata.get("official_defaults", {}))
     initial_lr = float(defaults.get("initial_lr", 0.0))
     final_lr = float(metadata.get("final_learning_rate", float("inf")))

@@ -34,7 +34,12 @@ required_analysis_inputs:
   - configs/q1q2_v2/subgroup_thresholds.yaml
   - configs/q1q2_v2/robustness_protocol.yaml
   - configs/q1q2_v2/resource_profile_protocol.yaml
+  - configs/q1q2_v2/resource_execution.yaml
+  - configs/q1q2_v2/figure_execution.yaml
   - configs/q1q2_v2/qualitative_protocol.yaml
+  - environment/q1q2_v2-environment.json
+  - environment/q1q2_v2-requirements-lock.txt
+  - reports/q1q2_v2/hardware_preflight.json
   - configs/q1q2_v2/selected_loss.yaml
   - configs/q1q2_v2/selected_nnunet_3d_plan.yaml
   - splits/q1q2_v2/split_metadata.json

@@ -371,6 +371,15 @@ def _run_one_job(
     environment["Q1Q2_RESOURCE_PROFILE_PROTOCOL_SHA256"] = file_digest(
         resource_profile_path
     )
+    environment["Q1Q2_ENVIRONMENT_LOCK_SHA256"] = file_digest(
+        Path("environment/q1q2_v2-environment.json")
+    )
+    environment["Q1Q2_REQUIREMENTS_LOCK_SHA256"] = file_digest(
+        Path("environment/q1q2_v2-requirements-lock.txt")
+    )
+    environment["Q1Q2_HARDWARE_PREFLIGHT_SHA256"] = file_digest(
+        Path("reports/q1q2_v2/hardware_preflight.json")
+    )
     environment["Q1Q2_TIMING_WARMUP_STEPS"] = str(timing_warmup_steps)
     environment["Q1Q2_TIMING_MEASUREMENT_COUNT"] = str(timing_measurement_count)
     report: dict[str, Any] = {

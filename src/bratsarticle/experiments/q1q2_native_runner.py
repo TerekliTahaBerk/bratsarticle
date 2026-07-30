@@ -535,6 +535,15 @@ def _metadata(
             "preprocessing": file_digest(preprocessing_path),
             "evaluation": file_digest(evaluation_path),
             "resource_profile_protocol": file_digest(resource_profile_path),
+            "environment_lock": file_digest(
+                Path("environment/q1q2_v2-environment.json")
+            ),
+            "requirements_lock": file_digest(
+                Path("environment/q1q2_v2-requirements-lock.txt")
+            ),
+            "hardware_preflight": file_digest(
+                Path("reports/q1q2_v2/hardware_preflight.json")
+            ),
             **dict(extra_hashes or {}),
         },
         "static_profile": asdict(static_profile),

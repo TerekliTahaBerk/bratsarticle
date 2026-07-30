@@ -1,0 +1,31 @@
+schema_version: 1
+status: frozen_before_external_results
+model_matrix: configs/q1q2_v2/model_matrix.yaml
+statistical_execution: configs/q1q2_v2/statistical_execution.yaml
+statistical_completion: artifacts/q1q2_v2/statistics/completion.json
+resource_execution: configs/q1q2_v2/resource_execution.yaml
+resource_completion: artifacts/q1q2_v2/resources/completion.json
+subgroup_execution: configs/q1q2_v2/subgroup_execution.yaml
+subgroup_completion: artifacts/q1q2_v2/subgroups/completion.json
+design:
+  development_patients: 369
+  folds: 5
+  seeds: 5
+  models: 12
+  development_runs: 600
+  external_confirmatory_patients: 95
+  external_supportive_patients: 51
+  external_main_checkpoints: 300
+render:
+  dpi: 300
+  raster_format: png
+  vector_format: svg
+outputs:
+  directory: artifacts/q1q2_v2/figures
+  study_design: fig01_study_design
+  confirmatory_performance: fig02_confirmatory_performance
+  primary_contrasts: fig03_primary_contrasts
+  accuracy_cost: fig04_accuracy_cost
+  resource_profiles: fig05_resource_profiles
+  exploratory_subgroups: fig06_exploratory_subgroups
+  completion: artifacts/q1q2_v2/figures/completion.json

@@ -1,0 +1,34 @@
+schema_version: 1
+status: frozen_before_external_results
+gate_g_analysis_freeze: artifacts/q1q2_v2/gate_g_analysis_freeze.json
+gate_g_checkpoint_manifest: artifacts/q1q2_v2/gate_g_checkpoint_manifest.json
+gate_h_completion: artifacts/q1q2_v2/gate_h_completion.json
+model_matrix: configs/q1q2_v2/model_matrix.yaml
+resource_profile_protocol: configs/q1q2_v2/resource_profile_protocol.yaml
+environment_lock: environment/q1q2_v2-environment.json
+requirements_lock: environment/q1q2_v2-requirements-lock.txt
+hardware_preflight: reports/q1q2_v2/hardware_preflight.json
+expected:
+  all_development_runs: 600
+  main_development_runs: 300
+  models: 12
+  main_runs_per_model: 25
+  external_confirmatory_patients_per_model: 95
+  external_timing_patients_per_checkpoint: 146
+pareto:
+  accuracy: external_confirmatory_patient_mean_regional_dice
+  direction: maximize
+  costs:
+    - parameter_count
+    - flops_per_declared_input
+    - training_accelerator_hours_mean
+    - training_peak_framework_allocated_unified_memory_bytes_max
+    - inference_end_to_end_p50_seconds
+  manual_score: prohibited
+outputs:
+  development_run_resources: artifacts/q1q2_v2/resources/development_run_resources.csv
+  main_model_resources: artifacts/q1q2_v2/resources/main_model_resources.csv
+  sensitivity_run_resources: artifacts/q1q2_v2/resources/sensitivity_run_resources.csv
+  matching_control_table: artifacts/q1q2_v2/resources/matching_control_table.csv
+  accuracy_cost_pareto: artifacts/q1q2_v2/resources/accuracy_cost_pareto.csv
+  completion: artifacts/q1q2_v2/resources/completion.json
