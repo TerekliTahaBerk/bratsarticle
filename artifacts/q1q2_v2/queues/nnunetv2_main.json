@@ -1,0 +1,1378 @@
+{
+  "canonical_manifest_sha256": "b9ab5bdf598521df5b3e26348ef4561f6ace631187385e180841e1712938e78b",
+  "dataset_id": 501,
+  "external_data_permitted": false,
+  "fold_sha256": {
+    "cv_fold_1.csv": "f532c85a3d6e5ee2a429a5b16ae38769eb799ce15b4a82209b24d19f37bb06a3",
+    "cv_fold_2.csv": "0f8f1a99d6c73341af50eb3beacbe6fd211838f906021250319145e9d1da36ac",
+    "cv_fold_3.csv": "cd7f0bf9849d2118331ab28f9a5f69c89a69c63042c61b80dda96c61e1d6df91",
+    "cv_fold_4.csv": "ff958e4032f77103dcb6bcd8bc37b674a3e1d85487cd25d935705750b4f25242",
+    "cv_fold_5.csv": "1a35b5754d9d76526032eceb79e096a8f721f158f42032a5b827376b3d96cd94"
+  },
+  "job_count": 50,
+  "job_count_by_configuration": {
+    "2d": 25,
+    "3d_fullres": 25
+  },
+  "jobs": [
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f1__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f1__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f1__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f1__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f1__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f2__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f2__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f2__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f2__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f2__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f3__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f3__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f3__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f3__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f3__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f4__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f4__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f4__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f4__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f4__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f5__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f5__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f5__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f5__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "2d",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "2d",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_2d",
+      "run_id": "nnunetv2_2d__f5__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f1__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f1__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f1__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f1__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "0",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 0,
+      "fold_one_indexed": 1,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f1__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f2__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f2__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f2__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f2__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "1",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 1,
+      "fold_one_indexed": 2,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f2__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f3__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f3__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f3__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f3__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "2",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 2,
+      "fold_one_indexed": 3,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f3__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f4__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f4__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f4__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f4__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "3",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 3,
+      "fold_one_indexed": 4,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f4__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260730",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260730",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f5__s20260730__convergence",
+      "seed": 20260730,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260730"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260731",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260731",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f5__s20260731__convergence",
+      "seed": 20260731,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260731"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260732",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260732",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f5__s20260732__convergence",
+      "seed": 20260732,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260732"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260733",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260733",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f5__s20260733__convergence",
+      "seed": 20260733,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260733"
+    },
+    {
+      "command": [
+        "nnUNetv2_train",
+        "501",
+        "3d_fullres",
+        "4",
+        "-tr",
+        "nnUNetTrainerSeed20260734",
+        "-device",
+        "mps"
+      ],
+      "configuration": "3d_fullres",
+      "device": "mps",
+      "environment": {
+        "PYTHONHASHSEED": "20260734",
+        "nnUNet_compile": "false",
+        "nnUNet_extTrainer": "nnunet_ext",
+        "nnUNet_n_proc_DA": "0"
+      },
+      "fold_nnunet_zero_indexed": 4,
+      "fold_one_indexed": 5,
+      "model_id": "nnunetv2_3d_fullres",
+      "run_id": "nnunetv2_3d_fullres__f5__s20260734__convergence",
+      "seed": 20260734,
+      "status": "not_started",
+      "trainer": "nnUNetTrainerSeed20260734"
+    }
+  ],
+  "schema_version": 1,
+  "seed_list": [
+    20260730,
+    20260731,
+    20260732,
+    20260733,
+    20260734
+  ],
+  "status": "generated_not_executed"
+}

@@ -30,6 +30,16 @@ machine-readable Gate 6 inventory stores config hashes, feature flags,
 parameter counts, closest-width matching outcomes, and tensor traces; the
 bounded smoke artifact records the producing Git commit and hardware.
 
+The Q1/Q2 nnU-Net v2 adapter uses the exact frozen five-fold patient split and
+five common training seeds. Raw MRI modalities are relative symlinks in an
+ignored derived tree; remapped labels have source and derived SHA-256 records.
+Seed-specific external trainer subclasses preserve official nnU-Net defaults,
+encode the seed in the trainer/checkpoint identity, enforce single-process
+augmentation, and write a run metadata sidecar. On MPS, deterministic
+algorithms are warning-only and reproduction is tolerance-based. Interrupted
+nnU-Net continuation is not represented as bitwise identical because upstream
+checkpoints do not serialize every augmentation RNG state.
+
 Gate 7 adds a strict run registry with a resolved `config.yaml`,
 `metadata.json`, append-only `metrics_per_epoch.jsonl`, patient-level
 `validation_per_case.csv`, checkpoint/log directories, and
