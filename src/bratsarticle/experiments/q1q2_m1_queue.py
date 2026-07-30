@@ -11,6 +11,7 @@ from typing import Any, cast
 from bratsarticle.experiments.q1q2_native_runner import (
     NativeRunSpec,
     loss_screen_specs,
+    main_convergence_specs,
     run_native_development,
 )
 from bratsarticle.utils.serialization import atomic_write_json
@@ -117,4 +118,70 @@ def run_loss_screen_queue(
         lock_path.unlink(missing_ok=True)
 
 
-__all__ = ["queue_snapshot", "run_loss_screen_queue"]
+def run_native_main_queue(
+    *,
+    runner_config_path: Path,
+    selected_loss_path: Path,
+    dataset_root: Path,
+    runtime_root: Path,
+    allow_reportable_development_training: bool,
+) -> dict[str, Any]:
+    """Run or resume all 225 frozen native main jobs sequentially."""
+    if not allow_reportable_development_training:
+        raise PermissionError(
+            "Native main queue requires reportable development authorization"
+        )
+    runtime_root.mkdir(parents=True, exist_ok=True)
+    loss_lock = runtime_root / "loss_screen.lock"
+    if loss_lock.exists():
+        raise RuntimeError("Loss-screen queue is still active")
+    lock_path = runtime_root / "native_main.lock"
+    try:
+        descriptor = os.open(
+            lock_path,
+            os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+            0o600,
+        )
+    except FileExistsError as error:
+        raise RuntimeError(
+            "Native main queue lock already exists; verify the existing process"
+        ) from error
+    with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+        handle.write(f"{os.getpid()}\n")
+    specs = main_convergence_specs(runner_config_path, selected_loss_path)
+    artifact_root = Path("artifacts/q1q2_v2/native_runs").resolve()
+    state_path = runtime_root / "native_main_runtime.json"
+    try:
+        snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+        atomic_write_json(state_path, snapshot)
+        for spec in specs:
+            status = _run_status(artifact_root, spec)
+            if status == "completed":
+                continue
+            output_dir = artifact_root / spec.run_id
+            run_native_development(
+                runner_config_path=runner_config_path,
+                spec=spec,
+                dataset_root=dataset_root,
+                allow_reportable_development_training=True,
+                resume=output_dir.exists(),
+            )
+            snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+            atomic_write_json(state_path, snapshot)
+        snapshot = queue_snapshot(specs=specs, artifact_root=artifact_root)
+        snapshot["status"] = (
+            "completed"
+            if int(snapshot["completed_count"]) == len(specs)
+            else "incomplete"
+        )
+        atomic_write_json(state_path, snapshot)
+        return snapshot
+    finally:
+        lock_path.unlink(missing_ok=True)
+
+
+__all__ = [
+    "queue_snapshot",
+    "run_loss_screen_queue",
+    "run_native_main_queue",
+]

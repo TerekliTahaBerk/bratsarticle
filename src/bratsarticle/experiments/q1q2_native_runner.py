@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 import traceback
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -182,6 +182,96 @@ def resolve_loss_screen_spec(
     return matches[0]
 
 
+def main_convergence_specs(
+    config_path: Path,
+    selected_loss_path: Path,
+) -> tuple[NativeRunSpec, ...]:
+    """Expand the nine-native-model, five-fold, equal-five-seed matrix."""
+    config = _load_yaml(config_path)
+    selected = _load_yaml(selected_loss_path)
+    if selected.get("status") != "frozen_from_complete_development_cv":
+        raise PermissionError("Architecture-attribution loss is not frozen")
+    if selected.get("external_data_used_for_selection") is not False:
+        raise PermissionError("Selected loss used external data")
+    if selected.get("legacy_internal_test_used_for_selection") is not False:
+        raise PermissionError("Selected loss used the legacy internal test")
+    selected_loss = str(selected["selected_loss"])
+    selection_artifact = Path(str(selected.get("selection_artifact", "")))
+    if not selection_artifact.is_absolute():
+        selection_artifact = Path.cwd() / selection_artifact
+    if not selection_artifact.is_file():
+        raise PermissionError("Selected-loss evidence artifact is missing")
+    if (
+        file_digest(selection_artifact)
+        != str(selected.get("selection_artifact_sha256"))
+    ):
+        raise PermissionError("Selected-loss evidence hash does not match")
+    selection_evidence = cast(
+        dict[str, Any],
+        json.loads(selection_artifact.read_text(encoding="utf-8")),
+    )
+    if (
+        selection_evidence.get("status")
+        != "selected_from_complete_development_cv"
+        or str(selection_evidence.get("selected_loss")) != selected_loss
+        or selection_evidence.get("external_data_accessed") is not False
+        or selection_evidence.get("legacy_internal_test_accessed") is not False
+    ):
+        raise PermissionError("Selected-loss evidence is invalid")
+    stages = cast(dict[str, Any], config["stages"])
+    stage = cast(dict[str, Any], stages["main_convergence"])
+    configured_loss = str(stage["loss"])
+    if configured_loss not in {"pending_development_cv", selected_loss}:
+        raise PermissionError("Main convergence config conflicts with frozen loss")
+    specs = tuple(
+        NativeRunSpec(
+            stage="main_convergence",
+            model_id=str(model),
+            fold=int(fold),
+            seed=int(seed),
+            loss_name=selected_loss,
+            maximum_optimizer_steps=int(stage["maximum_optimizer_steps"]),
+            warmup_optimizer_steps=int(stage["warmup_optimizer_steps"]),
+            full_metric_evaluation=bool(stage["full_metric_evaluation"]),
+        )
+        for model in cast(list[Any], stage["models"])
+        for fold in cast(list[Any], stage["folds"])
+        for seed in cast(list[Any], stage["seeds"])
+    )
+    expected_count = 9 * 5 * 5
+    if (
+        len(specs) != expected_count
+        or len({spec.run_id for spec in specs}) != expected_count
+    ):
+        raise ValueError(
+            f"Frozen native main matrix must expand to {expected_count} unique runs"
+        )
+    return specs
+
+
+def resolve_main_convergence_spec(
+    config_path: Path,
+    selected_loss_path: Path,
+    *,
+    model_id: str,
+    fold: int,
+    seed: int,
+) -> NativeRunSpec:
+    """Resolve a main run only if it belongs to the frozen native matrix."""
+    matches = [
+        spec
+        for spec in main_convergence_specs(config_path, selected_loss_path)
+        if (
+            spec.model_id == model_id
+            and spec.fold == fold
+            and spec.seed == seed
+        )
+    ]
+    if len(matches) != 1:
+        raise PermissionError("Requested run is outside the frozen native main matrix")
+    return matches[0]
+
+
 def _loader(
     dataset: BraTSSliceDataset,
     *,
@@ -228,14 +318,20 @@ def _metadata(
     preprocessing_path: Path,
     evaluation_path: Path,
     git_commit: str,
+    extra_hashes: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
+    scientific_role = (
+        "development_only_loss_selection"
+        if spec.stage == "loss_screen"
+        else "reportable_development_cross_validation"
+    )
     return {
         "schema_version": 1,
         "run_id": spec.run_id,
         "run_spec": asdict(spec),
         "run_spec_sha256": spec.sha256,
         "stage": spec.stage,
-        "scientific_role": "development_only_loss_selection",
+        "scientific_role": scientific_role,
         "git_commit": git_commit,
         "repository_dirty_at_start": False,
         "model_id": spec.model_id,
@@ -258,6 +354,7 @@ def _metadata(
             "canonical_manifest": file_digest(canonical_manifest_path),
             "preprocessing": file_digest(preprocessing_path),
             "evaluation": file_digest(evaluation_path),
+            **dict(extra_hashes or {}),
         },
         "external_data_accessed": False,
         "legacy_internal_test_accessed": False,
@@ -315,6 +412,14 @@ def run_native_development(
     config = _load_yaml(runner_config_path)
     if str(config["status"]) != "frozen_before_first_reportable_development_run":
         raise PermissionError("Native runner config is not frozen")
+    selected_loss_path = Path("configs/q1q2_v2/selected_loss.yaml")
+    allowed_specs = (
+        loss_screen_specs(runner_config_path)
+        if spec.stage == "loss_screen"
+        else main_convergence_specs(runner_config_path, selected_loss_path)
+    )
+    if spec.sha256 not in {allowed.sha256 for allowed in allowed_specs}:
+        raise PermissionError("Run specification is outside the frozen stage matrix")
     guards = cast(dict[str, Any], config["guards"])
     if (
         bool(guards["allow_external_data"])
@@ -356,6 +461,14 @@ def run_native_development(
     output_dir.mkdir(parents=True, exist_ok=resume)
     checkpoint_dir = output_dir / "checkpoints"
     checkpoint_dir.mkdir(exist_ok=True)
+    extra_hashes: dict[str, str] = {}
+    if spec.stage == "main_convergence":
+        selected = _load_yaml(selected_loss_path)
+        selection_artifact = Path(str(selected["selection_artifact"]))
+        extra_hashes = {
+            "selected_loss_config": file_digest(selected_loss_path),
+            "loss_selection_artifact": file_digest(selection_artifact),
+        }
     metadata = _metadata(
         spec=spec,
         runner_config_path=runner_config_path,
@@ -367,6 +480,7 @@ def run_native_development(
         preprocessing_path=preprocessing_path,
         evaluation_path=evaluation_path,
         git_commit=git_commit,
+        extra_hashes=extra_hashes,
     )
     metadata_path = output_dir / "metadata.json"
     progress_path = output_dir / "progress.json"
@@ -644,6 +758,8 @@ def run_native_development(
 __all__ = [
     "NativeRunSpec",
     "loss_screen_specs",
+    "main_convergence_specs",
     "resolve_loss_screen_spec",
+    "resolve_main_convergence_spec",
     "run_native_development",
 ]

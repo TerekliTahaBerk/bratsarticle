@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bratsarticle.experiments.q1q2_m1_queue import queue_snapshot
+import pytest
+
+from bratsarticle.experiments.q1q2_m1_queue import (
+    queue_snapshot,
+    run_native_main_queue,
+)
 from bratsarticle.experiments.q1q2_native_runner import NativeRunSpec
 
 
@@ -35,3 +40,18 @@ def test_queue_snapshot_detects_completed_and_unstarted_jobs(
     assert snapshot["job_count"] == 2
     assert snapshot["completed_count"] == 1
     assert snapshot["not_started_count"] == 1
+
+
+def test_native_main_queue_rejects_active_loss_screen(tmp_path: Path) -> None:
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    (runtime / "loss_screen.lock").write_text("123\n", encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="still active"):
+        run_native_main_queue(
+            runner_config_path=tmp_path / "unused_runner.yaml",
+            selected_loss_path=tmp_path / "unused_loss.yaml",
+            dataset_root=tmp_path / "unused_data",
+            runtime_root=runtime,
+            allow_reportable_development_training=True,
+        )
