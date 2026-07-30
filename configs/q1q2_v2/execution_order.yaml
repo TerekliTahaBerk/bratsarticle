@@ -17,10 +17,10 @@ ordered_stages:
     status: completed_m1
   - id: single_seed_pilot
     class: reportable_development
-    status: loss_screen_queue_frozen_ready
+    status: bounded_loss_screen_queue_running_on_companion_experiment_branch
   - id: parameter_compute_search_validation
     class: static_and_runtime_validation
-    status: native_runtime_and_nnunet_planning_completed_hardware_preflights_pending
+    status: native_runtime_nnunet_planning_and_selected_m1_preflights_completed
   - id: five_fold_equal_seed_main
     class: reportable_development
     status: queues_prepared_blocked_by_loss_freeze_and_serial_m1_runtime
@@ -31,7 +31,7 @@ ordered_stages:
       official_nnunetv2: 50
   - id: convergence_sensitivity
     class: reportable_development
-    status: blocked_by_compute_allocation
+    status: queues_prepared_blocked_by_loss_freeze_and_serial_m1_runtime
   - id: loss_interaction_sensitivity
     class: reportable_development
     status: 100_job_queue_prepared_blocked_by_loss_freeze_and_serial_m1_runtime
@@ -64,10 +64,13 @@ ordered_stages:
     status: exhaustive_manifest_and_clean_clone_contract_implemented_pending_results
   - id: claim_to_artifact_audit
     class: gate_j
-    status: registry_renderer_and_trace_audit_implemented_pending_results
+    status: manuscript_supplement_response_registry_and_trace_audits_implemented_pending_results
   - id: manuscript
     class: gate_k
-    status: blocked_by_measured_results_and_author_declarations
+    status: manuscript_supplement_response_and_claim_templates_complete_pending_results
+  - id: submission
+    class: gate_k
+    status: conditional_journal_contract_complete_pending_results_layout_policy_recheck_and_author_declarations
 invalid_run_policy:
   block_automatically:
     - external_or_legacy_internal_access_before_analysis_freeze
