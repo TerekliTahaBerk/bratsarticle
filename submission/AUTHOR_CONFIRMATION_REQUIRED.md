@@ -17,3 +17,9 @@ artifacts and must be confirmed by the authors before submission:
 
 No placeholder statement in the submission package should be interpreted as an
 author declaration.
+
+The conditional target analysis is in
+`submission/journal_target_rationale.md`. If Radiology: Artificial
+Intelligence is selected, the current verified main-paper limits are frozen in
+`submission/radiology_ai_original_research_contract.yaml` but must still be
+rechecked immediately before submission.

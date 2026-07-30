@@ -1,0 +1,35 @@
+schema_version: 1
+verified_on: "2026-07-30"
+source: "https://pubs.rsna.org/page/ai/author-instructions"
+article_type: Original Research
+review: double_anonymized
+limits:
+  main_text_words_introduction_through_discussion: 3000
+  structured_abstract_words: 250
+  references: 35
+  figures: 6
+  tables: 4
+required:
+  structured_abstract_sections:
+    - Purpose
+    - Materials and Methods
+    - Results
+    - Conclusion
+  summary_statement_sentences_min: 1
+  summary_statement_sentences_max: 2
+  key_points_max: 3
+  claim_checklist: true
+  cover_letter: true
+  full_title_page: true
+  anonymized_manuscript: true
+  data_sharing_statement: true
+submission_cost:
+  initial_submission: free
+  non_open_access_publication: no_charge
+  open_access: author_confirmation_required
+final_recheck_required:
+  - author_instructions
+  - open_access_cost
+  - institutional_agreement
+  - disclosure_policy
+  - file_format_requirements

@@ -63,4 +63,46 @@ def audit_claim_2024_template(
     }
 
 
-__all__ = ["audit_claim_2024_template"]
+def audit_radiology_ai_contract(
+    config_path: Path = Path(
+        "submission/radiology_ai_original_research_contract.yaml"
+    ),
+) -> dict[str, Any]:
+    """Verify that the journal-format contract is complete and internally valid."""
+    config = _load_yaml(config_path)
+    if config.get("source") != "https://pubs.rsna.org/page/ai/author-instructions":
+        raise RuntimeError("Radiology: AI contract must cite the official instructions")
+    limits = cast(dict[str, int], config["limits"])
+    required_limit_keys = {
+        "main_text_words_introduction_through_discussion",
+        "structured_abstract_words",
+        "references",
+        "figures",
+        "tables",
+    }
+    invalid_limit = any(value <= 0 for value in limits.values())
+    if set(limits) != required_limit_keys or invalid_limit:
+        raise RuntimeError("Radiology: AI contract limits are incomplete or invalid")
+    required = cast(dict[str, Any], config["required"])
+    boolean_requirements = {
+        "claim_checklist",
+        "cover_letter",
+        "full_title_page",
+        "anonymized_manuscript",
+        "data_sharing_statement",
+    }
+    if any(required.get(key) is not True for key in boolean_requirements):
+        raise RuntimeError("Radiology: AI required submission elements are incomplete")
+    final_rechecks = cast(list[str], config["final_recheck_required"])
+    if not final_rechecks:
+        raise RuntimeError("Radiology: AI final policy recheck cannot be empty")
+    return {
+        "valid": True,
+        "verified_on": str(config["verified_on"]),
+        "article_type": str(config["article_type"]),
+        "limits": limits,
+        "final_recheck_count": len(final_rechecks),
+    }
+
+
+__all__ = ["audit_claim_2024_template", "audit_radiology_ai_contract"]

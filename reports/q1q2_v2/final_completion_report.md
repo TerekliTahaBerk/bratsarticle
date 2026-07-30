@@ -150,7 +150,7 @@ Executed on the updated environment:
 
 - Ruff: PASS.
 - Strict mypy: PASS for 76 source files.
-- Pytest: **211 passed, 2 skipped**.
+- Pytest: **212 passed, 2 skipped**.
 - The skips are the CUDA-only metric-invariance test and the integration check
   requiring final Gate G checkpoints.
 - Real MPS matrix and Swin UNETR forward/backward smokes: PASS.
@@ -173,8 +173,11 @@ release is incomplete.
 The verified scope matrix retains Medical Image Analysis as the leading
 methodology target if the controlled result yields a transferable lesson, and
 Radiology: Artificial Intelligence if independent domain-shift/failure
-analysis becomes central. Current quartile was not guessed. Final selection,
-limits, APC and live policies require recheck after results.
+analysis becomes central. The conditional rule and current official
+Radiology: Artificial Intelligence Original Research limits are recorded in
+`submission/journal_target_rationale.md`. Current quartile was not guessed.
+Final selection, APC, institutional agreement and live policies require
+recheck after results.
 
 ## 17. Manuscript and supplement
 
