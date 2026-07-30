@@ -42,6 +42,8 @@ artifacts/runs/
 artifacts/checkpoints/
 artifacts/cache/
 artifacts/internal_test/
+artifacts/q1q2_v2/native_runs/
+artifacts/q1q2_v2/queue_runtime/
 *.ckpt
 *.pt
 *.pth
