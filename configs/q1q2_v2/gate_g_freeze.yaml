@@ -29,6 +29,9 @@ required_analysis_inputs:
   - configs/q1q2_v2/evaluation.yaml
   - configs/q1q2_v2/evaluation_sensitivity.yaml
   - configs/q1q2_v2/statistical_analysis_plan.yaml
+  - configs/q1q2_v2/statistical_execution.yaml
+  - configs/q1q2_v2/subgroup_execution.yaml
+  - configs/q1q2_v2/subgroup_thresholds.yaml
   - configs/q1q2_v2/robustness_protocol.yaml
   - configs/q1q2_v2/resource_profile_protocol.yaml
   - configs/q1q2_v2/qualitative_protocol.yaml

@@ -1,0 +1,19 @@
+schema_version: 1
+status: frozen_from_development_before_external_results
+source:
+  path: splits/q1q2_v2/cv_fold_1.csv
+  sha256: f532c85a3d6e5ee2a429a5b16ae38769eb799ce15b4a82209b24d19f37bb06a3
+  patient_count: 369
+  field: wt_volume_mm3
+derivation:
+  method: empirical_tertiles
+  quantiles: [0.3333333333333333, 0.6666666666666666]
+  interpolation: linear
+thresholds_mm3:
+  small_to_medium: 63126.33333333333
+  medium_to_large: 125309.0
+labels:
+  small: wt_volume_mm3_less_than_or_equal_to_small_to_medium
+  medium: wt_volume_mm3_above_small_to_medium_and_less_than_or_equal_to_medium_to_large
+  large: wt_volume_mm3_above_medium_to_large
+external_outcomes_used: false

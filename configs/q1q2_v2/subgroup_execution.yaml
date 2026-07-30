@@ -1,0 +1,25 @@
+schema_version: 1
+status: frozen_before_external_results
+statistical_completion: artifacts/q1q2_v2/statistics/completion.json
+statistical_execution: configs/q1q2_v2/statistical_execution.yaml
+statistical_analysis_plan: configs/q1q2_v2/statistical_analysis_plan.yaml
+external_test_manifest: splits/q1q2_v2/external_test.csv
+subgroup_thresholds: configs/q1q2_v2/subgroup_thresholds.yaml
+cohort_role: external_confirmatory
+minimum_reportable_patients: 10
+dimensions:
+  - institution
+  - scanner_vendor
+  - scanner_model
+  - field_strength_t
+  - grade_if_available
+  - et_present
+  - development_derived_tumor_burden_tertile
+  - resolution
+small_cell_policy: descriptive_with_explicit_denominator
+inferential_role: exploratory_estimation_only
+outputs:
+  enriched_model_patient_metrics: artifacts/q1q2_v2/subgroups/external_confirmatory_enriched.csv
+  model_subgroup_summary: artifacts/q1q2_v2/subgroups/model_subgroup_summary.csv
+  contrast_subgroup_summary: artifacts/q1q2_v2/subgroups/contrast_subgroup_summary.csv
+  completion: artifacts/q1q2_v2/subgroups/completion.json

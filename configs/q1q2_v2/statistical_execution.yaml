@@ -1,0 +1,30 @@
+schema_version: 1
+status: frozen_before_external_results
+gate_g_analysis_freeze: artifacts/q1q2_v2/gate_g_analysis_freeze.json
+gate_g_checkpoint_manifest: artifacts/q1q2_v2/gate_g_checkpoint_manifest.json
+gate_h_completion: artifacts/q1q2_v2/gate_h_completion.json
+statistical_analysis_plan: configs/q1q2_v2/statistical_analysis_plan.yaml
+model_matrix: configs/q1q2_v2/model_matrix.yaml
+confirmatory_cohort_role: external_confirmatory
+supportive_cohort_role: external_supportive_other_neoplasm
+expected:
+  models: 12
+  development_patients: 369
+  confirmatory_patients: 95
+  supportive_patients: 51
+  training_seeds: 5
+  folds: 5
+  replicates_per_external_model_patient: 25
+outputs:
+  development_checkpoint_metrics: artifacts/q1q2_v2/statistics/development_checkpoint_metrics.csv
+  development_model_patient_metrics: artifacts/q1q2_v2/statistics/development_model_patient_metrics.csv
+  external_confirmatory_checkpoint_metrics: artifacts/q1q2_v2/statistics/external_confirmatory_checkpoint_metrics.csv
+  external_confirmatory_model_patient_metrics: artifacts/q1q2_v2/statistics/external_confirmatory_model_patient_metrics.csv
+  external_supportive_model_patient_metrics: artifacts/q1q2_v2/statistics/external_supportive_model_patient_metrics.csv
+  model_metric_summary: artifacts/q1q2_v2/statistics/model_metric_summary.csv
+  primary_contrasts: artifacts/q1q2_v2/statistics/primary_contrasts.csv
+  paired_patient_differences: artifacts/q1q2_v2/statistics/paired_patient_differences.csv
+  hierarchical_bootstrap: artifacts/q1q2_v2/statistics/hierarchical_bootstrap.csv
+  mixed_effects: artifacts/q1q2_v2/statistics/mixed_effects.csv
+  development_2d_selection: artifacts/q1q2_v2/statistics/development_2d_selection.json
+  completion: artifacts/q1q2_v2/statistics/completion.json

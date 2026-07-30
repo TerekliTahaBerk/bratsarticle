@@ -43,13 +43,13 @@ ordered_stages:
     status: guarded_queue_implemented_prohibited_before_analysis_freeze
   - id: robustness
     class: postfreeze_analysis
-    status: pending
+    status: external_subgroup_pipeline_implemented_development_perturbations_pending
   - id: resource_profiling
     class: postfreeze_analysis
     status: pending
   - id: statistical_analysis
     class: postfreeze_analysis
-    status: pending
+    status: artifact_only_pipeline_implemented_blocked_by_gate_h
 invalid_run_policy:
   block_automatically:
     - external_or_legacy_internal_access_before_analysis_freeze
