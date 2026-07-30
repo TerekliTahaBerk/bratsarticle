@@ -146,6 +146,16 @@ def test_repository_manuscript_template_has_only_bound_result_tokens() -> None:
     assert report["claim_token_count"] > 20
 
 
+def test_repository_supplement_template_has_only_bound_result_tokens() -> None:
+    report = audit_claim_template(
+        Path("manuscript/q1q2_v2_supplement.template.md")
+    )
+
+    assert report["valid"] is True
+    assert report["artifact_bound_section_count"] == 3
+    assert report["claim_token_count"] > 15
+
+
 def test_repository_reviewer_response_covers_every_concern() -> None:
     report = audit_reviewer_response_template(
         Path("manuscript/q1q2_v2_response_to_reviewer.template.md")

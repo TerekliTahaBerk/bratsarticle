@@ -19,6 +19,7 @@ from bratsarticle.reporting.q1q2_claims import (
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--template", type=Path)
+    parser.add_argument("--supplement-template", type=Path)
     parser.add_argument("--reviewer-response-template", type=Path)
     parser.add_argument(
         "--registry",
@@ -34,6 +35,16 @@ def main() -> int:
         "--trace",
         type=Path,
         default=Path("artifacts/q1q2_v2/claims/render_trace.json"),
+    )
+    parser.add_argument(
+        "--rendered-supplement",
+        type=Path,
+        default=Path("artifacts/q1q2_v2/claims/rendered_supplement.md"),
+    )
+    parser.add_argument(
+        "--supplement-trace",
+        type=Path,
+        default=Path("artifacts/q1q2_v2/claims/supplement_trace.json"),
     )
     parser.add_argument(
         "--rendered-reviewer-response",
@@ -60,9 +71,19 @@ def main() -> int:
             rendered_path=arguments.rendered_reviewer_response,
             trace_path=arguments.reviewer_response_trace,
         )
+        supplement_report = audit_claim_package(
+            registry_path=arguments.registry,
+            rendered_path=arguments.rendered_supplement,
+            trace_path=arguments.supplement_trace,
+        )
         report = {
-            "valid": manuscript_report["valid"] and response_report["valid"],
+            "valid": (
+                manuscript_report["valid"]
+                and supplement_report["valid"]
+                and response_report["valid"]
+            ),
             "manuscript": manuscript_report,
+            "supplement": supplement_report,
             "reviewer_response": response_report,
         }
         print(json.dumps(report, indent=2, sort_keys=True))
@@ -89,8 +110,16 @@ def main() -> int:
             output_path=arguments.rendered_reviewer_response,
             trace_path=arguments.reviewer_response_trace,
         )
+    if arguments.supplement_template is not None:
+        report["supplement_render"] = render_claim_template(
+            template_path=arguments.supplement_template,
+            registry_path=arguments.registry,
+            output_path=arguments.rendered_supplement,
+            trace_path=arguments.supplement_trace,
+        )
     if (
         arguments.template is not None
+        and arguments.supplement_template is not None
         and arguments.reviewer_response_template is not None
     ):
         report["completion"] = complete_gate_j()

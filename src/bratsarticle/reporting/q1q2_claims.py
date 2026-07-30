@@ -692,6 +692,11 @@ def complete_gate_j(
         rendered_path=outputs["rendered_reviewer_response"],
         trace_path=outputs["reviewer_response_trace"],
     )
+    supplement_artifact_audit = audit_claim_package(
+        registry_path=outputs["registry"],
+        rendered_path=outputs["rendered_supplement"],
+        trace_path=outputs["supplement_trace"],
+    )
     trace = _load_json(outputs["render_trace"])
     wording_audit = _audit_inferential_language(
         outputs["rendered_manuscript"].read_text(encoding="utf-8"),
@@ -702,11 +707,18 @@ def complete_gate_j(
         outputs["rendered_reviewer_response"].read_text(encoding="utf-8"),
         response_trace,
     )
+    supplement_trace = _load_json(outputs["supplement_trace"])
+    supplement_wording_audit = _audit_inferential_language(
+        outputs["rendered_supplement"].read_text(encoding="utf-8"),
+        supplement_trace,
+    )
     passed = (
         artifact_audit["valid"]
         and response_artifact_audit["valid"]
+        and supplement_artifact_audit["valid"]
         and wording_audit["valid"]
         and response_wording_audit["valid"]
+        and supplement_wording_audit["valid"]
     )
     completion = {
         "schema_version": 1,
@@ -729,10 +741,16 @@ def complete_gate_j(
         "reviewer_response_trace_sha256": file_digest(
             outputs["reviewer_response_trace"]
         ),
+        "rendered_supplement": outputs["rendered_supplement"].as_posix(),
+        "rendered_supplement_sha256": file_digest(outputs["rendered_supplement"]),
+        "supplement_trace": outputs["supplement_trace"].as_posix(),
+        "supplement_trace_sha256": file_digest(outputs["supplement_trace"]),
         "artifact_audit": artifact_audit,
         "response_artifact_audit": response_artifact_audit,
+        "supplement_artifact_audit": supplement_artifact_audit,
         "inferential_wording_audit": wording_audit,
         "response_inferential_wording_audit": response_wording_audit,
+        "supplement_inferential_wording_audit": supplement_wording_audit,
     }
     atomic_write_json(outputs["completion"], completion)
     if not passed:

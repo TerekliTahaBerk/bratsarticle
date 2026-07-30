@@ -87,10 +87,11 @@ never implied by an artifact-only clean-clone check.
 
 Gate J builds a scalar claim registry directly from the hash-bound statistics,
 resources, subgroups, and qualitative selections. Numeric values inside marked
-Results blocks are prohibited in both the manuscript and reviewer-response
-templates; they must enter through a registered claim token. The response
-audit also enforces one-to-one coverage of the frozen reviewer concerns and
-the presence of mapped repository evidence. Rendering records every
+Results blocks are prohibited in the manuscript, supplement, and
+reviewer-response templates; they must enter through a registered claim
+token. The response audit also enforces one-to-one coverage of the frozen
+reviewer concerns and the presence of mapped repository evidence. Rendering
+records every
 substitution, format, source row/column, source hash, registry hash, and
 rendered-document hash. This is a scientific provenance and
 manual-transcription control, not an AI-authorship detector.

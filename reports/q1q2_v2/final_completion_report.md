@@ -150,7 +150,7 @@ Executed on the updated environment:
 
 - Ruff: PASS.
 - Strict mypy: PASS for 75 source files.
-- Pytest: **209 passed, 2 skipped**.
+- Pytest: **210 passed, 2 skipped**.
 - The skips are the CUDA-only metric-invariance test and the integration check
   requiring final Gate G checkpoints.
 - Real MPS matrix and Swin UNETR forward/backward smokes: PASS.
@@ -180,9 +180,11 @@ limits, APC and live policies require recheck after results.
 
 A complete v2 manuscript template is present at
 `manuscript/q1q2_v2_manuscript.template.md`. It contains no fabricated v2
-result and binds all numerical Results text to the Gate J registry. Final
+result and binds all numerical Results text to the Gate J registry. A
+23-table/15-figure supplementary template is present at
+`manuscript/q1q2_v2_supplement.template.md` and uses the same registry. Final
 Results, figures, tables, abstract effect estimates and the journal-formatted
-document remain unavailable until the 615 development runs and external
+documents remain unavailable until the 615 development runs and external
 inference complete. Legacy manuscript files remain legacy evidence.
 
 ## 18. Reviewer response

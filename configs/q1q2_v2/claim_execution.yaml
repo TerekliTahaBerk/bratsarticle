@@ -8,6 +8,7 @@ policy:
   external_confirmatory_claims_require_holm_and_effect_interpretation: true
 sources:
   manuscript_template: manuscript/q1q2_v2_manuscript.template.md
+  supplement_template: manuscript/q1q2_v2_supplement.template.md
   reviewer_response_template: manuscript/q1q2_v2_response_to_reviewer.template.md
   reviewer_response_execution: configs/q1q2_v2/reviewer_response_execution.yaml
   model_matrix: configs/q1q2_v2/model_matrix.yaml
@@ -29,6 +30,8 @@ outputs:
   registry: artifacts/q1q2_v2/claims/claim_registry.json
   rendered_manuscript: artifacts/q1q2_v2/claims/rendered_manuscript.md
   render_trace: artifacts/q1q2_v2/claims/render_trace.json
+  rendered_supplement: artifacts/q1q2_v2/claims/rendered_supplement.md
+  supplement_trace: artifacts/q1q2_v2/claims/supplement_trace.json
   rendered_reviewer_response: artifacts/q1q2_v2/claims/rendered_response_to_reviewer.md
   reviewer_response_trace: artifacts/q1q2_v2/claims/reviewer_response_trace.json
   completion: artifacts/q1q2_v2/claims/completion.json

@@ -26,6 +26,7 @@ frozen_inputs:
   - configs/q1q2_v2/claim_execution.yaml
   - configs/q1q2_v2/reviewer_response_execution.yaml
   - manuscript/q1q2_v2_manuscript.template.md
+  - manuscript/q1q2_v2_supplement.template.md
   - manuscript/q1q2_v2_response_to_reviewer.template.md
   - configs/q1q2_v2/model_matrix.yaml
   - configs/q1q2_v2/seeds.yaml
