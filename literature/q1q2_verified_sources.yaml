@@ -175,9 +175,17 @@ sources:
     title: "nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation"
     year: 2024
     venue: MICCAI
+    doi: "10.1007/978-3-031-72114-4_47"
     url: "https://papers.miccai.org/miccai-2024/paper/2847_paper.pdf"
+    implementation_guidance_url: "https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/resenc_presets.md"
     source_type: primary_conference_paper
-    verified_fields: [controlled_benchmarking, cnn_transformer_mamba_comparison, rigorous_validation]
+    verified_fields:
+      - controlled_benchmarking
+      - cnn_transformer_mamba_comparison
+      - rigorous_validation
+      - official_residual_encoder_presets
+      - resenc_l_recommended_default
+      - match_baseline_to_hardware_and_compute
 
   - id: random_effects_2024
     title: "Random effects during training: Implications for deep learning-based medical image segmentation"

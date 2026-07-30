@@ -67,7 +67,7 @@ def validate_model_matrix(
         "bunet": "10.3390/electronics9122203",
         "resblock_unet_wc": "10.3390/electronics9122203",
         "nnunetv2_2d": "10.1038/s41592-020-01008-z",
-        "nnunetv2_3d_fullres": "10.1038/s41592-020-01008-z",
+        "nnunetv2_3d_fullres": "10.1007/978-3-031-72114-4_47",
         "unet_2p5d_k5": "10.3390/bioengineering10020181",
         "swin_unetr": "10.1007/978-3-031-08999-2_22",
     }
@@ -100,6 +100,18 @@ def validate_model_matrix(
             raise ProtocolMatrixError(
                 f"{model['id']} has the wrong primary-source attribution"
             )
+        if str(model["id"]) == "nnunetv2_3d_fullres":
+            if config != "nnUNetResEncUNetLPlans__3d_fullres":
+                raise ProtocolMatrixError(
+                    "nnU-Net 3D must use the predeclared ResEnc-L primary plan"
+                )
+            if (
+                str(model.get("hardware_fallback_config"))
+                != "nnUNetResEncUNetMPlans__3d_fullres"
+            ):
+                raise ProtocolMatrixError(
+                    "nnU-Net 3D must retain only the ResEnc-M hardware fallback"
+                )
     fold_count = 5
     convergence_runs = len(models) * len(seeds) * fold_count
     core_models = [model for model in models if model["family"] == "component_core"]

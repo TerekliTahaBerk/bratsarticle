@@ -43,6 +43,9 @@ MAIN_SEEDS: Final[tuple[int, ...]] = (
     20260733,
     20260734,
 )
+NNUNET_2D_PLANS: Final[str] = "nnUNetPlans"
+NNUNET_3D_PRIMARY_PLANS: Final[str] = "nnUNetResEncUNetLPlans"
+NNUNET_3D_FALLBACK_PLANS: Final[str] = "nnUNetResEncUNetMPlans"
 
 
 class NNUNetAdapterError(RuntimeError):
@@ -519,14 +522,29 @@ def write_splits_final(
     return observed_hash
 
 
-def build_main_job_matrix() -> list[dict[str, Any]]:
+def build_main_job_matrix(
+    three_d_plans_identifier: str = NNUNET_3D_PRIMARY_PLANS,
+) -> list[dict[str, Any]]:
     """Return all 50 official nnU-Net model/fold/seed training jobs."""
+    if three_d_plans_identifier not in {
+        NNUNET_3D_PRIMARY_PLANS,
+        NNUNET_3D_FALLBACK_PLANS,
+    }:
+        raise NNUNetAdapterError(
+            "3D plans must be the predeclared ResEnc-L primary or "
+            "ResEnc-M hardware fallback"
+        )
     jobs: list[dict[str, Any]] = []
     for configuration in ("2d", "3d_fullres"):
         model_id = (
             "nnunetv2_2d"
             if configuration == "2d"
             else "nnunetv2_3d_fullres"
+        )
+        plans_identifier = (
+            NNUNET_2D_PLANS
+            if configuration == "2d"
+            else three_d_plans_identifier
         )
         for fold_one_indexed in range(1, 6):
             for seed in MAIN_SEEDS:
@@ -540,6 +558,7 @@ def build_main_job_matrix() -> list[dict[str, Any]]:
                         "run_id": run_id,
                         "model_id": model_id,
                         "configuration": configuration,
+                        "plans_identifier": plans_identifier,
                         "fold_one_indexed": fold_one_indexed,
                         "fold_nnunet_zero_indexed": fold_one_indexed - 1,
                         "seed": seed,
@@ -558,10 +577,16 @@ def build_main_job_matrix() -> list[dict[str, Any]]:
                             str(fold_one_indexed - 1),
                             "-tr",
                             trainer,
+                            "-p",
+                            plans_identifier,
                             "-device",
                             "mps",
                         ],
-                        "status": "not_started",
+                        "status": (
+                            "not_started"
+                            if configuration == "2d"
+                            else "blocked_hardware_preflight"
+                        ),
                     }
                 )
     return jobs

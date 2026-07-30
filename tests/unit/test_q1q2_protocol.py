@@ -43,3 +43,14 @@ def test_wrong_component_attribution_is_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(ProtocolMatrixError, match="wrong primary-source"):
         validate_model_matrix(changed, Path("configs/q1q2_v2/seeds.yaml"))
+
+
+def test_outcome_selected_nnunet_3d_plan_is_rejected(tmp_path: Path) -> None:
+    matrix_path = Path("configs/q1q2_v2/model_matrix.yaml")
+    payload = yaml.safe_load(matrix_path.read_text(encoding="utf-8"))
+    payload["main_models"][9]["config"] = "results_selected_plan"
+    changed = tmp_path / "matrix.yaml"
+    changed.write_text(yaml.safe_dump(payload), encoding="utf-8")
+
+    with pytest.raises(ProtocolMatrixError, match="ResEnc-L primary"):
+        validate_model_matrix(changed, Path("configs/q1q2_v2/seeds.yaml"))

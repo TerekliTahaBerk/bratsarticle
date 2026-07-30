@@ -10,6 +10,8 @@ from pathlib import Path
 from bratsarticle.adapters.nnunetv2 import (
     DATASET_ID,
     MAIN_SEEDS,
+    NNUNET_3D_FALLBACK_PLANS,
+    NNUNET_3D_PRIMARY_PLANS,
     build_main_job_matrix,
 )
 from bratsarticle.utils.hashing import file_digest
@@ -47,13 +49,22 @@ def main() -> None:
     jobs = build_main_job_matrix()
     payload = {
         "schema_version": 1,
-        "status": "generated_not_executed",
+        "status": "generated_hardware_preflight_pending",
         "dataset_id": DATASET_ID,
         "canonical_manifest_sha256": file_digest(args.canonical_manifest),
         "fold_sha256": fold_hashes,
         "seed_list": list(MAIN_SEEDS),
         "job_count": len(jobs),
         "job_count_by_configuration": {"2d": 25, "3d_fullres": 25},
+        "three_d_plan_selection": {
+            "primary": NNUNET_3D_PRIMARY_PLANS,
+            "hardware_fallback": NNUNET_3D_FALLBACK_PLANS,
+            "selection_criterion": (
+                "untouched official-plan one-batch MPS feasibility only; "
+                "never validation performance"
+            ),
+            "selected": None,
+        },
         "external_data_permitted": False,
         "jobs": jobs,
     }

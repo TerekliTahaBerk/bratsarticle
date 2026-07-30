@@ -2,8 +2,8 @@
 
 Status: infrastructure prepared; training not started
 
-This protocol covers the required official nnU-Net v2 2D and 3D
-full-resolution baselines. It uses all 369 BraTS 2020 development patients,
+This protocol covers the required official plain nnU-Net v2 2D and residual
+encoder 3D full-resolution baselines. It uses all 369 BraTS 2020 development patients,
 the frozen five patient-level folds, and the same five seeds used by every
 main model. It does not access the legacy 74-patient internal subset or the
 external cohort.
@@ -26,7 +26,7 @@ The inverse mapping is applied before the common repository evaluator. The
 nnU-Net region definitions are WT `(1,2,3)`, TC `(2,3)`, and ET `(3)`, with
 region class order `(1,2,3)`, following the official nnU-Net BraTS converter.
 
-The seed subclasses preserve the installed official nnU-Net architecture,
+The seed subclasses preserve the selected official nnU-Net architecture,
 loss, optimizer, learning-rate schedule, augmentation definitions, and
 default 1,000-epoch duration. Each epoch contains 250 optimizer steps. This
 means a completed default run contains 250,000 optimizer steps; it must not be
@@ -78,8 +78,10 @@ five tracked fold CSVs and uses nnU-Net folds `0..4` for repository folds
 
 ## Planning and preprocessing
 
-Planning must use default nnU-Net settings before any hardware-specific
-change. Both requested configurations are integrity-checked:
+Planning first records the legacy plain default because the installed official
+tool requests this baseline before a custom memory target. The tool itself
+warns that this planner is no longer the recommended benchmarking default.
+Both requested configurations are integrity-checked:
 
 ```bash
 nnUNetv2_plan_and_preprocess \
@@ -90,16 +92,51 @@ nnUNetv2_plan_and_preprocess \
   -np 4 2
 ```
 
+Before any model result exists, the official ResEnc-L and ResEnc-M presets are
+also planned without changing their memory targets:
+
+```bash
+nnUNetv2_plan_experiment -d 501 -pl nnUNetPlannerResEncL
+nnUNetv2_plan_experiment -d 501 -pl nnUNetPlannerResEncM
+```
+
+The official documentation recommends ResEnc-L as the new default and
+ResEnc-M for a budget similar to the standard U-Net. The predeclared 3D choice
+is therefore ResEnc-L, with ResEnc-M allowed only if the untouched ResEnc-L
+plan fails a one-batch MPS feasibility test. Published NVIDIA memory targets
+are not reported as M1 memory measurements. Selection never uses Dice, loss,
+or convergence behavior.
+
+After preprocessing and while no other MPS queue lock exists, the real
+one-step feasibility command is:
+
+```bash
+PYTHONHASHSEED=20260730 PYTHONPATH=src \
+  .venv/bin/python scripts/run_q1q2_nnunetv2_mps_preflight.py \
+  --configuration 3d_fullres \
+  --plans-identifier nnUNetResEncUNetLPlans \
+  --assert-no-active-mps-lock \
+    artifacts/q1q2_v2/queue_runtime/loss_screen.lock \
+  --output work/q1q2_v2/nnunet/preflight/resenc_l_3d.json
+```
+
+The command uses an actual preprocessed training batch and the official
+training loss/backward/optimizer step. It polls framework- and driver-reported
+MPS allocated unified memory. It is a hardware diagnostic, not a model
+evaluation, and it neither predicts nor computes metrics.
+
 The resulting fingerprint, plans, patch shapes, batch sizes, parameter counts,
 and estimated preprocessing disk use are frozen before training. A one-batch
 forward/backward MPS feasibility run is required for each configuration.
-Failure of 3D full-resolution at the untouched official plan is a model
-feasibility blocker; the GPU-memory target is not silently changed.
+Failure of ResEnc-L activates only the predeclared official ResEnc-M fallback.
+Failure of ResEnc-M is a model feasibility blocker; the GPU-memory target is
+not silently changed.
 
 ## Frozen job matrix
 
-The job generator creates 50 not-started jobs: two configurations × five
-folds × five seeds.
+The job generator creates 50 jobs: two configurations × five folds × five
+seeds. The 25 3D jobs remain hardware-blocked until ResEnc-L or the
+predeclared ResEnc-M fallback passes.
 
 ```bash
 PYTHONPATH=src .venv/bin/python \
@@ -113,6 +150,7 @@ environment, source manifest hash, and five split hashes. Example:
 PYTHONHASHSEED=20260730 nnUNetv2_train \
   501 2d 0 \
   -tr nnUNetTrainerSeed20260730 \
+  -p nnUNetPlans \
   -device mps
 ```
 
@@ -128,8 +166,9 @@ Training may enter the main queue only after all of the following are true:
 1. Dataset integrity and exact 369-case identity pass.
 2. `splits_final.json` matches all five tracked folds byte-for-byte after
    canonical serialization.
-3. Default plans contain both 2D and 3D full-resolution configurations.
-4. One-batch MPS forward/backward passes for both configurations.
+3. Default, ResEnc-L, and ResEnc-M plans have recorded hashes.
+4. One-batch MPS forward/backward passes for plain 2D and either ResEnc-L 3D
+   or the predeclared ResEnc-M 3D fallback.
 5. Measured step time, peak MPS allocated unified memory, checkpoint size, and
    total serial-hours estimate are recorded.
 6. The running native loss screen has completed or is deliberately paused so
@@ -137,4 +176,3 @@ Training may enter the main queue only after all of the following are true:
 7. The selected architecture-attribution loss is frozen from development CV.
 
 No external prediction or metric computation is authorized by this protocol.
-

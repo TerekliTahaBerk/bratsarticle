@@ -23,6 +23,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -37,6 +39,7 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f1__s20260730__convergence",
       "seed": 20260730,
       "status": "not_started",
@@ -50,6 +53,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -64,6 +69,7 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f1__s20260731__convergence",
       "seed": 20260731,
       "status": "not_started",
@@ -77,6 +83,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -91,6 +99,7 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f1__s20260732__convergence",
       "seed": 20260732,
       "status": "not_started",
@@ -104,6 +113,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -118,6 +129,7 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f1__s20260733__convergence",
       "seed": 20260733,
       "status": "not_started",
@@ -131,6 +143,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -145,6 +159,7 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f1__s20260734__convergence",
       "seed": 20260734,
       "status": "not_started",
@@ -158,6 +173,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -172,6 +189,7 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f2__s20260730__convergence",
       "seed": 20260730,
       "status": "not_started",
@@ -185,6 +203,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -199,6 +219,7 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f2__s20260731__convergence",
       "seed": 20260731,
       "status": "not_started",
@@ -212,6 +233,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -226,6 +249,7 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f2__s20260732__convergence",
       "seed": 20260732,
       "status": "not_started",
@@ -239,6 +263,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -253,6 +279,7 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f2__s20260733__convergence",
       "seed": 20260733,
       "status": "not_started",
@@ -266,6 +293,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -280,6 +309,7 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f2__s20260734__convergence",
       "seed": 20260734,
       "status": "not_started",
@@ -293,6 +323,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -307,6 +339,7 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f3__s20260730__convergence",
       "seed": 20260730,
       "status": "not_started",
@@ -320,6 +353,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -334,6 +369,7 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f3__s20260731__convergence",
       "seed": 20260731,
       "status": "not_started",
@@ -347,6 +383,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -361,6 +399,7 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f3__s20260732__convergence",
       "seed": 20260732,
       "status": "not_started",
@@ -374,6 +413,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -388,6 +429,7 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f3__s20260733__convergence",
       "seed": 20260733,
       "status": "not_started",
@@ -401,6 +443,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -415,6 +459,7 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f3__s20260734__convergence",
       "seed": 20260734,
       "status": "not_started",
@@ -428,6 +473,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -442,6 +489,7 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f4__s20260730__convergence",
       "seed": 20260730,
       "status": "not_started",
@@ -455,6 +503,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -469,6 +519,7 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f4__s20260731__convergence",
       "seed": 20260731,
       "status": "not_started",
@@ -482,6 +533,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -496,6 +549,7 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f4__s20260732__convergence",
       "seed": 20260732,
       "status": "not_started",
@@ -509,6 +563,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -523,6 +579,7 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f4__s20260733__convergence",
       "seed": 20260733,
       "status": "not_started",
@@ -536,6 +593,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -550,6 +609,7 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f4__s20260734__convergence",
       "seed": 20260734,
       "status": "not_started",
@@ -563,6 +623,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -577,6 +639,7 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f5__s20260730__convergence",
       "seed": 20260730,
       "status": "not_started",
@@ -590,6 +653,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -604,6 +669,7 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f5__s20260731__convergence",
       "seed": 20260731,
       "status": "not_started",
@@ -617,6 +683,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -631,6 +699,7 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f5__s20260732__convergence",
       "seed": 20260732,
       "status": "not_started",
@@ -644,6 +713,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -658,6 +729,7 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f5__s20260733__convergence",
       "seed": 20260733,
       "status": "not_started",
@@ -671,6 +743,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetPlans",
         "-device",
         "mps"
       ],
@@ -685,6 +759,7 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_2d",
+      "plans_identifier": "nnUNetPlans",
       "run_id": "nnunetv2_2d__f5__s20260734__convergence",
       "seed": 20260734,
       "status": "not_started",
@@ -698,6 +773,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -712,9 +789,10 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f1__s20260730__convergence",
       "seed": 20260730,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260730"
     },
     {
@@ -725,6 +803,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -739,9 +819,10 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f1__s20260731__convergence",
       "seed": 20260731,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260731"
     },
     {
@@ -752,6 +833,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -766,9 +849,10 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f1__s20260732__convergence",
       "seed": 20260732,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260732"
     },
     {
@@ -779,6 +863,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -793,9 +879,10 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f1__s20260733__convergence",
       "seed": 20260733,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260733"
     },
     {
@@ -806,6 +893,8 @@
         "0",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -820,9 +909,10 @@
       "fold_nnunet_zero_indexed": 0,
       "fold_one_indexed": 1,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f1__s20260734__convergence",
       "seed": 20260734,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260734"
     },
     {
@@ -833,6 +923,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -847,9 +939,10 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f2__s20260730__convergence",
       "seed": 20260730,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260730"
     },
     {
@@ -860,6 +953,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -874,9 +969,10 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f2__s20260731__convergence",
       "seed": 20260731,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260731"
     },
     {
@@ -887,6 +983,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -901,9 +999,10 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f2__s20260732__convergence",
       "seed": 20260732,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260732"
     },
     {
@@ -914,6 +1013,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -928,9 +1029,10 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f2__s20260733__convergence",
       "seed": 20260733,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260733"
     },
     {
@@ -941,6 +1043,8 @@
         "1",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -955,9 +1059,10 @@
       "fold_nnunet_zero_indexed": 1,
       "fold_one_indexed": 2,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f2__s20260734__convergence",
       "seed": 20260734,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260734"
     },
     {
@@ -968,6 +1073,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -982,9 +1089,10 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f3__s20260730__convergence",
       "seed": 20260730,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260730"
     },
     {
@@ -995,6 +1103,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1009,9 +1119,10 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f3__s20260731__convergence",
       "seed": 20260731,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260731"
     },
     {
@@ -1022,6 +1133,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1036,9 +1149,10 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f3__s20260732__convergence",
       "seed": 20260732,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260732"
     },
     {
@@ -1049,6 +1163,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1063,9 +1179,10 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f3__s20260733__convergence",
       "seed": 20260733,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260733"
     },
     {
@@ -1076,6 +1193,8 @@
         "2",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1090,9 +1209,10 @@
       "fold_nnunet_zero_indexed": 2,
       "fold_one_indexed": 3,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f3__s20260734__convergence",
       "seed": 20260734,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260734"
     },
     {
@@ -1103,6 +1223,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1117,9 +1239,10 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f4__s20260730__convergence",
       "seed": 20260730,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260730"
     },
     {
@@ -1130,6 +1253,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1144,9 +1269,10 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f4__s20260731__convergence",
       "seed": 20260731,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260731"
     },
     {
@@ -1157,6 +1283,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1171,9 +1299,10 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f4__s20260732__convergence",
       "seed": 20260732,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260732"
     },
     {
@@ -1184,6 +1313,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1198,9 +1329,10 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f4__s20260733__convergence",
       "seed": 20260733,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260733"
     },
     {
@@ -1211,6 +1343,8 @@
         "3",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1225,9 +1359,10 @@
       "fold_nnunet_zero_indexed": 3,
       "fold_one_indexed": 4,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f4__s20260734__convergence",
       "seed": 20260734,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260734"
     },
     {
@@ -1238,6 +1373,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260730",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1252,9 +1389,10 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f5__s20260730__convergence",
       "seed": 20260730,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260730"
     },
     {
@@ -1265,6 +1403,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260731",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1279,9 +1419,10 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f5__s20260731__convergence",
       "seed": 20260731,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260731"
     },
     {
@@ -1292,6 +1433,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260732",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1306,9 +1449,10 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f5__s20260732__convergence",
       "seed": 20260732,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260732"
     },
     {
@@ -1319,6 +1463,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260733",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1333,9 +1479,10 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f5__s20260733__convergence",
       "seed": 20260733,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260733"
     },
     {
@@ -1346,6 +1493,8 @@
         "4",
         "-tr",
         "nnUNetTrainerSeed20260734",
+        "-p",
+        "nnUNetResEncUNetLPlans",
         "-device",
         "mps"
       ],
@@ -1360,9 +1509,10 @@
       "fold_nnunet_zero_indexed": 4,
       "fold_one_indexed": 5,
       "model_id": "nnunetv2_3d_fullres",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
       "run_id": "nnunetv2_3d_fullres__f5__s20260734__convergence",
       "seed": 20260734,
-      "status": "not_started",
+      "status": "blocked_hardware_preflight",
       "trainer": "nnUNetTrainerSeed20260734"
     }
   ],
@@ -1374,5 +1524,11 @@
     20260733,
     20260734
   ],
-  "status": "generated_not_executed"
+  "status": "generated_hardware_preflight_pending",
+  "three_d_plan_selection": {
+    "hardware_fallback": "nnUNetResEncUNetMPlans",
+    "primary": "nnUNetResEncUNetLPlans",
+    "selected": null,
+    "selection_criterion": "untouched official-plan one-batch MPS feasibility only; never validation performance"
+  }
 }

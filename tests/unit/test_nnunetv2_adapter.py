@@ -300,4 +300,28 @@ def test_nnunet_job_matrix_uses_every_frozen_fold_and_seed() -> None:
     assert {job["configuration"] for job in jobs} == {"2d", "3d_fullres"}
     assert {job["fold_nnunet_zero_indexed"] for job in jobs} == set(range(5))
     assert all(job["environment"]["nnUNet_n_proc_DA"] == "0" for job in jobs)
-    assert all(job["status"] == "not_started" for job in jobs)
+    assert {
+        job["plans_identifier"]
+        for job in jobs
+        if job["configuration"] == "2d"
+    } == {"nnUNetPlans"}
+    assert {
+        job["plans_identifier"]
+        for job in jobs
+        if job["configuration"] == "3d_fullres"
+    } == {"nnUNetResEncUNetLPlans"}
+    assert all(
+        job["status"] == "not_started"
+        for job in jobs
+        if job["configuration"] == "2d"
+    )
+    assert all(
+        job["status"] == "blocked_hardware_preflight"
+        for job in jobs
+        if job["configuration"] == "3d_fullres"
+    )
+
+
+def test_nnunet_job_matrix_rejects_an_outcome_driven_3d_plan() -> None:
+    with pytest.raises(NNUNetAdapterError, match="predeclared"):
+        build_main_job_matrix("results_selected_plan")

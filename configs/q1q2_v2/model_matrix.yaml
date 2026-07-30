@@ -1,5 +1,12 @@
 schema_version: 1
-status: frozen_before_main_training
+status: revised_before_main_training_hardware_preflight_pending
+preoutcome_revision:
+  reason: official_nnunet_2_8_1_deprecates_plain_3d_default_for_benchmarking
+  result_data_seen: false
+  nnunet_2d: standard_plain_2d_preserved
+  nnunet_3d_primary: official_resenc_l
+  nnunet_3d_hardware_fallback: official_resenc_m
+  fallback_selection_criterion: untouched_plan_mps_feasibility_only
 seeds_config: configs/q1q2_v2/seeds.yaml
 development_folds: splits/q1q2_v2/cv_fold_{fold}.csv
 external_test: splits/q1q2_v2/external_test.csv
@@ -88,12 +95,14 @@ main_models:
     implementation_license: Apache-2.0
     seeds: [20260730, 20260731, 20260732, 20260733, 20260734]
   - id: nnunetv2_3d_fullres
-    display_name: nnU-Net v2 3D full-resolution
+    display_name: nnU-Net v2 ResEnc-L 3D full-resolution
     family: strong_baseline
     dimensionality: 3D
     adapter: official_nnunetv2
-    config: nnUNetPlans__3d_fullres
-    primary_source: 10.1038/s41592-020-01008-z
+    config: nnUNetResEncUNetLPlans__3d_fullres
+    hardware_fallback_config: nnUNetResEncUNetMPlans__3d_fullres
+    hardware_fallback_rule: use_only_if_untouched_resenc_l_plan_fails_mps_feasibility
+    primary_source: 10.1007/978-3-031-72114-4_47
     implementation_source: https://github.com/MIC-DKFZ/nnUNet
     implementation_license: Apache-2.0
     seeds: [20260730, 20260731, 20260732, 20260733, 20260734]

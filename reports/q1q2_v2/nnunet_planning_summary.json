@@ -1,0 +1,189 @@
+{
+  "adapter_git_commit": "4337663171630d4b778b1e2a7c0f7ac98a04798b",
+  "case_count": 369,
+  "dataset": "Dataset501_BraTS2020Q1Q2",
+  "dataset_integrity": {
+    "fingerprint_sha256": "d7ca8aa918a4ca56f75743231ce614eb1aaa7e838cfc55ad9e3314a4d4f3cfbf",
+    "label_mapping_validated": true,
+    "source_hashes_recomputed": true,
+    "splits_final_sha256": "a8642cd90c0784a04d3b6c40f2971bdc54dad2e056ee603bd37bc0b3799aae30"
+  },
+  "external_data_accessed": false,
+  "plans": [
+    {
+      "configurations": {
+        "2d": {
+          "architecture": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+          "batch_dice": true,
+          "batch_size": 105,
+          "data_identifier": "nnUNetPlans_2d",
+          "features_per_stage": [
+            32,
+            64,
+            128,
+            256,
+            512,
+            512
+          ],
+          "patch_size": [
+            192,
+            160
+          ],
+          "spacing": [
+            1.0,
+            1.0
+          ],
+          "stage_count": 6
+        },
+        "3d_fullres": {
+          "architecture": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+          "batch_dice": false,
+          "batch_size": 2,
+          "data_identifier": "nnUNetPlans_3d_fullres",
+          "features_per_stage": [
+            32,
+            64,
+            128,
+            256,
+            320,
+            320
+          ],
+          "patch_size": [
+            128,
+            128,
+            128
+          ],
+          "spacing": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "stage_count": 6
+        }
+      },
+      "experiment_planner": "ExperimentPlanner",
+      "plans_identifier": "nnUNetPlans",
+      "plans_sha256": "661f455232b11fabd0c0e654caf73337d5c8c625d23bd69fd1dc9f346662e1d2"
+    },
+    {
+      "configurations": {
+        "2d": {
+          "architecture": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+          "batch_dice": true,
+          "batch_size": 107,
+          "data_identifier": "nnUNetPlans_2d",
+          "features_per_stage": [
+            32,
+            64,
+            128,
+            256,
+            512,
+            512
+          ],
+          "patch_size": [
+            192,
+            160
+          ],
+          "spacing": [
+            1.0,
+            1.0
+          ],
+          "stage_count": 6
+        },
+        "3d_fullres": {
+          "architecture": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+          "batch_dice": false,
+          "batch_size": 2,
+          "data_identifier": "nnUNetPlans_3d_fullres",
+          "features_per_stage": [
+            32,
+            64,
+            128,
+            256,
+            320,
+            320
+          ],
+          "patch_size": [
+            128,
+            128,
+            128
+          ],
+          "spacing": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "stage_count": 6
+        }
+      },
+      "experiment_planner": "nnUNetPlannerResEncM",
+      "plans_identifier": "nnUNetResEncUNetMPlans",
+      "plans_sha256": "5766822397ca367577ff48515402b7877fbfee54f87a1f6b22ae4e63af7d6fae"
+    },
+    {
+      "configurations": {
+        "2d": {
+          "architecture": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+          "batch_dice": true,
+          "batch_size": 301,
+          "data_identifier": "nnUNetPlans_2d",
+          "features_per_stage": [
+            32,
+            64,
+            128,
+            256,
+            512,
+            512
+          ],
+          "patch_size": [
+            192,
+            160
+          ],
+          "spacing": [
+            1.0,
+            1.0
+          ],
+          "stage_count": 6
+        },
+        "3d_fullres": {
+          "architecture": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+          "batch_dice": false,
+          "batch_size": 3,
+          "data_identifier": "nnUNetPlans_3d_fullres",
+          "features_per_stage": [
+            32,
+            64,
+            128,
+            256,
+            320,
+            320
+          ],
+          "patch_size": [
+            160,
+            192,
+            160
+          ],
+          "spacing": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "stage_count": 6
+        }
+      },
+      "experiment_planner": "nnUNetPlannerResEncL",
+      "plans_identifier": "nnUNetResEncUNetLPlans",
+      "plans_sha256": "472bd6f66dbb217b4021132e720b42ad8925d87ae01da9fad1864e83318ea7a1"
+    }
+  ],
+  "schema_version": 1,
+  "source_manifest_sha256": "b9ab5bdf598521df5b3e26348ef4561f6ace631187385e180841e1712938e78b",
+  "status": "planned_hardware_preflight_pending",
+  "three_d_selection": {
+    "criterion": "untouched_plan_mps_feasibility_only",
+    "hardware_fallback": "nnUNetResEncUNetMPlans",
+    "performance_outcomes_permitted": false,
+    "primary": "nnUNetResEncUNetLPlans",
+    "selected": null
+  }
+}
