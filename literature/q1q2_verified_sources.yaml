@@ -84,8 +84,16 @@ sources:
 
   - id: seed_variability_2020
     title: "Variability and Reproducibility in Deep Learning for Medical Image Segmentation"
+    authors:
+      - Félix Renard
+      - Soulaimane Guedria
+      - Noël De Palma
+      - Nicolas Vuillerme
     year: 2020
     venue: Scientific Reports
+    volume: 10
+    article_number: 13724
+    doi: "10.1038/s41598-020-69920-0"
     url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7426407/"
     source_type: primary_review_and_experimental_analysis
     verified_fields: [variability_sources, reproducibility_risk]
@@ -100,10 +108,19 @@ sources:
     code: "https://github.com/MIC-DKFZ/nnUNet"
     verified_fields: [self_configuration, preprocessing, architecture, training, postprocessing, 23_public_datasets]
 
-  - id: transbts_2022
+  - id: transbts_2021
     title: "TransBTS: Multimodal Brain Tumor Segmentation Using Transformer"
-    year: 2022
-    venue: Medical Image Analysis
+    authors:
+      - Wenxuan Wang
+      - Chen Chen
+      - Meng Ding
+      - Jiangyun Li
+      - Hong Yu
+      - Sen Zha
+    year: 2021
+    venue: "Medical Image Computing and Computer Assisted Intervention (MICCAI), LNCS 12901"
+    pages: "109-119"
+    doi: "10.1007/978-3-030-87193-2_11"
     url: "https://arxiv.org/abs/2103.04430"
     source_type: author_manuscript_of_published_work
     code: "https://github.com/Wenxuan-1119/TransBTS"
@@ -111,8 +128,16 @@ sources:
 
   - id: swin_unetr_2022
     title: "Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images"
+    authors:
+      - Ali Hatamizadeh
+      - Vishwesh Nath
+      - Yucheng Tang
+      - Dong Yang
+      - Holger R. Roth
+      - Daguang Xu
     year: 2022
     venue: "BrainLes 2021, LNCS 12962"
+    pages: "272-284"
     doi: "10.1007/978-3-031-08999-2_22"
     url: "https://link.springer.com/chapter/10.1007/978-3-031-08999-2_22"
     source_type: primary_conference_paper
@@ -122,8 +147,18 @@ sources:
 
   - id: avesta_2p5d_2023
     title: "Comparing 3D, 2.5D, and 2D Approaches to Brain Image Auto-Segmentation"
+    authors:
+      - Arman Avesta
+      - Sajid Hossain
+      - MingDe Lin
+      - Mariam Aboian
+      - Harlan M. Krumholz
+      - Sanjay Aneja
     year: 2023
     venue: Bioengineering
+    volume: 10
+    issue: 2
+    article_number: 181
     doi: "10.3390/bioengineering10020181"
     url: "https://pubmed.ncbi.nlm.nih.gov/36829675/"
     source_type: primary_journal_paper
@@ -171,8 +206,18 @@ sources:
 
   - id: nnformer_2023
     title: "nnFormer: Volumetric Medical Image Segmentation via a 3D Transformer"
+    authors:
+      - Hong-Yu Zhou
+      - Jiansen Guo
+      - Yinghao Zhang
+      - Xiaoguang Han
+      - Lequan Yu
+      - Liansheng Wang
+      - Yizhou Yu
     year: 2023
     venue: IEEE Transactions on Image Processing
+    volume: 32
+    pages: "4036-4045"
     doi: "10.1109/TIP.2023.3293771"
     url: "https://ieeexplore.ieee.org/document/10183842/"
     source_type: primary_journal_paper
@@ -180,8 +225,15 @@ sources:
 
   - id: metrics_reloaded_2024
     title: "Metrics Reloaded: recommendations for image analysis validation"
+    authors:
+      - Lena Maier-Hein
+      - Annika Reinke
+      - Patrick Godau
+      - et al.
     year: 2024
     venue: Nature Methods
+    volume: 21
+    pages: "195-212"
     doi: "10.1038/s41592-023-02151-z"
     url: "https://www.nature.com/articles/s41592-023-02151-z"
     source_type: consensus_recommendation
@@ -189,8 +241,16 @@ sources:
 
   - id: claim_2024
     title: "Checklist for Artificial Intelligence in Medical Imaging: 2024 Update"
+    authors:
+      - Ali S. Tejani
+      - Michail E. Klontzas
+      - Anthony A. Gatti
+      - et al.
     year: 2024
     venue: Radiology Artificial Intelligence
+    volume: 6
+    issue: 4
+    article_number: e240300
     doi: "10.1148/ryai.240300"
     url: "https://pubs.rsna.org/doi/10.1148/ryai.240300"
     source_type: reporting_guideline
@@ -198,8 +258,17 @@ sources:
 
   - id: nnunet_revisited_2024
     title: "nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation"
+    authors:
+      - Fabian Isensee
+      - Tassilo Wald
+      - Constantin Ulrich
+      - Michael Baumgartner
+      - Saikat Roy
+      - Klaus Maier-Hein
+      - Paul F. Jäger
     year: 2024
-    venue: MICCAI
+    venue: "Medical Image Computing and Computer Assisted Intervention (MICCAI)"
+    pages: "488-498"
     doi: "10.1007/978-3-031-72114-4_47"
     url: "https://papers.miccai.org/miccai-2024/paper/2847_paper.pdf"
     implementation_guidance_url: "https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/resenc_presets.md"
@@ -214,16 +283,31 @@ sources:
 
   - id: random_effects_2024
     title: "Random effects during training: Implications for deep learning-based medical image segmentation"
+    authors:
+      - Julius Åkesson
+      - Johannes Töger
+      - Einar Heiberg
     year: 2024
     venue: Computers in Biology and Medicine
+    volume: 180
+    article_number: 108944
+    doi: "10.1016/j.compbiomed.2024.108944"
     url: "https://www.sciencedirect.com/science/article/pii/S0010482524010291"
     source_type: primary_journal_paper
     verified_fields: [multiple_seeds, holdout_and_fivefold_variability, seed_selection_risk]
 
   - id: brats_africa_2025
     title: "The BraTS-Africa Dataset: Expanding the Brain Tumor Segmentation Data to Capture African Populations"
+    authors:
+      - Maruf Adewole
+      - Jeffrey D. Rudie
+      - Anu Gbadamosi
+      - et al.
     year: 2025
     venue: Radiology Artificial Intelligence
+    volume: 7
+    issue: 4
+    article_number: e240528
     doi: "10.1148/ryai.240528"
     data_doi: "10.7937/V8H6-8X67"
     url: "https://pubs.rsna.org/doi/10.1148/ryai.240528"

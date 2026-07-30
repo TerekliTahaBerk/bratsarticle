@@ -7,6 +7,12 @@ policy:
   result_numbers_in_template: prohibited_inside_artifact_bound_blocks
   external_confirmatory_claims_require_holm_and_effect_interpretation: true
 sources:
+  manuscript_template: manuscript/q1q2_v2_manuscript.template.md
+  model_matrix: configs/q1q2_v2/model_matrix.yaml
+  training_protocol: configs/q1q2_v2/training_protocol.yaml
+  statistical_analysis_plan: configs/q1q2_v2/statistical_analysis_plan.yaml
+  selected_loss: configs/q1q2_v2/selected_loss.yaml
+  loss_catalog: configs/losses/catalog.yaml
   figure_execution: configs/q1q2_v2/figure_execution.yaml
   statistical_completion: artifacts/q1q2_v2/statistics/completion.json
   subgroup_completion: artifacts/q1q2_v2/subgroups/completion.json

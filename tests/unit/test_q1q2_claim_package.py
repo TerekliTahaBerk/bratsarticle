@@ -9,6 +9,7 @@ import yaml
 from bratsarticle.reporting.q1q2_claims import (
     ClaimRegistry,
     audit_claim_package,
+    audit_claim_template,
     render_claim_template,
 )
 from bratsarticle.utils.hashing import file_digest
@@ -134,3 +135,11 @@ def test_claim_registry_rejects_duplicate_identifiers(tmp_path: Path) -> None:
             column="value",
             inferential_role="design_fact",
         )
+
+
+def test_repository_manuscript_template_has_only_bound_result_tokens() -> None:
+    report = audit_claim_template(Path("manuscript/q1q2_v2_manuscript.template.md"))
+
+    assert report["valid"] is True
+    assert report["artifact_bound_section_count"] == 2
+    assert report["claim_token_count"] > 20

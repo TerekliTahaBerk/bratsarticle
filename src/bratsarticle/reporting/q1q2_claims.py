@@ -197,6 +197,76 @@ def build_claim_registry(
         raise RuntimeError("Gate J qualitative selection source differs")
 
     registry = ClaimRegistry()
+    selected_loss = _load_yaml(sources["selected_loss"])
+    if (
+        selected_loss.get("status") != "frozen_from_complete_development_cv"
+        or selected_loss.get("external_data_used_for_selection") is not False
+        or selected_loss.get("legacy_internal_test_used_for_selection") is not False
+    ):
+        raise PermissionError("Gate J requires the development-only loss freeze")
+    registry.add(
+        "METHOD.SELECTED_LOSS",
+        selected_loss["selected_loss"],
+        source_path=sources["selected_loss"],
+        selector={"section": "root"},
+        column="selected_loss",
+        inferential_role="development_only_model_selection",
+    )
+    training_protocol = _load_yaml(sources["training_protocol"])
+    training = cast(dict[str, Any], training_protocol["training"])
+    convergence = cast(dict[str, Any], training_protocol["convergence_matched"])
+    early_stopping = cast(dict[str, Any], convergence["early_stopping"])
+    compute = cast(dict[str, Any], training_protocol["compute_matched"])
+    method_values = {
+        "INITIAL_LEARNING_RATE_NATIVE_2D": cast(
+            dict[str, Any], training["initial_learning_rate"]
+        )["native_2d"],
+        "WEIGHT_DECAY": training["weight_decay"],
+        "EFFECTIVE_BATCH_SIZE_NATIVE_2D": cast(
+            dict[str, Any], training["effective_batch_size"]
+        )["native_2d"],
+        "VALIDATION_FREQUENCY_OPTIMIZER_STEPS": training[
+            "validation_frequency_optimizer_steps"
+        ],
+        "MAXIMUM_OPTIMIZER_STEPS": convergence["maximum_optimizer_steps"],
+        "MINIMUM_OPTIMIZER_STEPS_BEFORE_EARLY_STOPPING": convergence[
+            "minimum_optimizer_steps_before_early_stopping"
+        ],
+        "EARLY_STOPPING_MINIMUM_DELTA": early_stopping["minimum_delta"],
+        "EARLY_STOPPING_PATIENCE_CHECKS": early_stopping["patience_validation_checks"],
+        "COMPUTE_MATCHED_HOURS_PER_RUN": compute["maximum_accelerator_hours_per_run"],
+    }
+    for name, value in method_values.items():
+        registry.add(
+            f"METHOD.{name}",
+            value,
+            source_path=sources["training_protocol"],
+            selector={"section": "training_or_budget"},
+            column=name.lower(),
+            inferential_role="frozen_method_fact",
+        )
+    plan = _load_yaml(sources["statistical_analysis_plan"])
+    estimation = cast(dict[str, Any], plan["estimation"])
+    bootstrap = cast(dict[str, Any], estimation["paired_patient_bootstrap"])
+    permutation = cast(dict[str, Any], estimation["paired_permutation"])
+    multiplicity = cast(dict[str, Any], plan["multiplicity"])
+    practical = cast(dict[str, Any], plan["practical_interpretation"])
+    statistical_values = {
+        "CONFIDENCE_LEVEL": bootstrap["confidence_level"],
+        "PAIRED_BOOTSTRAP_RESAMPLES": bootstrap["resamples"],
+        "PAIRED_PERMUTATION_RESAMPLES": permutation["resamples"],
+        "MULTIPLICITY_ALPHA": multiplicity["alpha_two_sided"],
+        "PRACTICAL_THRESHOLD": practical["smallest_effect_size_of_interest"],
+    }
+    for name, value in statistical_values.items():
+        registry.add(
+            f"METHOD.{name}",
+            value,
+            source_path=sources["statistical_analysis_plan"],
+            selector={"section": "estimation_or_interpretation"},
+            column=name.lower(),
+            inferential_role="frozen_statistical_method_fact",
+        )
     figure_execution = _load_yaml(sources["figure_execution"])
     design = cast(dict[str, Any], figure_execution["design"])
     for field, value in sorted(design.items()):
@@ -208,14 +278,42 @@ def build_claim_registry(
             column=field,
             inferential_role="design_fact",
         )
+    contrast_frame = pd.read_csv(sources["primary_contrasts"])
     _add_frame(
         registry,
-        pd.read_csv(sources["primary_contrasts"]),
+        contrast_frame,
         path=sources["primary_contrasts"],
         prefix="CONTRAST",
         identity_columns=("contrast_id",),
         inferential_role="confirmatory_prespecified_contrast",
     )
+    interpretation_text = {
+        "positive_and_practically_relevant": (
+            "The difference met both the multiplicity-adjusted statistical "
+            "criterion and the prespecified practical threshold."
+        ),
+        "positive_but_below_practical_threshold": (
+            "The adjusted statistical criterion was met, but the mean "
+            "difference remained below the prespecified practical threshold."
+        ),
+        "no_confirmatory_superiority": (
+            "The confirmatory comparison did not establish a "
+            "capacity-controlled benefit."
+        ),
+    }
+    for _, row in contrast_frame.iterrows():
+        contrast_id = str(row["contrast_id"])
+        interpretation = str(row["claim_interpretation"])
+        if interpretation not in interpretation_text:
+            raise RuntimeError(f"Unknown confirmatory interpretation: {interpretation}")
+        registry.add(
+            f"CONTRAST.{_identifier(contrast_id)}.INTERPRETATION_TEXT",
+            interpretation_text[interpretation],
+            source_path=sources["primary_contrasts"],
+            selector={"contrast_id": contrast_id},
+            column="claim_interpretation",
+            inferential_role="confirmatory_prespecified_contrast",
+        )
     _add_frame(
         registry,
         pd.read_csv(sources["model_metric_summary"]),
@@ -289,6 +387,45 @@ def _artifact_bound_sections(source: str, *, start: str, end: str) -> list[str]:
     return sections
 
 
+def audit_claim_template(
+    template_path: Path,
+    *,
+    config_path: Path = Path("configs/q1q2_v2/claim_execution.yaml"),
+) -> dict[str, Any]:
+    """Reject malformed tokens and manual numbers in bounded Results blocks."""
+    config = _load_yaml(config_path)
+    contract = cast(dict[str, Any], config["template_contract"])
+    source = template_path.read_text(encoding="utf-8")
+    sections = _artifact_bound_sections(
+        source,
+        start=str(contract["artifact_bound_start"]),
+        end=str(contract["artifact_bound_end"]),
+    )
+    if not sections:
+        raise RuntimeError("Manuscript template has no artifact-bound result block")
+    raw_tokens = UNRESOLVED_PATTERN.findall(source)
+    malformed = [token for token in raw_tokens if not TOKEN_PATTERN.fullmatch(token)]
+    if malformed:
+        raise RuntimeError(f"Malformed Gate J claim tokens: {malformed[:5]}")
+    manual_numbers: list[str] = []
+    for section in sections:
+        without_tokens = TOKEN_PATTERN.sub("", section)
+        manual_numbers.extend(STANDALONE_NUMBER_PATTERN.findall(without_tokens))
+    if manual_numbers:
+        raise RuntimeError(
+            "Manual numeric literals occur in artifact-bound results: "
+            f"{manual_numbers[:5]}"
+        )
+    if not raw_tokens:
+        raise RuntimeError("Manuscript template has no Gate J claim tokens")
+    return {
+        "valid": True,
+        "artifact_bound_section_count": len(sections),
+        "claim_token_count": len(raw_tokens),
+        "manual_numeric_literal_count": 0,
+    }
+
+
 def _format_claim(claim: dict[str, Any], format_name: str) -> str:
     if claim["value_status"] != "available":
         raise RuntimeError(f"Cannot render nonfinite claim: {claim['claim_id']}")
@@ -321,24 +458,8 @@ def render_claim_template(
     config_path: Path = Path("configs/q1q2_v2/claim_execution.yaml"),
 ) -> dict[str, Any]:
     """Resolve only registered values and record every template substitution."""
-    config = _load_yaml(config_path)
-    contract = cast(dict[str, Any], config["template_contract"])
+    audit_claim_template(template_path, config_path=config_path)
     source = template_path.read_text(encoding="utf-8")
-    sections = _artifact_bound_sections(
-        source,
-        start=str(contract["artifact_bound_start"]),
-        end=str(contract["artifact_bound_end"]),
-    )
-    if not sections:
-        raise RuntimeError("Manuscript template has no artifact-bound result block")
-    for section in sections:
-        without_tokens = TOKEN_PATTERN.sub("", section)
-        manual_numbers = STANDALONE_NUMBER_PATTERN.findall(without_tokens)
-        if manual_numbers:
-            raise RuntimeError(
-                "Manual numeric literals occur in artifact-bound results: "
-                f"{manual_numbers[:5]}"
-            )
     registry = _load_json(registry_path)
     if registry.get("status") != "complete":
         raise PermissionError("Complete Gate J claim registry is required")
@@ -451,7 +572,13 @@ def _audit_inferential_language(
         for claim_id, value in used.items()
     )
     problems: list[str] = []
-    if ("superior" in lowered or "superiority" in lowered) and not (
+    affirmative_superiority = any(
+        ("superior" in line.lower() or "superiority" in line.lower())
+        and "probability of superiority" not in line.lower()
+        and not NEGATION_PATTERN.search(line)
+        for line in rendered_text.splitlines()
+    )
+    if affirmative_superiority and not (
         holm_positive and practical_positive and positive_interpretation
     ):
         problems.append(
@@ -524,6 +651,7 @@ def complete_gate_j(
 __all__ = [
     "ClaimRegistry",
     "audit_claim_package",
+    "audit_claim_template",
     "build_claim_registry",
     "complete_gate_j",
     "render_claim_template",
