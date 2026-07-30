@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import tempfile
-from collections.abc import Mapping
+import time
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
@@ -28,6 +28,76 @@ from bratsarticle.training.losses import class_indices_to_labels
 from bratsarticle.utils.hashing import file_digest
 from bratsarticle.utils.serialization import atomic_write_json
 from evaluation import CentralEvaluator
+from nnunet_ext.q1q2_timed_predictor import Q1Q2TimedNNUNetPredictor
+
+
+@dataclass(frozen=True)
+class ExternalInferenceResult:
+    """Patient metrics and synchronized per-volume timing observations."""
+
+    metric_rows: list[dict[str, Any]]
+    timing_rows: list[dict[str, Any]]
+
+
+PredictionSink = Callable[[str, np.ndarray], None]
+
+
+def _synchronize(device: torch.device) -> None:
+    if device.type == "mps":
+        torch.mps.synchronize()
+    elif device.type == "cuda":
+        torch.cuda.synchronize(device)
+
+
+def _timing_row(
+    *,
+    run: Mapping[str, Any],
+    patient_id: str,
+    checkpoint_sha256: str,
+    adapter: str,
+    preprocessing_seconds: float,
+    model_forward_seconds: float,
+    postprocessing_seconds: float,
+    end_to_end_seconds: float,
+) -> dict[str, Any]:
+    values = (
+        preprocessing_seconds,
+        model_forward_seconds,
+        postprocessing_seconds,
+        end_to_end_seconds,
+    )
+    if any(value < 0.0 or not np.isfinite(value) for value in values):
+        raise ValueError("External inference timing must be finite and nonnegative")
+    component_total = (
+        preprocessing_seconds + model_forward_seconds + postprocessing_seconds
+    )
+    if component_total > end_to_end_seconds + 1e-6:
+        raise ValueError("External timing components exceed end-to-end latency")
+    mps_allocated = (
+        int(torch.mps.current_allocated_memory())
+        if torch.backends.mps.is_available()
+        else None
+    )
+    mps_driver_allocated = (
+        int(torch.mps.driver_allocated_memory())
+        if torch.backends.mps.is_available()
+        else None
+    )
+    return {
+        "external_run_id": str(run["run_id"]),
+        "model_id": str(run["model_id"]),
+        "training_fold": int(run["fold"]),
+        "training_seed": int(run["seed"]),
+        "checkpoint_sha256": checkpoint_sha256,
+        "patient_id": patient_id,
+        "adapter": adapter,
+        "preprocessing_seconds": preprocessing_seconds,
+        "model_forward_seconds": model_forward_seconds,
+        "postprocessing_seconds": postprocessing_seconds,
+        "end_to_end_seconds": end_to_end_seconds,
+        "mps_framework_allocated_unified_memory_bytes": mps_allocated,
+        "mps_driver_allocated_unified_memory_bytes": mps_driver_allocated,
+    }
 
 
 def _checkpoint_state(
@@ -82,7 +152,8 @@ def predict_native_external_checkpoint(
     preprocessing_config_path: Path,
     validation_batch_size: int,
     device: torch.device,
-) -> list[dict[str, Any]]:
+    prediction_sink: PredictionSink,
+) -> ExternalInferenceResult:
     """Infer every external volume with one frozen native checkpoint."""
     if device.type != "mps":
         raise ValueError("Reportable native external inference requires MPS")
@@ -103,16 +174,22 @@ def predict_native_external_checkpoint(
     slice_axis = preprocessing.slice_axis
     offsets = (-2, -1, 0, 1, 2) if str(run["model_id"]) == "unet_2p5d_k5" else (0,)
     rows: list[dict[str, Any]] = []
+    timing_rows: list[dict[str, Any]] = []
     with torch.no_grad():
         for patient_index in range(len(dataset)):
+            end_to_end_started = time.perf_counter()
+            preprocessing_started = time.perf_counter()
             volume = dataset.load(patient_index)
+            preprocessing_seconds = time.perf_counter() - preprocessing_started
             slice_count = volume.label.shape[slice_axis]
             predicted_slices: list[np.ndarray] = []
+            forward_seconds = 0.0
             for start in range(0, slice_count, validation_batch_size):
                 indices = range(
                     start,
                     min(start + validation_batch_size, slice_count),
                 )
+                preprocessing_started = time.perf_counter()
                 images = np.stack(
                     [
                         extract_context_slices(
@@ -124,13 +201,36 @@ def predict_native_external_checkpoint(
                         for slice_index in indices
                     ]
                 )
+                preprocessing_seconds += (
+                    time.perf_counter() - preprocessing_started
+                )
+                _synchronize(device)
+                forward_started = time.perf_counter()
                 logits = model(torch.from_numpy(images).to(device, dtype=torch.float32))
                 labels = class_indices_to_labels(torch.argmax(logits, dim=1))
+                _synchronize(device)
+                forward_seconds += time.perf_counter() - forward_started
                 predicted_slices.extend(
                     np.asarray(item, dtype=np.int16)
                     for item in labels.detach().cpu().numpy()
                 )
+            postprocessing_started = time.perf_counter()
             prediction = np.stack(predicted_slices, axis=slice_axis)
+            postprocessing_seconds = time.perf_counter() - postprocessing_started
+            end_to_end_seconds = time.perf_counter() - end_to_end_started
+            prediction_sink(volume.patient_id, prediction)
+            timing_rows.append(
+                _timing_row(
+                    run=run,
+                    patient_id=volume.patient_id,
+                    checkpoint_sha256=checkpoint_sha256,
+                    adapter="native_configurable_unet",
+                    preprocessing_seconds=preprocessing_seconds,
+                    model_forward_seconds=forward_seconds,
+                    postprocessing_seconds=postprocessing_seconds,
+                    end_to_end_seconds=end_to_end_seconds,
+                )
+            )
             metric_rows = evaluator.evaluate_batch(
                 prediction,
                 volume.label,
@@ -146,7 +246,7 @@ def predict_native_external_checkpoint(
                     cohort_role=volume.cohort_role,
                 )
             )
-    return rows
+    return ExternalInferenceResult(metric_rows=rows, timing_rows=timing_rows)
 
 
 def predict_swin_external_checkpoint(
@@ -159,7 +259,8 @@ def predict_swin_external_checkpoint(
     mode: str,
     sliding_window_batch_size: int,
     device: torch.device,
-) -> list[dict[str, Any]]:
+    prediction_sink: PredictionSink,
+) -> ExternalInferenceResult:
     """Infer every external volume with one frozen Swin checkpoint."""
     if device.type != "mps":
         raise ValueError("Reportable Swin external inference requires MPS")
@@ -177,12 +278,18 @@ def predict_swin_external_checkpoint(
     model.to(device)
     model.eval()
     rows: list[dict[str, Any]] = []
+    timing_rows: list[dict[str, Any]] = []
     with torch.no_grad():
         for patient_index in range(len(dataset)):
+            end_to_end_started = time.perf_counter()
+            preprocessing_started = time.perf_counter()
             volume = dataset.load(patient_index)
             image = torch.from_numpy(
                 np.ascontiguousarray(volume.image[None], dtype=np.float32)
             )
+            preprocessing_seconds = time.perf_counter() - preprocessing_started
+            _synchronize(device)
+            forward_started = time.perf_counter()
             logits = cast(
                 torch.Tensor,
                 sliding_window_inference(
@@ -196,9 +303,28 @@ def predict_swin_external_checkpoint(
                     device=torch.device("cpu"),
                 ),
             )
+            _synchronize(device)
+            forward_seconds = time.perf_counter() - forward_started
+            postprocessing_started = time.perf_counter()
             prediction = class_indices_to_labels(torch.argmax(logits, dim=1))
+            prediction_array = np.asarray(prediction.numpy()[0], dtype=np.int16)
+            postprocessing_seconds = time.perf_counter() - postprocessing_started
+            end_to_end_seconds = time.perf_counter() - end_to_end_started
+            prediction_sink(volume.patient_id, prediction_array)
+            timing_rows.append(
+                _timing_row(
+                    run=run,
+                    patient_id=volume.patient_id,
+                    checkpoint_sha256=checkpoint_sha256,
+                    adapter="monai_swinunetr",
+                    preprocessing_seconds=preprocessing_seconds,
+                    model_forward_seconds=forward_seconds,
+                    postprocessing_seconds=postprocessing_seconds,
+                    end_to_end_seconds=end_to_end_seconds,
+                )
+            )
             metric_rows = evaluator.evaluate_batch(
-                prediction.numpy(),
+                prediction_array,
                 volume.label,
                 patient_ids=[volume.patient_id],
                 spacings_mm=[volume.spacing_mm],
@@ -212,7 +338,7 @@ def predict_swin_external_checkpoint(
                     cohort_role=volume.cohort_role,
                 )
             )
-    return rows
+    return ExternalInferenceResult(metric_rows=rows, timing_rows=timing_rows)
 
 
 def prepare_nnunet_external_input(
@@ -315,100 +441,88 @@ def predict_nnunet_external_checkpoint(
     evaluator: CentralEvaluator,
     input_directory: Path,
     queue_path: Path,
-    environment: Mapping[str, str],
-    log_directory: Path,
-) -> list[dict[str, Any]]:
-    """Run official best-checkpoint inference and evaluate before cleanup."""
+    device: torch.device,
+    prediction_sink: PredictionSink,
+    warmup_cases: int,
+) -> ExternalInferenceResult:
+    """Run the official predictor while retaining synchronized patient timings."""
+    if device.type != "mps":
+        raise ValueError("Reportable nnU-Net external inference requires MPS")
     job = _nnunet_job(queue_path, str(run["run_id"]))
     checkpoint_path = Path(str(run["best_checkpoint_path"]))
     checkpoint_sha256 = str(run["best_checkpoint_sha256"])
     if file_digest(checkpoint_path) != checkpoint_sha256:
         raise ValueError("Official nnU-Net external checkpoint hash differs")
-    command = [
-        "nnUNetv2_predict",
-        "-i",
-        input_directory.as_posix(),
-        "-o",
-        "{output}",
-        "-d",
-        "501",
-        "-p",
-        str(job["plans_identifier"]),
-        "-tr",
-        str(job["trainer"]),
-        "-c",
-        str(job["configuration"]),
-        "-f",
-        str(job["fold_nnunet_zero_indexed"]),
-        "-chk",
-        "checkpoint_best.pth",
-        "-npp",
-        "1",
-        "-nps",
-        "1",
-        "-device",
-        "mps",
-        "--disable_progress_bar",
-    ]
-    rows: list[dict[str, Any]] = []
-    log_directory.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(
-        prefix=f"{run['run_id']}-",
-    ) as raw_output:
-        output = Path(raw_output)
-        resolved_command = [
-            output.as_posix() if value == "{output}" else value for value in command
+    if checkpoint_path.name != "checkpoint_best.pth":
+        raise ValueError(
+            "Gate H nnU-Net checkpoint is not the official best checkpoint"
+        )
+    predictor = Q1Q2TimedNNUNetPredictor(device=device)
+    predictor.initialize_from_trained_model_folder(
+        checkpoint_path.parent.parent.as_posix(),
+        use_folds=(int(job["fold_nnunet_zero_indexed"]),),
+        checkpoint_name="checkpoint_best.pth",
+    )
+
+    def inputs(patient_id: str) -> list[Path]:
+        paths = [
+            input_directory / f"{patient_id}_{channel:04d}.nii"
+            for channel in range(4)
         ]
-        with (
-            (log_directory / "stdout.log").open("a", encoding="utf-8") as stdout,
-            (log_directory / "stderr.log").open("a", encoding="utf-8") as stderr,
-        ):
-            result = subprocess.run(
-                resolved_command,
-                env=dict(environment),
-                stdout=stdout,
-                stderr=stderr,
-                check=False,
+        if not all(path.is_file() for path in paths):
+            raise FileNotFoundError(
+                f"Official nnU-Net external inputs are incomplete: {patient_id}"
             )
-        if result.returncode != 0:
-            raise RuntimeError(
-                f"Official nnU-Net external inference failed: {run['run_id']}"
+        return paths
+
+    if warmup_cases < 0:
+        raise ValueError("nnU-Net warmup case count cannot be negative")
+    if warmup_cases:
+        warmup_patient = str(dataset.frame.iloc[0]["patient_id"])
+        for _ in range(warmup_cases):
+            predictor.predict_case_timed(inputs(warmup_patient))
+
+    rows: list[dict[str, Any]] = []
+    timing_rows: list[dict[str, Any]] = []
+    for patient_index in range(len(dataset)):
+        volume = dataset.load(patient_index)
+        nnunet_prediction, timing = predictor.predict_case_timed(
+            inputs(volume.patient_id)
+        )
+        if nnunet_prediction.shape != volume.label.shape:
+            raise ValueError(
+                f"nnU-Net external shape differs for {volume.patient_id}"
             )
-        expected = {
-            f"{dataset.frame.iloc[index]['patient_id']}.nii"
-            for index in range(len(dataset))
-        }
-        observed = {path.name for path in output.glob("*.nii")}
-        if observed != expected:
-            raise RuntimeError("Official nnU-Net external prediction set differs")
-        for patient_index in range(len(dataset)):
-            volume = dataset.load(patient_index)
-            prediction_path = output / f"{volume.patient_id}.nii"
-            prediction_image = cast(
-                nib.Nifti1Image,
-                nib.load(str(prediction_path), mmap="r"),
+        prediction = nnunet_to_brats_labels(nnunet_prediction)
+        prediction_sink(volume.patient_id, prediction)
+        timing_rows.append(
+            _timing_row(
+                run=run,
+                patient_id=volume.patient_id,
+                checkpoint_sha256=checkpoint_sha256,
+                adapter="official_nnunetv2",
+                preprocessing_seconds=float(timing["preprocessing_seconds"]),
+                model_forward_seconds=float(timing["model_forward_seconds"]),
+                postprocessing_seconds=float(timing["postprocessing_seconds"]),
+                end_to_end_seconds=float(timing["end_to_end_seconds"]),
             )
-            nnunet_prediction = np.asarray(prediction_image.dataobj)
-            if nnunet_prediction.shape != volume.label.shape:
-                raise ValueError(
-                    f"nnU-Net external shape differs for {volume.patient_id}"
-                )
-            metric_rows = evaluator.evaluate_batch(
-                nnunet_to_brats_labels(nnunet_prediction),
-                volume.label,
-                patient_ids=[volume.patient_id],
-                spacings_mm=[volume.spacing_mm],
+        )
+        metric_rows = evaluator.evaluate_batch(
+            prediction,
+            volume.label,
+            patient_ids=[volume.patient_id],
+            spacings_mm=[volume.spacing_mm],
+        )
+        rows.extend(
+            _identified_rows(
+                metric_rows,
+                run=run,
+                checkpoint_sha256=checkpoint_sha256,
+                volume_metadata=volume.metadata,
+                cohort_role=volume.cohort_role,
             )
-            rows.extend(
-                _identified_rows(
-                    metric_rows,
-                    run=run,
-                    checkpoint_sha256=checkpoint_sha256,
-                    volume_metadata=volume.metadata,
-                    cohort_role=volume.cohort_role,
-                )
-            )
-    return rows
+        )
+    return ExternalInferenceResult(metric_rows=rows, timing_rows=timing_rows)
 
 
 def native_model_config(model_matrix_path: Path, model_id: str) -> Path:
@@ -425,6 +539,7 @@ def native_model_config(model_matrix_path: Path, model_id: str) -> Path:
 
 
 __all__ = [
+    "ExternalInferenceResult",
     "native_model_config",
     "predict_native_external_checkpoint",
     "predict_nnunet_external_checkpoint",

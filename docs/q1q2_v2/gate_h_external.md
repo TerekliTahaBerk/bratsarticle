@@ -19,8 +19,10 @@ At the first opening the queue:
 4. creates a provenance-bound normalized mmap cache for native/Swin inference;
 5. derives raw-valued, uncompressed NIfTI inputs for official nnU-Net without
    substituting the native normalized cache;
-6. appends the irreversible external-session start event; and
-7. runs every best checkpoint without changing normalization, thresholds,
+6. appends the irreversible external-session start event;
+7. records synchronized preprocessing, model-forward, postprocessing, and
+   end-to-end volume latency plus MPS unified-memory observations; and
+8. runs every best checkpoint without changing normalization, thresholds,
    postprocessing, loss, or model parameters.
 
 Run the queue only after Gate G passes:
@@ -43,15 +45,19 @@ Per-checkpoint patient tables retain model, training fold, seed, checkpoint
 hash, cohort role, scanner metadata, and all common metrics. The prespecified
 model-level table is the arithmetic mean of the 25 frozen fold-seed
 checkpoint metrics for each patient. Gate H passes only if all 300 checkpoints
-complete and every model–patient row has exactly 25 replicates. The raw
-checkpoint tables remain available for seed/fold uncertainty analyses.
+complete, every model–patient row has exactly 25 replicates, every checkpoint
+has 146 timing rows, and all 12 model-prediction manifests are complete. The
+raw checkpoint tables remain available for seed/fold uncertainty analyses.
 
-The official nnU-Net adapter uses `nnUNetv2_predict`, the exact seeded trainer,
-selected plans identifier, training fold, and `checkpoint_best.pth`. Temporary
-prediction volumes are evaluated and discarded only after their patient
-metrics are written and hash-verified; this avoids retaining hundreds of
-gigabytes of redundant label maps. Native and Swin adapters also reload the
-Gate G best-checkpoint hash before inference.
+The official nnU-Net adapter uses the official `nnUNetPredictor`, preprocessor,
+export transform, exact seeded trainer, selected plans identifier, training
+fold, and `checkpoint_best.pth`. Each checkpoint's compressed labels are kept
+only until all 25 frozen fold-seed checkpoints for that model complete. They
+are then converted patient-by-patient into a nested-region strict-majority
+model prediction, hash-verified, and removed. The resulting 12 × 146
+model-level predictions support the prespecified post-evaluation qualitative
+rules without reopening external inference. Native and Swin adapters also
+reload the Gate G best-checkpoint hash before inference.
 
 No outcome in Gate H can trigger a new seed, checkpoint, threshold,
 normalization, or postprocessing decision.

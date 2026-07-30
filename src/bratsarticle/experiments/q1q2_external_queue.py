@@ -21,11 +21,17 @@ from bratsarticle.data.external_dataset import (
     verify_external_files,
 )
 from bratsarticle.experiments.q1q2_external_inference import (
+    ExternalInferenceResult,
     native_model_config,
     predict_native_external_checkpoint,
     predict_nnunet_external_checkpoint,
     predict_swin_external_checkpoint,
     prepare_nnunet_external_input,
+)
+from bratsarticle.experiments.q1q2_prediction_retention import (
+    finalize_model_predictions,
+    prepare_checkpoint_stager,
+    validate_checkpoint_prediction_manifest,
 )
 from bratsarticle.experiments.registry import ResourceTracker
 from bratsarticle.utils.hashing import file_digest, text_digest
@@ -90,6 +96,8 @@ def _validate_gate_g(
         "external_confirmatory_manifest",
         "evaluation",
         "model_matrix",
+        "resource_profile_protocol",
+        "qualitative_protocol",
     ):
         path = Path(str(config[key]))
         if frozen_inputs.get(path.as_posix()) != file_digest(path):
@@ -280,6 +288,38 @@ def _validate_rows(
         raise RuntimeError("External confirmatory/supportive roles differ")
 
 
+def _validate_timing_rows(
+    rows: list[dict[str, Any]],
+    *,
+    run: dict[str, Any],
+    expected_patient_count: int,
+) -> None:
+    if len(rows) != expected_patient_count:
+        raise RuntimeError("External patient timing row count differs")
+    if len({str(row["patient_id"]) for row in rows}) != expected_patient_count:
+        raise RuntimeError("External patient timing identities are incomplete")
+    required = (
+        "preprocessing_seconds",
+        "model_forward_seconds",
+        "postprocessing_seconds",
+        "end_to_end_seconds",
+    )
+    for row in rows:
+        if (
+            row["external_run_id"] != run["run_id"]
+            or row["model_id"] != run["model_id"]
+            or int(row["training_fold"]) != int(run["fold"])
+            or int(row["training_seed"]) != int(run["seed"])
+            or row["checkpoint_sha256"] != run["best_checkpoint_sha256"]
+        ):
+            raise RuntimeError("External timing identity differs from Gate G")
+        values = [float(row[key]) for key in required]
+        if any(value < 0.0 for value in values) or values[-1] <= 0.0:
+            raise RuntimeError("External timing values are invalid")
+        if sum(values[:3]) > values[-1] + 1e-6:
+            raise RuntimeError("External timing components exceed end-to-end latency")
+
+
 def _run_one(
     *,
     run: dict[str, Any],
@@ -300,6 +340,25 @@ def _run_one(
             or file_digest(metrics_path) != stored["patient_metrics_sha256"]
         ):
             raise RuntimeError("Completed external metric artifact differs")
+        timing_path = Path(str(stored["patient_timing"]))
+        if (
+            not timing_path.is_file()
+            or file_digest(timing_path) != stored["patient_timing_sha256"]
+        ):
+            raise RuntimeError("Completed external timing artifact differs")
+        if stored.get("predictions_disposition") != (
+            "finalized_model_ensemble_then_removed"
+        ):
+            prediction_manifest = Path(
+                str(stored["checkpoint_prediction_manifest"])
+            )
+            validate_checkpoint_prediction_manifest(
+                prediction_manifest,
+                run=run,
+                expected_patient_count=int(
+                    cast(dict[str, Any], config["expected"])["total_patients"]
+                ),
+            )
         return
     if status == "failed":
         return
@@ -322,10 +381,14 @@ def _run_one(
     atomic_write_json(runtime_path, report)
     tracker = ResourceTracker(torch.device("mps"))
     try:
+        expected = cast(dict[str, Any], config["expected"])
+        stager = prepare_checkpoint_stager(
+            run_directory / "checkpoint_predictions"
+        )
         adapter = str(run["adapter"])
         if adapter == "native_configurable_unet":
             native_config = _load_yaml(Path(str(config["native_runner"])))
-            rows = predict_native_external_checkpoint(
+            result = predict_native_external_checkpoint(
                 run=run,
                 dataset=dataset,
                 evaluator=evaluator,
@@ -340,11 +403,12 @@ def _run_one(
                     cast(dict[str, Any], native_config["data"])["validation_batch_size"]
                 ),
                 device=torch.device("mps"),
+                prediction_sink=stager.add,
             )
         elif adapter == "monai_swinunetr":
             swin_config = _load_yaml(Path(str(config["swin_runner"])))
             validation = cast(dict[str, Any], swin_config["validation"])
-            rows = predict_swin_external_checkpoint(
+            result = predict_swin_external_checkpoint(
                 run=run,
                 dataset=dataset,
                 evaluator=evaluator,
@@ -355,27 +419,44 @@ def _run_one(
                 mode=str(validation["sliding_window_mode"]),
                 sliding_window_batch_size=int(validation["sliding_window_batch_size"]),
                 device=torch.device("mps"),
+                prediction_sink=stager.add,
             )
         elif adapter == "official_nnunetv2":
-            rows = predict_nnunet_external_checkpoint(
+            inference = cast(dict[str, Any], config["inference_timing"])
+            result = predict_nnunet_external_checkpoint(
                 run=run,
                 dataset=dataset,
                 evaluator=evaluator,
                 input_directory=nnunet_input,
                 queue_path=Path(str(config["nnunet_queue"])),
-                environment=os.environ.copy(),
-                log_directory=run_directory,
+                device=torch.device("mps"),
+                prediction_sink=stager.add,
+                warmup_cases=int(inference["warmup_cases_per_checkpoint"]),
             )
         else:
             raise ValueError(f"Unknown Gate H adapter: {adapter}")
-        expected = cast(dict[str, Any], config["expected"])
+        if not isinstance(result, ExternalInferenceResult):
+            raise TypeError("External inference adapter returned an invalid result")
+        rows = result.metric_rows
+        timing_rows = result.timing_rows
         _validate_rows(
             rows,
             run=run,
             expected_patient_count=int(expected["total_patients"]),
         )
+        _validate_timing_rows(
+            timing_rows,
+            run=run,
+            expected_patient_count=int(expected["total_patients"]),
+        )
         metrics_path = run_directory / "patient_metrics.csv"
+        timing_path = run_directory / "patient_timing.csv"
         atomic_write_csv(metrics_path, rows)
+        atomic_write_csv(timing_path, timing_rows)
+        prediction_manifest = stager.seal(
+            run=run,
+            expected_patient_count=int(expected["total_patients"]),
+        )
         report.update(
             {
                 "status": "completed",
@@ -383,6 +464,15 @@ def _run_one(
                 "patient_count": len(rows),
                 "patient_metrics": metrics_path.as_posix(),
                 "patient_metrics_sha256": file_digest(metrics_path),
+                "patient_timing": timing_path.as_posix(),
+                "patient_timing_sha256": file_digest(timing_path),
+                "checkpoint_prediction_manifest": (
+                    prediction_manifest.as_posix()
+                ),
+                "checkpoint_prediction_manifest_sha256": file_digest(
+                    prediction_manifest
+                ),
+                "predictions_disposition": "staged_until_model_finalization",
                 "resource_profile": tracker.snapshot(),
             }
         )
@@ -407,9 +497,12 @@ def _aggregate(
     artifact_root: Path,
     checkpoint_output: Path,
     model_output: Path,
+    checkpoint_timing_output: Path,
+    model_resource_output: Path,
     expected: dict[str, Any],
 ) -> dict[str, Any]:
     frames: list[pd.DataFrame] = []
+    timing_frames: list[pd.DataFrame] = []
     failed: list[str] = []
     for run in runs:
         runtime_path = artifact_root / str(run["run_id"]) / "runtime.json"
@@ -421,6 +514,10 @@ def _aggregate(
         if file_digest(metrics_path) != runtime["patient_metrics_sha256"]:
             raise RuntimeError("External checkpoint metric hash differs at aggregation")
         frames.append(pd.read_csv(metrics_path))
+        timing_path = Path(str(runtime["patient_timing"]))
+        if file_digest(timing_path) != runtime["patient_timing_sha256"]:
+            raise RuntimeError("External checkpoint timing hash differs at aggregation")
+        timing_frames.append(pd.read_csv(timing_path))
     if not frames:
         raise RuntimeError("No external checkpoint completed")
     checkpoint_frame = pd.concat(frames, ignore_index=True)
@@ -473,6 +570,66 @@ def _aggregate(
         model_output,
         cast(list[dict[str, Any]], model_frame.to_dict(orient="records")),
     )
+    timing_frame = pd.concat(timing_frames, ignore_index=True)
+    timing_frame = timing_frame.sort_values(
+        ["model_id", "patient_id", "training_fold", "training_seed"]
+    ).reset_index(drop=True)
+    atomic_write_csv(
+        checkpoint_timing_output,
+        cast(list[dict[str, Any]], timing_frame.to_dict(orient="records")),
+    )
+    expected_timing_rows = (
+        len(frames) * int(expected["total_patients"])
+    )
+    timings_complete = bool(
+        len(timing_frame) == expected_timing_rows
+        and bool(timing_frame["end_to_end_seconds"].gt(0.0).all())
+    )
+    resource_rows: list[dict[str, Any]] = []
+    for model_id, group in timing_frame.groupby("model_id", sort=True):
+        end_to_end = group["end_to_end_seconds"].astype(float)
+        framework_memory = group[
+            "mps_framework_allocated_unified_memory_bytes"
+        ].dropna()
+        driver_memory = group[
+            "mps_driver_allocated_unified_memory_bytes"
+        ].dropna()
+        resource_rows.append(
+            {
+                "model_id": model_id,
+                "checkpoint_count": int(group["external_run_id"].nunique()),
+                "patient_timing_observation_count": len(group),
+                "preprocessing_p50_seconds": float(
+                    group["preprocessing_seconds"].quantile(0.50)
+                ),
+                "preprocessing_p95_seconds": float(
+                    group["preprocessing_seconds"].quantile(0.95)
+                ),
+                "model_forward_p50_seconds": float(
+                    group["model_forward_seconds"].quantile(0.50)
+                ),
+                "model_forward_p95_seconds": float(
+                    group["model_forward_seconds"].quantile(0.95)
+                ),
+                "postprocessing_p50_seconds": float(
+                    group["postprocessing_seconds"].quantile(0.50)
+                ),
+                "postprocessing_p95_seconds": float(
+                    group["postprocessing_seconds"].quantile(0.95)
+                ),
+                "end_to_end_p50_seconds": float(end_to_end.quantile(0.50)),
+                "end_to_end_p95_seconds": float(end_to_end.quantile(0.95)),
+                "end_to_end_mean_seconds": float(end_to_end.mean()),
+                "volumes_per_hour": float(3600.0 / end_to_end.mean()),
+                "peak_mps_framework_allocated_unified_memory_bytes": (
+                    int(framework_memory.max()) if len(framework_memory) else None
+                ),
+                "peak_mps_driver_allocated_unified_memory_bytes": (
+                    int(driver_memory.max()) if len(driver_memory) else None
+                ),
+            }
+        )
+    atomic_write_csv(model_resource_output, resource_rows)
     required_replicates = int(expected["checkpoints_per_model"])
     complete_groups = bool(
         model_frame["valid_checkpoint_count"].eq(required_replicates).all()
@@ -484,10 +641,17 @@ def _aggregate(
         "checkpoint_patient_row_count": len(checkpoint_frame),
         "model_patient_row_count": len(model_frame),
         "all_model_patient_groups_have_25_checkpoints": complete_groups,
+        "all_checkpoint_patient_timings_complete": timings_complete,
         "checkpoint_patient_metrics": checkpoint_output.as_posix(),
         "checkpoint_patient_metrics_sha256": file_digest(checkpoint_output),
         "model_patient_metrics": model_output.as_posix(),
         "model_patient_metrics_sha256": file_digest(model_output),
+        "checkpoint_patient_timing": checkpoint_timing_output.as_posix(),
+        "checkpoint_patient_timing_sha256": file_digest(
+            checkpoint_timing_output
+        ),
+        "model_inference_resources": model_resource_output.as_posix(),
+        "model_inference_resources_sha256": file_digest(model_resource_output),
     }
 
 
@@ -513,6 +677,9 @@ def _run_gate_h_external_queue_locked(
             "nnunet_input",
             "checkpoint_patient_metrics",
             "model_patient_metrics",
+            "checkpoint_patient_timing",
+            "model_inference_resources",
+            "model_predictions",
             "completion",
         )
     ]
@@ -549,6 +716,16 @@ def _run_gate_h_external_queue_locked(
         )
     else:
         nnunet_preparation = {"status": "not_required"}
+    expected = cast(dict[str, Any], config["expected"])
+    model_run_groups = {
+        model_id: [
+            candidate
+            for candidate in runs
+            if str(candidate["model_id"]) == model_id
+        ]
+        for model_id in sorted({str(run["model_id"]) for run in runs})
+    }
+    model_prediction_manifests: dict[str, dict[str, str]] = {}
     for run in runs:
         _run_one(
             run=run,
@@ -558,6 +735,20 @@ def _run_gate_h_external_queue_locked(
             run_directory=artifact_root / str(run["run_id"]),
             nnunet_input=Path(str(artifacts["nnunet_input"])),
         )
+        model_id = str(run["model_id"])
+        model_prediction_manifest = finalize_model_predictions(
+            model_id=model_id,
+            runs=model_run_groups[model_id],
+            run_artifact_root=artifact_root,
+            output_root=Path(str(artifacts["model_predictions"])),
+            expected_patient_count=int(expected["total_patients"]),
+            required_replicates=int(expected["checkpoints_per_model"]),
+        )
+        if model_prediction_manifest is not None:
+            model_prediction_manifests[model_id] = {
+                "path": model_prediction_manifest.as_posix(),
+                "sha256": file_digest(model_prediction_manifest),
+            }
         statuses = [
             _run_status(artifact_root / str(candidate["run_id"])) for candidate in runs
         ]
@@ -577,12 +768,35 @@ def _run_gate_h_external_queue_locked(
         artifact_root=artifact_root,
         checkpoint_output=Path(str(artifacts["checkpoint_patient_metrics"])),
         model_output=Path(str(artifacts["model_patient_metrics"])),
-        expected=cast(dict[str, Any], config["expected"]),
+        checkpoint_timing_output=Path(
+            str(artifacts["checkpoint_patient_timing"])
+        ),
+        model_resource_output=Path(str(artifacts["model_inference_resources"])),
+        expected=expected,
+    )
+    for model_id, group in model_run_groups.items():
+        manifest = finalize_model_predictions(
+            model_id=model_id,
+            runs=group,
+            run_artifact_root=artifact_root,
+            output_root=Path(str(artifacts["model_predictions"])),
+            expected_patient_count=int(expected["total_patients"]),
+            required_replicates=int(expected["checkpoints_per_model"]),
+        )
+        if manifest is not None:
+            model_prediction_manifests[model_id] = {
+                "path": manifest.as_posix(),
+                "sha256": file_digest(manifest),
+            }
+    predictions_complete = len(model_prediction_manifests) == int(
+        expected["model_count"]
     )
     gate_h_pass = (
         int(aggregation["completed_checkpoint_count"]) == len(runs)
         and int(aggregation["failed_checkpoint_count"]) == 0
         and bool(aggregation["all_model_patient_groups_have_25_checkpoints"])
+        and bool(aggregation["all_checkpoint_patient_timings_complete"])
+        and predictions_complete
     )
     completion = {
         "schema_version": 1,
@@ -597,6 +811,8 @@ def _run_gate_h_external_queue_locked(
         "source_verification": verification,
         "cache": cache,
         "nnunet_input_preparation": nnunet_preparation,
+        "model_prediction_manifests": model_prediction_manifests,
+        "all_model_predictions_retained": predictions_complete,
         **aggregation,
     }
     completion_path = Path(str(artifacts["completion"]))

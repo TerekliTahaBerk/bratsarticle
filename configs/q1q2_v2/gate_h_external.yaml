@@ -7,6 +7,8 @@ external_confirmatory_manifest: splits/q1q2_v2/external_test.csv
 external_gate_c_summary: reports/q1q2_v2/external_gate_c_summary.json
 evaluation: configs/q1q2_v2/evaluation.yaml
 model_matrix: configs/q1q2_v2/model_matrix.yaml
+resource_profile_protocol: configs/q1q2_v2/resource_profile_protocol.yaml
+qualitative_protocol: configs/q1q2_v2/qualitative_protocol.yaml
 native_runner: configs/q1q2_v2/m1_native_runner.yaml
 swin_runner: configs/q1q2_v2/swin_m1_runner.yaml
 nnunet_runner: configs/q1q2_v2/nnunet_m1_runner.yaml
@@ -23,6 +25,13 @@ aggregation:
   checkpoint_replicates: arithmetic_mean_over_25_frozen_fold_seed_models
   stages: [raw]
   failed_checkpoint_policy: report_and_block_gate_h_pass
+inference_timing:
+  unit: patient_volume
+  warmup_cases_per_checkpoint: 0
+  measured_cases_per_checkpoint: all_146
+  synchronize_before_and_after_model_forward: true
+  model_initialization_excluded_from_patient_latency: true
+  central_metric_evaluation_excluded_from_end_to_end_latency: true
 guards:
   explicit_authorization_required: true
   single_external_session: true
@@ -40,4 +49,7 @@ artifacts:
   nnunet_input: work/q1q2_v2/external_nnunet/imagesTs
   checkpoint_patient_metrics: artifacts/q1q2_v2/external_checkpoint_patient_metrics.csv
   model_patient_metrics: artifacts/q1q2_v2/external_model_patient_metrics.csv
+  checkpoint_patient_timing: artifacts/q1q2_v2/external_checkpoint_patient_timing.csv
+  model_inference_resources: artifacts/q1q2_v2/external_model_inference_resources.csv
+  model_predictions: artifacts/q1q2_v2/external_model_predictions
   completion: artifacts/q1q2_v2/gate_h_completion.json

@@ -26,6 +26,10 @@ def test_gate_h_protocol_keeps_external_single_opening_frozen() -> None:
     assert config["expected"]["supportive_patients"] == 51
     assert config["guards"]["single_external_session"] is True
     assert config["guards"]["retuning"] == "prohibited"
+    assert config["inference_timing"]["measured_cases_per_checkpoint"] == "all_146"
+    assert config["artifacts"]["model_predictions"].endswith(
+        "external_model_predictions"
+    )
 
 
 def test_external_session_requires_explicit_authorization(tmp_path: Path) -> None:
@@ -104,12 +108,36 @@ def test_external_aggregation_averages_25_frozen_checkpoint_replicates(
         )
         metrics_path = run_directory / "patient_metrics.csv"
         metrics.to_csv(metrics_path, index=False)
+        timing = pd.DataFrame(
+            [
+                {
+                    "external_run_id": run_id,
+                    "model_id": "unet_small",
+                    "training_fold": replicate % 5 + 1,
+                    "training_seed": 20260730 + replicate % 5,
+                    "checkpoint_sha256": f"sha-{replicate}",
+                    "patient_id": patient,
+                    "adapter": "native_configurable_unet",
+                    "preprocessing_seconds": 0.1,
+                    "model_forward_seconds": 0.2,
+                    "postprocessing_seconds": 0.05,
+                    "end_to_end_seconds": 0.4,
+                    "mps_framework_allocated_unified_memory_bytes": 100,
+                    "mps_driver_allocated_unified_memory_bytes": 200,
+                }
+                for patient in ("patient_a", "patient_b")
+            ]
+        )
+        timing_path = run_directory / "patient_timing.csv"
+        timing.to_csv(timing_path, index=False)
         (run_directory / "runtime.json").write_text(
             json.dumps(
                 {
                     "status": "completed",
                     "patient_metrics": metrics_path.as_posix(),
                     "patient_metrics_sha256": file_digest(metrics_path),
+                    "patient_timing": timing_path.as_posix(),
+                    "patient_timing_sha256": file_digest(timing_path),
                 }
             ),
             encoding="utf-8",
@@ -120,11 +148,17 @@ def test_external_aggregation_averages_25_frozen_checkpoint_replicates(
         artifact_root=artifact_root,
         checkpoint_output=tmp_path / "checkpoint.csv",
         model_output=tmp_path / "model.csv",
-        expected={"checkpoints_per_model": 25},
+        checkpoint_timing_output=tmp_path / "timing.csv",
+        model_resource_output=tmp_path / "resources.csv",
+        expected={"checkpoints_per_model": 25, "total_patients": 2},
     )
 
     model = pd.read_csv(report["model_patient_metrics"])
     assert report["failed_checkpoint_count"] == 0
     assert report["all_model_patient_groups_have_25_checkpoints"] is True
+    assert report["all_checkpoint_patient_timings_complete"] is True
     assert set(model["valid_checkpoint_count"]) == {25}
     assert set(model["mean_regional_dice"].round(12)) == {0.5}
+    resources = pd.read_csv(report["model_inference_resources"])
+    assert resources.loc[0, "end_to_end_p50_seconds"] == pytest.approx(0.4)
+    assert resources.loc[0, "volumes_per_hour"] == pytest.approx(9000.0)

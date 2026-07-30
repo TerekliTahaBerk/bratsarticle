@@ -23,11 +23,22 @@ measurements:
     - model_forward_only_latency
     - end_to_end_latency
 timing:
+  scope: training_effective_optimizer_steps
   warmup_iterations: 20
   measured_iterations: 100
   synchronize_before_and_after: true
   fixed_batch: true
   fixed_host_load: true
+inference_timing:
+  warmup_cases_per_checkpoint: 0
+  measured_cases_per_checkpoint: all_146
+  justification: Patient-level p50 and p95 use every frozen external volume; model initialization and central metric evaluation are excluded.
+  synchronized_model_forward: true
+  components:
+    - preprocessing
+    - model_forward
+    - postprocessing
+    - end_to_end
 memory_terminology:
   mps: MPS framework-reported allocated unified memory
   cuda_allocated: allocated GPU memory
