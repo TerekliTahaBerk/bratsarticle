@@ -36,6 +36,8 @@ training:
   early_stopping_minimum_delta: 0.001
   early_stopping_patience_validation_checks: 12
   mixed_precision: false
+resource_profiling:
+  protocol: configs/q1q2_v2/resource_profile_protocol.yaml
 validation:
   sliding_window_overlap: 0.5
   sliding_window_mode: gaussian

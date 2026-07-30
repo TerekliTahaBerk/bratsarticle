@@ -67,3 +67,10 @@ BRATS_CACHE_ROOT=cache/brats-mmap-v2 PYTHONPATH=src \
   --allow-reportable-development-training \
   --dataset-root data/brats2020/BraTS2020_TrainingData
 ```
+
+For every reportable main, compute-matched, and loss-interaction run, resource
+profiling discards the first 20 optimizer steps and records the next 100
+synchronized effective-step durations. The same artifact records total
+accelerator-hours, checkpoint size, static parameter/MAC/FLOP profile, and MPS
+framework/driver allocated unified-memory peaks. Gate G rejects incomplete
+timing samples or a changed resource-protocol hash.

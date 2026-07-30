@@ -238,6 +238,19 @@ def _validate_completed_output(
         raise RuntimeError("Official nnU-Net best checkpoint hash differs")
     if metadata.get("checkpoint_final_sha256") != final_hash:
         raise RuntimeError("Official nnU-Net final checkpoint hash differs")
+    timing_samples = cast(
+        list[Any],
+        metadata.get("synchronized_training_step_seconds", []),
+    )
+    timing_target = int(metadata.get("training_step_timing_target_count", -1))
+    if (
+        int(metadata.get("synchronized_training_step_measurement_count", -1))
+        != timing_target
+        or len(timing_samples) != timing_target
+        or timing_target < 1
+        or not all(float(value) > 0.0 for value in timing_samples)
+    ):
+        raise RuntimeError("Official nnU-Net synchronized step timing is incomplete")
     milestone_entries = cast(
         dict[str, dict[str, Any]],
         metadata.get("budget_sensitivity_checkpoints", {}),
@@ -268,6 +281,13 @@ def _validate_completed_output(
         "driver_peak_allocated_unified_memory_bytes": int(
             metadata["driver_peak_allocated_unified_memory_bytes"]
         ),
+        "synchronized_training_step_measurement_count": len(timing_samples),
+        "synchronized_training_step_p50_seconds": float(
+            metadata["synchronized_training_step_p50_seconds"]
+        ),
+        "synchronized_training_step_p95_seconds": float(
+            metadata["synchronized_training_step_p95_seconds"]
+        ),
     }
 
 
@@ -281,6 +301,9 @@ def _run_one_job(
     repository_commit: str,
     fold_pattern: str,
     evaluation_config_path: Path,
+    resource_profile_path: Path,
+    timing_warmup_steps: int,
+    timing_measurement_count: int,
 ) -> None:
     runtime_dir = artifact_root / str(job["run_id"])
     runtime_dir.mkdir(parents=True, exist_ok=True)
@@ -344,6 +367,12 @@ def _run_one_job(
         }
     )
     environment["Q1Q2_CONTINUATION_REQUESTED"] = "1" if continuation else "0"
+    environment["Q1Q2_RESOURCE_PROFILE_PROTOCOL"] = resource_profile_path.as_posix()
+    environment["Q1Q2_RESOURCE_PROFILE_PROTOCOL_SHA256"] = file_digest(
+        resource_profile_path
+    )
+    environment["Q1Q2_TIMING_WARMUP_STEPS"] = str(timing_warmup_steps)
+    environment["Q1Q2_TIMING_MEASUREMENT_COUNT"] = str(timing_measurement_count)
     report: dict[str, Any] = {
         "schema_version": 1,
         "status": "running",
@@ -449,6 +478,15 @@ def run_nnunet_main_queue(
         raise RuntimeError("Reportable nnU-Net training requires a clean repository")
     data = cast(dict[str, Any], config["data"])
     artifacts = cast(dict[str, Any], config["artifacts"])
+    resource_profile_path = Path(str(config["resource_profile_protocol"]))
+    resource_profile = yaml.safe_load(resource_profile_path.read_text(encoding="utf-8"))
+    if not isinstance(resource_profile, dict):
+        raise ValueError("Resource profile protocol must be a mapping")
+    timing = cast(dict[str, Any], resource_profile["timing"])
+    timing_warmup_steps = int(timing["warmup_iterations"])
+    timing_measurement_count = int(timing["measured_iterations"])
+    if timing_warmup_steps < 0 or timing_measurement_count < 1:
+        raise ValueError("Resource timing protocol is invalid")
     raw_root = _required_environment_path(str(data["nnunet_raw_environment"]))
     preprocessed_root = _required_environment_path(
         str(data["nnunet_preprocessed_environment"])
@@ -504,6 +542,9 @@ def run_nnunet_main_queue(
                 repository_commit=commit,
                 fold_pattern=fold_pattern,
                 evaluation_config_path=evaluation_config_path,
+                resource_profile_path=resource_profile_path,
+                timing_warmup_steps=timing_warmup_steps,
+                timing_measurement_count=timing_measurement_count,
             )
             snapshot = nnunet_queue_snapshot(jobs, artifact_root)
             atomic_write_json(state_path, snapshot)

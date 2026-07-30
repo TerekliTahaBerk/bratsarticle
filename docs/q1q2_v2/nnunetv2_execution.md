@@ -239,3 +239,10 @@ identity and geometry are checked against the exact fold, and all regional,
 surface, volume, and lesion metrics are written beside the guarded runtime
 record. Gate G independently re-hashes the official best/final/milestone
 checkpoints and these common metric tables.
+
+The seeded trainer adds measurement only; it does not change the official
+architecture, loss, optimizer, schedule, augmentation, or 1,000-epoch
+duration. It records 100 synchronized optimizer-step durations after 20
+warm-up steps, total accelerator-hours, parameter count, checkpoint hashes,
+and MPS framework/driver allocated unified-memory peaks. The timing protocol
+path and SHA-256 are injected by the guarded queue and checked at Gate G.

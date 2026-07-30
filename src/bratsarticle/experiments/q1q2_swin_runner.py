@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import time
 import traceback
 from collections.abc import Iterator, Mapping
 from dataclasses import asdict, dataclass
@@ -669,11 +670,24 @@ def run_swin_development(
     loss_raw = cast(dict[str, Any], config["loss"])
     training = cast(dict[str, Any], config["training"])
     validation = cast(dict[str, Any], config["validation"])
+    resources = cast(dict[str, Any], config["resource_profiling"])
     artifacts = cast(dict[str, Any], config["artifacts"])
     fold_path = Path(str(data["fold_pattern"]).format(fold=spec.fold))
     canonical_path = Path(str(data["canonical_manifest"]))
     preprocessing_path = Path(str(data["preprocessing"]))
     evaluation_path = Path(str(data["evaluation"]))
+    resource_profile_path = Path(str(resources["protocol"]))
+    resource_protocol_raw = yaml.safe_load(
+        resource_profile_path.read_text(encoding="utf-8")
+    )
+    if not isinstance(resource_protocol_raw, dict):
+        raise ValueError("Resource profile protocol must be a mapping")
+    resource_protocol = cast(dict[str, Any], resource_protocol_raw)
+    timing = cast(dict[str, Any], resource_protocol["timing"])
+    timing_warmup = int(timing["warmup_iterations"])
+    timing_measurements = int(timing["measured_iterations"])
+    if timing_warmup < 0 or timing_measurements < 1:
+        raise ValueError("Resource timing protocol is invalid")
     model_config_path = Path(str(model_raw["config"]))
     catalog_path = Path(str(loss_raw["catalog"]))
     evidence_path = _load_selected_loss(selected_loss_path)[1]
@@ -715,6 +729,7 @@ def run_swin_development(
             "canonical_manifest": file_digest(canonical_path),
             "preprocessing": file_digest(preprocessing_path),
             "evaluation": file_digest(evaluation_path),
+            "resource_profile_protocol": file_digest(resource_profile_path),
             "repeat_tolerance_audit": file_digest(repeat_tolerance_path),
         },
         "external_data_accessed": False,
@@ -760,6 +775,10 @@ def run_swin_development(
         seed=spec.seed,
     )
     model, patch_size = _model(model_config_path)
+    metadata["parameter_count"] = sum(
+        parameter.numel() for parameter in model.parameters() if parameter.requires_grad
+    )
+    atomic_write_json(metadata_path, metadata)
     train_dataset = SwinPatchDataset(
         train_volumes,
         patch_size=patch_size,
@@ -830,6 +849,7 @@ def run_swin_development(
         )
     }
     progress.setdefault("budget_sensitivity_checkpoints", {})
+    progress.setdefault("synchronized_training_step_seconds", [])
     stop = False
     try:
         while state.global_step < spec.maximum_optimizer_steps and not stop:
@@ -837,10 +857,22 @@ def run_swin_development(
             sampler.set_epoch(state.epoch)
             pending_losses: list[float] = []
             optimizer.zero_grad(set_to_none=True)
+            optimizer_step_started: float | None = None
             for batch_index, batch in _batches_from_resume(
                 train_loader,
                 state.batches_consumed_in_epoch,
             ):
+                step_samples = cast(
+                    list[float],
+                    progress["synchronized_training_step_seconds"],
+                )
+                if (
+                    not pending_losses
+                    and state.global_step >= timing_warmup
+                    and len(step_samples) < timing_measurements
+                ):
+                    torch.mps.synchronize()
+                    optimizer_step_started = time.perf_counter()
                 model.train()
                 image = batch["image"].to(device, dtype=torch.float32)
                 label = batch["label"].to(device, dtype=torch.long)
@@ -857,6 +889,10 @@ def run_swin_development(
                 optimizer.zero_grad(set_to_none=True)
                 scheduler.step()
                 state.global_step += 1
+                if optimizer_step_started is not None:
+                    torch.mps.synchronize()
+                    step_samples.append(time.perf_counter() - optimizer_step_started)
+                    optimizer_step_started = None
                 training_loss = float(np.mean(pending_losses))
                 pending_losses.clear()
                 at_validation = (
@@ -1094,6 +1130,32 @@ def run_swin_development(
         resource["checkpoint_size_bytes"] = (
             (checkpoint_dir / "terminal.pt").stat().st_size
             if (checkpoint_dir / "terminal.pt").is_file()
+            else None
+        )
+        step_samples_array = np.asarray(
+            progress.get("synchronized_training_step_seconds", []),
+            dtype=np.float64,
+        )
+        resource["resource_profile_protocol"] = resource_profile_path.as_posix()
+        resource["resource_profile_protocol_sha256"] = file_digest(
+            resource_profile_path
+        )
+        resource["training_step_timing_warmup_iterations"] = timing_warmup
+        resource["synchronized_training_step_seconds"] = step_samples_array.tolist()
+        resource["synchronized_training_step_measurement_count"] = len(
+            step_samples_array
+        )
+        resource["synchronized_training_step_mean_seconds"] = (
+            float(step_samples_array.mean()) if len(step_samples_array) else None
+        )
+        resource["synchronized_training_step_p50_seconds"] = (
+            float(np.quantile(step_samples_array, 0.5))
+            if len(step_samples_array)
+            else None
+        )
+        resource["synchronized_training_step_p95_seconds"] = (
+            float(np.quantile(step_samples_array, 0.95))
+            if len(step_samples_array)
             else None
         )
         atomic_write_json(output_dir / "resource_profile.json", resource)

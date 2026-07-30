@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import time
 import traceback
 from collections.abc import Iterator, Mapping
 from dataclasses import asdict, dataclass
@@ -26,6 +27,7 @@ from bratsarticle.models.configurable_unet import (
     load_model_config,
     model_from_config,
 )
+from bratsarticle.models.matching import profile_model
 from bratsarticle.training.checkpoint import load_checkpoint, save_checkpoint
 from bratsarticle.training.engine import TrainingEngine
 from bratsarticle.training.loss_catalog import (
@@ -483,6 +485,7 @@ def _metadata(
     canonical_manifest_path: Path,
     preprocessing_path: Path,
     evaluation_path: Path,
+    resource_profile_path: Path,
     git_commit: str,
     extra_hashes: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
@@ -498,6 +501,11 @@ def _metadata(
                 else "reportable_development_cross_validation"
             )
         )
+    )
+    model_config = load_model_config(model_config_path)
+    static_profile = profile_model(
+        model_config,
+        input_shape=(1, model_config.input_channels, 240, 240),
     )
     return {
         "schema_version": 1,
@@ -526,8 +534,10 @@ def _metadata(
             "canonical_manifest": file_digest(canonical_manifest_path),
             "preprocessing": file_digest(preprocessing_path),
             "evaluation": file_digest(evaluation_path),
+            "resource_profile_protocol": file_digest(resource_profile_path),
             **dict(extra_hashes or {}),
         },
+        "static_profile": asdict(static_profile),
         "external_data_accessed": False,
         "legacy_internal_test_accessed": False,
         "status": "running",
@@ -630,6 +640,7 @@ def run_native_development(
     models = cast(dict[str, Any], config["models"])
     losses = cast(dict[str, Any], config["losses"])
     training = cast(dict[str, Any], config["training"])
+    resources = cast(dict[str, Any], config["resource_profiling"])
     artifacts = cast(dict[str, Any], config["artifacts"])
     matrix_path = Path(str(models["matrix"]))
     model_entry = _model_entry(matrix_path, spec.model_id)
@@ -641,6 +652,13 @@ def run_native_development(
     canonical_manifest_path = Path(str(data["canonical_manifest"]))
     preprocessing_path = Path(str(data["preprocessing"]))
     evaluation_path = Path(str(data["evaluation"]))
+    resource_profile_path = Path(str(resources["protocol"]))
+    resource_protocol = _load_yaml(resource_profile_path)
+    timing = cast(dict[str, Any], resource_protocol["timing"])
+    timing_warmup = int(timing["warmup_iterations"])
+    timing_measurements = int(timing["measured_iterations"])
+    if timing_warmup < 0 or timing_measurements < 1:
+        raise ValueError("Resource timing protocol is invalid")
     artifact_root = Path(str(artifacts["root"])).resolve()
     output_dir = artifact_root / spec.run_id
     assert_output_paths_safe([output_dir], [dataset_root.resolve()])
@@ -671,6 +689,7 @@ def run_native_development(
         canonical_manifest_path=canonical_manifest_path,
         preprocessing_path=preprocessing_path,
         evaluation_path=evaluation_path,
+        resource_profile_path=resource_profile_path,
         git_commit=git_commit,
         extra_hashes=extra_hashes,
     )
@@ -797,6 +816,7 @@ def run_native_development(
         else None
     )
     progress.setdefault("budget_sensitivity_checkpoints", {})
+    progress.setdefault("synchronized_training_step_seconds", [])
     stop = False
     try:
         while engine.state.global_step < spec.maximum_optimizer_steps and not stop:
@@ -805,8 +825,22 @@ def run_native_development(
             sampler.set_epoch(epoch)
             consumed = engine.state.batches_consumed_in_epoch
             for batch_index, batch in _batches_from_resume(train_loader, consumed):
+                step_samples = cast(
+                    list[float],
+                    progress["synchronized_training_step_seconds"],
+                )
+                measure_step = (
+                    engine.state.global_step >= timing_warmup
+                    and len(step_samples) < timing_measurements
+                )
+                if measure_step:
+                    torch.mps.synchronize()
+                    step_started = time.perf_counter()
                 training_loss = engine.train_step(batch["image"], batch["label"])
                 scheduler.step()
+                if measure_step:
+                    torch.mps.synchronize()
+                    step_samples.append(time.perf_counter() - step_started)
                 engine.state.batches_consumed_in_epoch = batch_index + 1
                 if (
                     maximum_accelerator_hours is not None
@@ -1054,6 +1088,32 @@ def run_native_development(
         resource["checkpoint_size_bytes"] = (
             (checkpoint_dir / "terminal.pt").stat().st_size
             if (checkpoint_dir / "terminal.pt").is_file()
+            else None
+        )
+        step_samples_array = np.asarray(
+            progress.get("synchronized_training_step_seconds", []),
+            dtype=np.float64,
+        )
+        resource["resource_profile_protocol"] = resource_profile_path.as_posix()
+        resource["resource_profile_protocol_sha256"] = file_digest(
+            resource_profile_path
+        )
+        resource["training_step_timing_warmup_iterations"] = timing_warmup
+        resource["synchronized_training_step_seconds"] = step_samples_array.tolist()
+        resource["synchronized_training_step_measurement_count"] = len(
+            step_samples_array
+        )
+        resource["synchronized_training_step_mean_seconds"] = (
+            float(step_samples_array.mean()) if len(step_samples_array) else None
+        )
+        resource["synchronized_training_step_p50_seconds"] = (
+            float(np.quantile(step_samples_array, 0.5))
+            if len(step_samples_array)
+            else None
+        )
+        resource["synchronized_training_step_p95_seconds"] = (
+            float(np.quantile(step_samples_array, 0.95))
+            if len(step_samples_array)
             else None
         )
         atomic_write_json(output_dir / "resource_profile.json", resource)

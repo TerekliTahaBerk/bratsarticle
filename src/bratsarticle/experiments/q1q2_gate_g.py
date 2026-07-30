@@ -180,6 +180,10 @@ def _native_hash_inputs(
     problems: list[str],
 ) -> None:
     hashes = cast(dict[str, Any], metadata.get("hashes", {}))
+    runner = _load_yaml(runner_config_path)
+    resource_profile_path = Path(
+        str(cast(dict[str, Any], runner["resource_profiling"])["protocol"])
+    )
     current = {
         "runner_config": runner_config_path,
         "model_matrix": Path("configs/q1q2_v2/model_matrix.yaml"),
@@ -191,6 +195,7 @@ def _native_hash_inputs(
         "preprocessing": Path("configs/data/preprocessing_pilot_cached.yaml"),
         "evaluation": Path("configs/q1q2_v2/evaluation.yaml"),
         "loss_catalog": Path("configs/losses/catalog.yaml"),
+        "resource_profile_protocol": resource_profile_path,
     }
     if spec.stage != "loss_screen":
         current["selected_loss_config"] = Path("configs/q1q2_v2/selected_loss.yaml")
@@ -347,8 +352,44 @@ def _audit_native_run(
         / 3600.0
     )
     completed_steps = int(resource.get("completed_optimizer_steps", -1))
+    resource_protocol_path = Path(
+        str(resource.get("resource_profile_protocol", "missing"))
+    )
+    if resource_protocol_path.is_file():
+        resource_protocol = _load_yaml(resource_protocol_path)
+        required_timing_count = int(
+            cast(dict[str, Any], resource_protocol["timing"])["measured_iterations"]
+        )
+        resource_protocol_hash_valid = resource.get(
+            "resource_profile_protocol_sha256"
+        ) == file_digest(resource_protocol_path)
+    else:
+        required_timing_count = -1
+        resource_protocol_hash_valid = False
     if elapsed_hours <= 0.0 or completed_steps <= 0:
         problems.append(f"{spec.run_id}: resource profile is incomplete")
+    if (
+        not resource_protocol_hash_valid
+        or int(resource.get("synchronized_training_step_measurement_count", -1))
+        != required_timing_count
+        or len(
+            cast(
+                list[Any],
+                resource.get("synchronized_training_step_seconds", []),
+            )
+        )
+        != required_timing_count
+    ):
+        problems.append(f"{spec.run_id}: synchronized step timing is incomplete")
+    static_profile = cast(dict[str, Any], metadata.get("static_profile", {}))
+    if adapter == "native_configurable_unet" and (
+        int(static_profile.get("parameter_count", 0)) <= 0
+        or int(static_profile.get("macs_per_slice", 0)) <= 0
+        or int(static_profile.get("flops_per_slice", 0)) <= 0
+    ):
+        problems.append(f"{spec.run_id}: native static profile is incomplete")
+    if adapter == "monai_swinunetr" and int(metadata.get("parameter_count", 0)) <= 0:
+        problems.append(f"{spec.run_id}: Swin parameter count is incomplete")
     if problems:
         return None, problems
     return (
@@ -445,6 +486,11 @@ def _audit_nnunet_run(
         expected_sha256=str(runtime.get("official_metadata_sha256", "")),
     )
     metadata = _load_json(metadata_path) if metadata_hash else {}
+    nnunet_runner = _load_yaml(Path("configs/q1q2_v2/nnunet_m1_runner.yaml"))
+    resource_profile_path = Path(str(nnunet_runner["resource_profile_protocol"]))
+    resource_profile = _load_yaml(resource_profile_path)
+    resource_timing = cast(dict[str, Any], resource_profile["timing"])
+    required_timing_count = int(resource_timing["measured_iterations"])
     if (
         metadata.get("repository_dirty_at_start") is not False
         or metadata.get("git_commit") != commit
@@ -455,6 +501,21 @@ def _audit_nnunet_run(
         or int(metadata.get("completed_epochs", -1)) != required_epochs
     ):
         problems.append(f"{run_id}: official completion/conduct check failed")
+    timing_samples = cast(
+        list[Any],
+        metadata.get("synchronized_training_step_seconds", []),
+    )
+    if (
+        metadata.get("resource_profile_protocol") != resource_profile_path.as_posix()
+        or metadata.get("resource_profile_protocol_sha256")
+        != file_digest(resource_profile_path)
+        or int(metadata.get("training_step_timing_target_count", -1))
+        != required_timing_count
+        or int(metadata.get("synchronized_training_step_measurement_count", -1))
+        != required_timing_count
+        or len(timing_samples) != required_timing_count
+    ):
+        problems.append(f"{run_id}: official synchronized step timing is incomplete")
     defaults = cast(dict[str, Any], metadata.get("official_defaults", {}))
     initial_lr = float(defaults.get("initial_lr", 0.0))
     final_lr = float(metadata.get("final_learning_rate", float("inf")))

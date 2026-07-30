@@ -26,6 +26,9 @@ def test_nnunet_runner_prohibits_external_and_legacy_access() -> None:
         20260733,
         20260734,
     ]
+    assert config["resource_profile_protocol"] == (
+        "configs/q1q2_v2/resource_profile_protocol.yaml"
+    )
 
 
 def test_official_output_directory_is_exact_and_does_not_glob() -> None:

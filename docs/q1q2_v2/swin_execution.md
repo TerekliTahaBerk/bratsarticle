@@ -55,3 +55,9 @@ full-volume sliding-window pass produces every common regional, surface, and
 lesion metric. This reportable table is hash-linked to the checkpoint and to
 the exact fold, model, and seed. Gate G rejects a selection-only Dice table as
 insufficient evidence.
+
+Resource timing is defined at the effective optimizer-step level, so each
+Swin measurement includes the frozen two-microbatch gradient accumulation.
+After 20 warm-up optimizer steps, 100 synchronized step durations are stored
+with total accelerator-hours, parameter count, checkpoint size, and MPS
+allocated unified-memory peaks. Gate G requires the complete timing vector.

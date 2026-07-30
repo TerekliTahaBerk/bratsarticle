@@ -30,6 +30,7 @@ training:
   continuation_bitwise_reproducibility_claimed: false
   require_best_checkpoint: true
   require_final_checkpoint: true
+resource_profile_protocol: configs/q1q2_v2/resource_profile_protocol.yaml
 artifacts:
   root: artifacts/q1q2_v2/nnunet_runs
   runtime_root: artifacts/q1q2_v2/queue_runtime

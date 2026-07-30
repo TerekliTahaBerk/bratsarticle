@@ -27,6 +27,10 @@ def test_gate_g_protocol_requires_all_600_prespecified_runs() -> None:
     assert counts["native_loss_interaction"] == 100
     assert counts["total"] == 600
     assert protocol["external_inference_permitted"] is False
+    assert (
+        "configs/q1q2_v2/resource_profile_protocol.yaml"
+        in protocol["required_analysis_inputs"]
+    )
 
 
 def test_gate_g_external_guard_rejects_any_prediction_access(

@@ -15,11 +15,13 @@ import random
 import subprocess
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import torch
-from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
+from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import (  # type: ignore[import-untyped]
+    nnUNetTrainer,
+)
 
 DEFAULT_DEVICE = torch.device("cuda")
 Q1Q2_BUDGET_SENSITIVITY_STEPS = frozenset({2_000, 10_000})
@@ -72,7 +74,7 @@ def _atomic_json(path: Path, payload: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
-class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
+class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):  # type: ignore[misc]
     """Preserve official training defaults while enforcing a declared seed."""
 
     Q1Q2_SEED: int | None = None
@@ -111,6 +113,16 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
         self.q1q2_elapsed_before_session = 0.0
         self.q1q2_framework_peak_bytes = 0
         self.q1q2_driver_peak_bytes = 0
+        self.q1q2_timing_warmup_steps = int(
+            os.environ.get("Q1Q2_TIMING_WARMUP_STEPS", "20")
+        )
+        self.q1q2_timing_measurement_count = int(
+            os.environ.get("Q1Q2_TIMING_MEASUREMENT_COUNT", "100")
+        )
+        if self.q1q2_timing_warmup_steps < 0 or self.q1q2_timing_measurement_count < 1:
+            raise RuntimeError("Q1/Q2 resource timing contract is invalid")
+        self.q1q2_train_step_calls = 0
+        self.q1q2_training_step_seconds: list[float] = []
         self._seed_all(device)
         super().__init__(plans, configuration, fold, dataset_json, device)
         self.logger.update_config(
@@ -159,6 +171,38 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
     def _metadata_path(self) -> Path:
         return Path(self.output_folder) / "q1q2_run_metadata.json"
 
+    def _synchronize(self) -> None:
+        if self.device.type == "mps":
+            torch.mps.synchronize()
+        elif self.device.type == "cuda":
+            torch.cuda.synchronize(self.device)
+
+    def _timing_payload(self) -> dict[str, Any]:
+        values = np.asarray(self.q1q2_training_step_seconds, dtype=np.float64)
+        return {
+            "resource_profile_protocol": os.environ.get(
+                "Q1Q2_RESOURCE_PROFILE_PROTOCOL",
+                "unavailable",
+            ),
+            "resource_profile_protocol_sha256": os.environ.get(
+                "Q1Q2_RESOURCE_PROFILE_PROTOCOL_SHA256",
+                "unavailable",
+            ),
+            "training_step_timing_warmup_iterations": (self.q1q2_timing_warmup_steps),
+            "training_step_timing_target_count": (self.q1q2_timing_measurement_count),
+            "synchronized_training_step_seconds": values.tolist(),
+            "synchronized_training_step_measurement_count": len(values),
+            "synchronized_training_step_mean_seconds": (
+                float(values.mean()) if len(values) else None
+            ),
+            "synchronized_training_step_p50_seconds": (
+                float(np.quantile(values, 0.5)) if len(values) else None
+            ),
+            "synchronized_training_step_p95_seconds": (
+                float(np.quantile(values, 0.95)) if len(values) else None
+            ),
+        }
+
     def _update_metadata(self, **updates: Any) -> None:
         path = self._metadata_path()
         payload = (
@@ -190,11 +234,19 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
                     0,
                 )
             )
+            self.q1q2_training_step_seconds = [
+                float(value)
+                for value in existing.get(
+                    "synchronized_training_step_seconds",
+                    [],
+                )
+            ]
+            self.q1q2_train_step_calls = int(
+                existing.get("completed_optimizer_steps", 0)
+            )
         self.q1q2_started_at = time.perf_counter()
         self._sample_mps_memory()
-        split_path = Path(self.preprocessed_dataset_folder_base) / (
-            "splits_final.json"
-        )
+        split_path = Path(self.preprocessed_dataset_folder_base) / ("splits_final.json")
         payload = {
             "schema_version": 1,
             "trainer": self.__class__.__name__,
@@ -227,13 +279,9 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
             "official_defaults": {
                 "initial_lr": self.initial_lr,
                 "weight_decay": self.weight_decay,
-                "oversample_foreground_percent": (
-                    self.oversample_foreground_percent
-                ),
+                "oversample_foreground_percent": (self.oversample_foreground_percent),
                 "iterations_per_epoch": self.num_iterations_per_epoch,
-                "validation_iterations_per_epoch": (
-                    self.num_val_iterations_per_epoch
-                ),
+                "validation_iterations_per_epoch": (self.num_val_iterations_per_epoch),
                 "epochs": self.num_epochs,
                 "deep_supervision": self.enable_deep_supervision,
             },
@@ -243,33 +291,43 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
                 "checkpoints do not serialize every augmentation RNG state."
             ),
             "status": "running",
+            **self._timing_payload(),
         }
         _atomic_json(self._metadata_path(), payload)
 
     def train_step(self, batch: dict[str, torch.Tensor]) -> dict[str, Any]:
-        result = super().train_step(batch)
+        measure = (
+            self.q1q2_train_step_calls >= self.q1q2_timing_warmup_steps
+            and len(self.q1q2_training_step_seconds)
+            < self.q1q2_timing_measurement_count
+        )
+        if measure:
+            self._synchronize()
+            started = time.perf_counter()
+        result = cast(dict[str, Any], super().train_step(batch))
+        if measure:
+            self._synchronize()
+            self.q1q2_training_step_seconds.append(time.perf_counter() - started)
+        self.q1q2_train_step_calls += 1
         self._sample_mps_memory()
         return result
 
     def validation_step(self, batch: dict[str, torch.Tensor]) -> dict[str, Any]:
-        result = super().validation_step(batch)
+        result = cast(dict[str, Any], super().validation_step(batch))
         self._sample_mps_memory()
         return result
 
     def on_epoch_end(self) -> None:
         super().on_epoch_end()
         self._sample_mps_memory()
-        completed_optimizer_steps = (
-            int(self.current_epoch) * int(self.num_iterations_per_epoch)
+        completed_optimizer_steps = int(self.current_epoch) * int(
+            self.num_iterations_per_epoch
         )
         if completed_optimizer_steps in Q1Q2_BUDGET_SENSITIVITY_STEPS:
             self.save_checkpoint(
                 str(
                     Path(self.output_folder)
-                    / (
-                        "checkpoint_q1q2_step_"
-                        f"{completed_optimizer_steps}.pth"
-                    )
+                    / (f"checkpoint_q1q2_step_{completed_optimizer_steps}.pth")
                 )
             )
         cumulative = self.q1q2_elapsed_before_session + (
@@ -282,9 +340,8 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
             framework_peak_allocated_unified_memory_bytes=(
                 self.q1q2_framework_peak_bytes
             ),
-            driver_peak_allocated_unified_memory_bytes=(
-                self.q1q2_driver_peak_bytes
-            ),
+            driver_peak_allocated_unified_memory_bytes=(self.q1q2_driver_peak_bytes),
+            **self._timing_payload(),
         )
 
     def on_train_end(self) -> None:
@@ -293,10 +350,7 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
         checkpoint_best = Path(self.output_folder) / "checkpoint_best.pth"
         checkpoint_final = Path(self.output_folder) / "checkpoint_final.pth"
         milestone_paths = {
-            str(step): (
-                Path(self.output_folder)
-                / f"checkpoint_q1q2_step_{step}.pth"
-            )
+            str(step): (Path(self.output_folder) / f"checkpoint_q1q2_step_{step}.pth")
             for step in sorted(Q1Q2_BUDGET_SENSITIVITY_STEPS)
         }
         session_elapsed_seconds = time.perf_counter() - self.q1q2_started_at
@@ -313,9 +367,8 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
             framework_peak_allocated_unified_memory_bytes=(
                 self.q1q2_framework_peak_bytes
             ),
-            driver_peak_allocated_unified_memory_bytes=(
-                self.q1q2_driver_peak_bytes
-            ),
+            driver_peak_allocated_unified_memory_bytes=(self.q1q2_driver_peak_bytes),
+            **self._timing_payload(),
             checkpoint_best_sha256=(
                 _file_sha256(checkpoint_best)
                 if checkpoint_best.is_file()
@@ -329,9 +382,7 @@ class Q1Q2SeededNNUNetTrainer(nnUNetTrainer):
             budget_sensitivity_checkpoints={
                 step: {
                     "path": path.as_posix(),
-                    "sha256": (
-                        _file_sha256(path) if path.is_file() else "missing"
-                    ),
+                    "sha256": (_file_sha256(path) if path.is_file() else "missing"),
                 }
                 for step, path in milestone_paths.items()
             },
