@@ -41,9 +41,11 @@ required_analysis_inputs:
   - configs/q1q2_v2/reproducibility_execution.yaml
   - configs/q1q2_v2/claim_execution.yaml
   - configs/q1q2_v2/reviewer_response_execution.yaml
+  - configs/q1q2_v2/claim_2024_execution.yaml
   - manuscript/q1q2_v2_manuscript.template.md
   - manuscript/q1q2_v2_supplement.template.md
   - manuscript/q1q2_v2_response_to_reviewer.template.md
+  - submission/q1q2_v2_claim_2024_checklist.template.md
   - environment/q1q2_v2-environment.json
   - environment/q1q2_v2-requirements-lock.txt
   - reports/q1q2_v2/hardware_preflight.json

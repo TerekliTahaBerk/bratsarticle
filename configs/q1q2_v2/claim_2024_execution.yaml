@@ -1,0 +1,72 @@
+schema_version: 1
+status: template_complete_final_layout_pending
+source_guideline:
+  title: "Checklist for Artificial Intelligence in Medical Imaging: 2024 Update"
+  doi: "10.1148/ryai.240300"
+template: submission/q1q2_v2_claim_2024_checklist.template.md
+expected_item_ids:
+  - C01
+  - C02
+  - C03
+  - C04
+  - C05
+  - C06
+  - C07
+  - C08
+  - C09
+  - C10
+  - C11
+  - C12
+  - C13
+  - C14
+  - C15
+  - C16
+  - C17
+  - C18
+  - C19
+  - C20
+  - C21
+  - C22
+  - C23
+  - C24
+  - C25
+  - C26
+  - C27
+  - C28
+  - C29
+  - C30
+  - C31
+  - C32
+  - C33
+  - C34
+  - C35
+  - C36
+  - C37
+  - C38
+  - C39
+  - C40
+  - C41
+  - C42
+  - C43
+  - C44
+allowed_statuses:
+  - yes_pending_final_page_lines
+  - partial_pending_final_results
+  - "no"
+  - not_applicable
+required_evidence:
+  - manuscript/q1q2_v2_manuscript.template.md
+  - manuscript/q1q2_v2_supplement.template.md
+  - manuscript/q1q2_v2_response_to_reviewer.template.md
+  - configs/q1q2_v2/claim_execution.yaml
+  - configs/q1q2_v2/statistical_analysis_plan.yaml
+  - configs/q1q2_v2/evaluation.yaml
+  - configs/q1q2_v2/reproducibility_execution.yaml
+  - reports/q1q2_v2/external_gate_c_summary.json
+  - reports/q1q2_v2/external_precision_analysis.json
+  - submission/AUTHOR_CONFIRMATION_REQUIRED.md
+finalization:
+  require_final_page_and_line_for_yes_or_partial: true
+  prohibit_unresolved_result_tokens: true
+  require_author_confirmation_for_declarations: true
+  output_pdf: submission/claim_2024_checklist.pdf

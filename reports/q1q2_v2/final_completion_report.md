@@ -149,8 +149,8 @@ superseded/unrealized legacy A100 boundary are also documented.
 Executed on the updated environment:
 
 - Ruff: PASS.
-- Strict mypy: PASS for 75 source files.
-- Pytest: **210 passed, 2 skipped**.
+- Strict mypy: PASS for 76 source files.
+- Pytest: **211 passed, 2 skipped**.
 - The skips are the CUDA-only metric-invariance test and the integration check
   requiring final Gate G checkpoints.
 - Real MPS matrix and Swin UNETR forward/backward smokes: PASS.
@@ -186,6 +186,11 @@ result and binds all numerical Results text to the Gate J registry. A
 Results, figures, tables, abstract effect estimates and the journal-formatted
 documents remain unavailable until the 615 development runs and external
 inference complete. Legacy manuscript files remain legacy evidence.
+
+The Gate K CLAIM 2024 template covers all 44 guideline items: 27 are
+Yes pending final page/line references, 11 are Partial pending results, two
+remain No, and four are Not Applicable. It is not represented as a completed
+submission checklist before final results, layout, and author confirmation.
 
 ## 18. Reviewer response
 

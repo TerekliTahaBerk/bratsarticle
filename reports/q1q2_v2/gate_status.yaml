@@ -36,7 +36,7 @@ gates:
     evidence: configs/q1q2_v2/claim_execution.yaml
   K:
     status: response_and_manuscript_templates_complete_results_layout_and_author_confirmations_pending
-    evidence: configs/q1q2_v2/reviewer_response_execution.yaml
+    evidence: configs/q1q2_v2/claim_2024_execution.yaml
 required_user_action:
   selected_host: Apple M1 Max 32-core GPU with 32-GB unified memory
   immediate: none_for_bounded_15_job_loss_screen
