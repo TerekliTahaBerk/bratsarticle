@@ -3,12 +3,23 @@ verified_on: "2026-07-30"
 source: "https://pubs.rsna.org/page/ai/author-instructions"
 article_type: Original Research
 review: double_anonymized
+submission_text_format:
+  required_extension: docx
+  office_version: "2010_or_later"
+  font: Arial
+  font_size_points: 11
+  line_spacing: double
+  alignment: left
+  page_numbers_in_manuscript: false
+  maximum_abbreviations: 10
 limits:
   main_text_words_introduction_through_discussion: 3000
   structured_abstract_words: 250
   references: 35
   figures: 6
   tables: 4
+  summary_statement_characters: 255
+  supplemental_material_pages: 12
 required:
   structured_abstract_sections:
     - Purpose
@@ -23,6 +34,33 @@ required:
   full_title_page: true
   anonymized_manuscript: true
   data_sharing_statement: true
+  figures_combined_with_legends_for_initial_submission: true
+  tables_at_end_of_manuscript_one_per_page: true
+  merged_table_cells_prohibited: true
+cover_letter_required_content:
+  - manuscript_title
+  - complete_author_list
+  - subject_overlap_statement
+  - conflicts_and_industry_support
+  - sole_submission_confirmation
+full_title_page_required_content:
+  - manuscript_title
+  - complete_author_names_degrees_and_affiliations
+  - originating_institution_postal_address
+  - corresponding_author_phone_email_and_postal_address
+  - funding
+  - manuscript_type
+  - main_text_word_count
+  - unanonymized_acknowledgments
+  - data_sharing_statement
+anonymized_manuscript_order:
+  - abbreviated_title_page
+  - structured_abstract
+  - main_body
+  - anonymized_acknowledgments
+  - references
+  - figure_legends
+  - tables
 submission_cost:
   initial_submission: free
   non_open_access_publication: no_charge
@@ -33,3 +71,5 @@ final_recheck_required:
   - institutional_agreement
   - disclosure_policy
   - file_format_requirements
+  - supplement_page_limit
+  - figure_submission_requirements

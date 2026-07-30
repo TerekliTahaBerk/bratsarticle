@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "confirmed_by_all_authors": false,
+  "confirmation_date": null,
+  "manuscript_title": "Capacity- and Compute-Matched Evaluation of Published BU-Net Components with Multi-Seed Development and Independent External Testing for Multimodal Glioma Segmentation",
+  "short_title": "Capacity-controlled evaluation of BU-Net components",
+  "article_type": "Original Research",
+  "authors": [],
+  "affiliations": [],
+  "originating_institution": {
+    "name": null,
+    "street_address": null,
+    "city": null,
+    "postal_code": null,
+    "country": null
+  },
+  "corresponding_author": {
+    "name": null,
+    "degrees": null,
+    "email": null,
+    "telephone": null,
+    "street_address": null,
+    "city": null,
+    "postal_code": null,
+    "country": null
+  },
+  "credit_contributions": [],
+  "funding_statement": null,
+  "funder_role": null,
+  "conflict_of_interest_statement": null,
+  "industry_support_statement": null,
+  "ethics_statement": null,
+  "acknowledgments": null,
+  "subject_overlap_statement": null,
+  "sole_submission_confirmed": false,
+  "dual_first_authorship": false,
+  "dual_first_authorship_explanation": null,
+  "checkpoint_distribution_approved": false,
+  "generative_ai_disclosure": null,
+  "data_sharing_statement": null,
+  "open_access_route_confirmed": false
+}

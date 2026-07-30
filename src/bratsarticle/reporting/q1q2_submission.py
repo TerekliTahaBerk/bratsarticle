@@ -79,6 +79,8 @@ def audit_radiology_ai_contract(
         "references",
         "figures",
         "tables",
+        "summary_statement_characters",
+        "supplemental_material_pages",
     }
     invalid_limit = any(value <= 0 for value in limits.values())
     if set(limits) != required_limit_keys or invalid_limit:
@@ -93,6 +95,25 @@ def audit_radiology_ai_contract(
     }
     if any(required.get(key) is not True for key in boolean_requirements):
         raise RuntimeError("Radiology: AI required submission elements are incomplete")
+    text_format = cast(dict[str, Any], config["submission_text_format"])
+    expected_text_format = {
+        "required_extension": "docx",
+        "font": "Arial",
+        "font_size_points": 11,
+        "line_spacing": "double",
+        "alignment": "left",
+        "page_numbers_in_manuscript": False,
+        "maximum_abbreviations": 10,
+    }
+    if any(
+        text_format.get(key) != value
+        for key, value in expected_text_format.items()
+    ):
+        raise RuntimeError("Radiology: AI submission text-format contract is invalid")
+    if len(cast(list[str], config["cover_letter_required_content"])) != 5:
+        raise RuntimeError("Radiology: AI cover-letter content contract is incomplete")
+    if len(cast(list[str], config["full_title_page_required_content"])) != 9:
+        raise RuntimeError("Radiology: AI full-title-page contract is incomplete")
     final_rechecks = cast(list[str], config["final_recheck_required"])
     if not final_rechecks:
         raise RuntimeError("Radiology: AI final policy recheck cannot be empty")
@@ -101,6 +122,7 @@ def audit_radiology_ai_contract(
         "verified_on": str(config["verified_on"]),
         "article_type": str(config["article_type"]),
         "limits": limits,
+        "submission_text_format": text_format,
         "final_recheck_count": len(final_rechecks),
     }
 

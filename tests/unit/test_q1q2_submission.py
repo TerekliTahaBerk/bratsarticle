@@ -26,3 +26,8 @@ def test_radiology_ai_contract_has_verified_original_research_limits() -> None:
     assert report["limits"]["references"] == 35
     assert report["limits"]["figures"] == 6
     assert report["limits"]["tables"] == 4
+    assert report["limits"]["summary_statement_characters"] == 255
+    assert report["limits"]["supplemental_material_pages"] == 12
+    assert report["submission_text_format"]["required_extension"] == "docx"
+    assert report["submission_text_format"]["line_spacing"] == "double"
+    assert report["submission_text_format"]["page_numbers_in_manuscript"] is False

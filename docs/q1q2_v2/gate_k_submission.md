@@ -29,3 +29,32 @@ Finalization requires:
 
 The tracked Markdown checklist is a source template, not the final signed
 author declaration or submission PDF.
+
+## Pre-results submission preview
+
+A guarded Radiology: Artificial Intelligence package is generated at
+`submission/generated/pre_results/`. It contains:
+
+- anonymized manuscript;
+- full title page;
+- cover letter;
+- supplement;
+- response to the reviewer;
+- CLAIM 2024 checklist; and
+- data/code availability statement.
+
+Every document is available as Markdown, DOCX, and PDF. The DOCX files use
+Letter paper, 1-inch margins, Arial 11-point body text, double spacing, left
+alignment, and no manuscript page-number field. The source audit records 203
+abstract words, 2,557 Introduction-through-Discussion words, and 16
+references. All 52 rendered pages passed visual inspection; the checklist
+tables use fixed geometry, explicit page headers, intact rows, and no merged
+cells.
+
+This directory is deliberately **not a submission package**. Its manifest has
+status `preview_not_for_submission`, all result and author-dependent fields
+remain conspicuously marked, and every page begins with a red pre-results
+warning where applicable. Final mode hard-fails unless Gates H, I, and J pass,
+author metadata is confirmed, the CLAIM checklist has real page/line
+references, no pending marker remains, and the final supplement is within the
+12-page limit.

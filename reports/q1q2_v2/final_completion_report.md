@@ -195,6 +195,16 @@ Yes pending final page/line references, 11 are Partial pending results, two
 remain No, and four are Not Applicable. It is not represented as a completed
 submission checklist before final results, layout, and author confirmation.
 
+A guarded pre-results Radiology: Artificial Intelligence package is also
+available in `submission/generated/pre_results/`. It contains seven documents
+in Markdown, DOCX, and PDF form, including the anonymized manuscript, title
+page, cover letter, supplement, reviewer response, CLAIM checklist, and
+data/code statement. The package passes the journal-format source audit and a
+52-page visual layout audit, but its manifest is explicitly
+`preview_not_for_submission`. Final-mode generation is blocked by Gates H–J,
+confirmed author metadata, real page/line references, unresolved result
+markers, the live journal-policy recheck, and the supplement page limit.
+
 ## 18. Reviewer response
 
 A 19-concern v2 response template is present at
@@ -219,5 +229,7 @@ The user has authorized execution on the selected Apple M1 Max. No immediate
 user action is required for the active bounded loss screen. The frozen full
 matrix remains a multi-month serial MPS workload; five patient folds and five
 common seeds cannot be silently reduced. Gates F–H, the external result, final
-manuscript, figures/tables, rendered reviewer response and submission package
-remain incomplete until real artifacts exist.
+result-bearing manuscript, figures/tables, reviewer-response substitutions,
+and genuinely submission-ready package remain incomplete until real artifacts
+exist. The generated pre-results package is a format-verified preview and
+cannot satisfy Gate K.

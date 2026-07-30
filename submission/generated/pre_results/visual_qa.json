@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "pass_preview_only",
+  "scope": "pre_results_not_for_submission",
+  "inspection_date": "2026-07-30",
+  "total_pages": 52,
+  "documents": [
+    {
+      "stem": "01_anonymized_manuscript",
+      "pages": 18,
+      "status": "pass"
+    },
+    {
+      "stem": "02_full_title_page",
+      "pages": 2,
+      "status": "pass"
+    },
+    {
+      "stem": "03_cover_letter",
+      "pages": 2,
+      "status": "pass"
+    },
+    {
+      "stem": "04_supplement",
+      "pages": 8,
+      "status": "pass"
+    },
+    {
+      "stem": "05_response_to_reviewer",
+      "pages": 16,
+      "status": "pass"
+    },
+    {
+      "stem": "06_claim_2024_checklist",
+      "pages": 5,
+      "status": "pass"
+    },
+    {
+      "stem": "07_data_and_code_availability",
+      "pages": 1,
+      "status": "pass"
+    }
+  ],
+  "checks": {
+    "no_clipped_text_or_objects": true,
+    "no_overlapping_text_or_objects": true,
+    "no_blank_pages": true,
+    "preview_warning_visible": true,
+    "claim_rows_do_not_split": true,
+    "claim_header_present_on_each_table_page": true,
+    "claim_tables_have_no_merged_cells": true
+  },
+  "submission_ready": false,
+  "note": "Visual QA verifies layout only. Scientific results and author declarations remain unresolved."
+}

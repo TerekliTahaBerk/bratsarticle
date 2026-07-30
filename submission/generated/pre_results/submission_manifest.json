@@ -1,0 +1,242 @@
+{
+  "article_type": "Original Research",
+  "audit": {
+    "abstract_words": 203,
+    "claim_tokens": 0,
+    "docx_layout_pass": true,
+    "format_limits_pass": true,
+    "main_text_words_introduction_through_discussion": 2557,
+    "mode": "preview",
+    "pending_markers": 133,
+    "reference_count": 16,
+    "submission_ready": false,
+    "unresolved_tokens": 0
+  },
+  "builder_base_commit": "c5ef6356ab4bd12b1e84ba66e052ed60212d9eec",
+  "files": [
+    {
+      "bytes": 25625,
+      "path": "submission/generated/pre_results/01_anonymized_manuscript.docx",
+      "sha256": "e7c189730fb6bd8c04f9cf5ebef7a5f2a73b26ab899df030dbf63aa23e1793d9"
+    },
+    {
+      "bytes": 28031,
+      "path": "submission/generated/pre_results/01_anonymized_manuscript.md",
+      "sha256": "377d2dc631726eae775ddd4ccd5a31cf8011ea561f762d2a0958927651a7d2e1"
+    },
+    {
+      "bytes": 152221,
+      "pages": 18,
+      "path": "submission/generated/pre_results/01_anonymized_manuscript.pdf",
+      "sha256": "c4ce0d1e34bad849d241eb65587852518c21bfcf00b67175a5bd82a71701f758"
+    },
+    {
+      "bytes": 13209,
+      "path": "submission/generated/pre_results/02_full_title_page.docx",
+      "sha256": "ae45849c7ec1322c216ffe49f2823ae81a74f92a82e06d1b0e787a144ee2710b"
+    },
+    {
+      "bytes": 2449,
+      "path": "submission/generated/pre_results/02_full_title_page.md",
+      "sha256": "f67a613fec283782ca696ec3d03baf930793f131b48b71bc11b8f383a283c0c6"
+    },
+    {
+      "bytes": 61094,
+      "pages": 2,
+      "path": "submission/generated/pre_results/02_full_title_page.pdf",
+      "sha256": "4f30ab1b4fc7cb7fe8da1401b53462ace3e0d7428d8ec5f3090cbc7003fd423e"
+    },
+    {
+      "bytes": 13090,
+      "path": "submission/generated/pre_results/03_cover_letter.docx",
+      "sha256": "0ca184b2d2e8039c75c518de29add0653e497c2b63dd491017b219f45e82dbf2"
+    },
+    {
+      "bytes": 2374,
+      "path": "submission/generated/pre_results/03_cover_letter.md",
+      "sha256": "41b42a86ed772c98999bb908315d91ad3c63a977b84629779ecbe13e7b36b824"
+    },
+    {
+      "bytes": 68245,
+      "pages": 2,
+      "path": "submission/generated/pre_results/03_cover_letter.pdf",
+      "sha256": "3ada093fe2ce2dddbf65aa1ae849b195ed78ba133c41fabc227bcc8f7dff1e21"
+    },
+    {
+      "bytes": 17214,
+      "path": "submission/generated/pre_results/04_supplement.docx",
+      "sha256": "088a9a367f88ec910369767578d510d2b4bb4bda484f6723d9cf906cf4cde8d1"
+    },
+    {
+      "bytes": 11155,
+      "path": "submission/generated/pre_results/04_supplement.md",
+      "sha256": "c73fc44bfcb7202407442a60ecb71f7e71ff7da79e19434994fc69174c129cbb"
+    },
+    {
+      "bytes": 91660,
+      "pages": 8,
+      "path": "submission/generated/pre_results/04_supplement.pdf",
+      "sha256": "a646a9908fbeeb56616ed28605f952b35dac3bde470bae12c94710ef42f7a72a"
+    },
+    {
+      "bytes": 22315,
+      "path": "submission/generated/pre_results/05_response_to_reviewer.docx",
+      "sha256": "d50a0d4172ad8379f52c9f49e9dbc71128f16e0b46b6d412574aad18424d5b3c"
+    },
+    {
+      "bytes": 23535,
+      "path": "submission/generated/pre_results/05_response_to_reviewer.md",
+      "sha256": "d5400ce81b86f58ac83bcf75e566ef6abe122d68c9988fe19a76ac35400ddf0d"
+    },
+    {
+      "bytes": 153954,
+      "pages": 16,
+      "path": "submission/generated/pre_results/05_response_to_reviewer.pdf",
+      "sha256": "f74a4a665796d1c90dc103b12efc25cae5cef513745517261548835c9c070a5d"
+    },
+    {
+      "bytes": 18050,
+      "path": "submission/generated/pre_results/06_claim_2024_checklist.docx",
+      "sha256": "8f854d897a8ccbc9c01070932ddaa9147109d0f3ce01e817281af3e87b2fec02"
+    },
+    {
+      "bytes": 11857,
+      "path": "submission/generated/pre_results/06_claim_2024_checklist.md",
+      "sha256": "5a4f40785d47657748caf690489216b2a0869bc4b764666c76018f0119777b3e"
+    },
+    {
+      "bytes": 185561,
+      "pages": 5,
+      "path": "submission/generated/pre_results/06_claim_2024_checklist.pdf",
+      "sha256": "d0ab57acb9c7c77c899e85994bfc80615fe9589b1d06431ef7966053e49519af"
+    },
+    {
+      "bytes": 12789,
+      "path": "submission/generated/pre_results/07_data_and_code_availability.docx",
+      "sha256": "ba4a83fdccbfbaafb1ee229d47519d3b1bab7ffda1db6f9fe9784553010fd0eb"
+    },
+    {
+      "bytes": 1401,
+      "path": "submission/generated/pre_results/07_data_and_code_availability.md",
+      "sha256": "5cf599c3bce6671bcd24e6393becacd848ec89265d7b5b52580532ccbe963d2d"
+    },
+    {
+      "bytes": 58586,
+      "pages": 1,
+      "path": "submission/generated/pre_results/07_data_and_code_availability.pdf",
+      "sha256": "c8f2dfb004db3158f010f637f68ef13c0197ac7ee118a8d0a9f0211fad77d15d"
+    }
+  ],
+  "final_blockers": [
+    "Gate H external results",
+    "Gate I reproducibility completion",
+    "Gate J claim rendering",
+    "confirmed author metadata",
+    "final page/line references in CLAIM",
+    "final live journal-policy recheck"
+  ],
+  "journal": "Radiology: Artificial Intelligence",
+  "layout_audits": {
+    "01_anonymized_manuscript": {
+      "letter_page_and_one_inch_margins": true,
+      "normal_style_arial_11_double_spaced": true,
+      "page_number_fields_absent": true,
+      "pass": true,
+      "tables": [],
+      "tables_pass": true
+    },
+    "02_full_title_page": {
+      "letter_page_and_one_inch_margins": true,
+      "normal_style_arial_11_double_spaced": true,
+      "page_number_fields_absent": true,
+      "pass": true,
+      "tables": [],
+      "tables_pass": true
+    },
+    "03_cover_letter": {
+      "letter_page_and_one_inch_margins": true,
+      "normal_style_arial_11_double_spaced": true,
+      "page_number_fields_absent": true,
+      "pass": true,
+      "tables": [],
+      "tables_pass": true
+    },
+    "04_supplement": {
+      "letter_page_and_one_inch_margins": true,
+      "normal_style_arial_11_double_spaced": true,
+      "page_number_fields_absent": true,
+      "pass": true,
+      "tables": [],
+      "tables_pass": true
+    },
+    "05_response_to_reviewer": {
+      "letter_page_and_one_inch_margins": true,
+      "normal_style_arial_11_double_spaced": true,
+      "page_number_fields_absent": true,
+      "pass": true,
+      "tables": [],
+      "tables_pass": true
+    },
+    "06_claim_2024_checklist": {
+      "letter_page_and_one_inch_margins": true,
+      "normal_style_arial_11_double_spaced": true,
+      "page_number_fields_absent": true,
+      "pass": true,
+      "tables": [
+        {
+          "columns": 5,
+          "explicit_header_row": true,
+          "fixed_layout": true,
+          "merged_cells_absent": true,
+          "rows": 7,
+          "rows_do_not_split": true
+        },
+        {
+          "columns": 5,
+          "explicit_header_row": true,
+          "fixed_layout": true,
+          "merged_cells_absent": true,
+          "rows": 10,
+          "rows_do_not_split": true
+        },
+        {
+          "columns": 5,
+          "explicit_header_row": true,
+          "fixed_layout": true,
+          "merged_cells_absent": true,
+          "rows": 11,
+          "rows_do_not_split": true
+        },
+        {
+          "columns": 5,
+          "explicit_header_row": true,
+          "fixed_layout": true,
+          "merged_cells_absent": true,
+          "rows": 12,
+          "rows_do_not_split": true
+        },
+        {
+          "columns": 5,
+          "explicit_header_row": true,
+          "fixed_layout": true,
+          "merged_cells_absent": true,
+          "rows": 9,
+          "rows_do_not_split": true
+        }
+      ],
+      "tables_pass": true
+    },
+    "07_data_and_code_availability": {
+      "letter_page_and_one_inch_margins": true,
+      "normal_style_arial_11_double_spaced": true,
+      "page_number_fields_absent": true,
+      "pass": true,
+      "tables": [],
+      "tables_pass": true
+    }
+  },
+  "mode": "preview",
+  "schema_version": 1,
+  "status": "preview_not_for_submission",
+  "visual_qa_report": "submission/generated/pre_results/visual_qa.json"
+}
