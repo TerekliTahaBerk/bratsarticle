@@ -38,6 +38,10 @@ def _save_nifti(path: Path, values: np.ndarray) -> None:
 def _tiny_cohort(tmp_path: Path, case_count: int = 5) -> tuple[Path, Path]:
     raw_root = tmp_path / "raw"
     raw_root.mkdir()
+    (raw_root / "name_mapping.csv").write_text(
+        "BraTS_2020_subject_ID\n",
+        encoding="utf-8",
+    )
     rows: list[dict[str, object]] = []
     for index in range(case_count):
         subject_id = f"BraTS20_Training_{index + 1:03d}"

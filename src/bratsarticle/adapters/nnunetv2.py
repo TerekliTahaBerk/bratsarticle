@@ -16,9 +16,9 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 
+from bratsarticle.data.discovery import resolve_brats2020_training_root
 from bratsarticle.utils.hashing import file_digest, text_digest
 from bratsarticle.utils.paths import (
-    assert_existing_directory,
     assert_output_paths_safe,
 )
 from bratsarticle.utils.serialization import atomic_write_json, atomic_write_text
@@ -583,7 +583,7 @@ def prepare_nnunet_dataset(
             "Reportable nnU-Net preparation requires a clean repository; "
             f"resolved commit={git_commit}"
         )
-    raw_root = assert_existing_directory(raw_root, "BraTS 2020 raw root")
+    raw_root = resolve_brats2020_training_root(raw_root)
     canonical_manifest_path = canonical_manifest_path.resolve()
     manifest = _load_canonical_manifest(canonical_manifest_path)
     manifest_sha256 = file_digest(canonical_manifest_path)
